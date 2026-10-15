@@ -20,7 +20,10 @@ env:
 jobs:
   build-linux:
     name: Linux (AppImage + deb)
-    runs-on: ubuntu-22.04
+    # ubuntu-24.04, not 22.04: the `numkong` C dependency needs a GCC that
+    # knows avx512fp16 (GCC 12+); 22.04's GCC 11 fails with "attribute
+    # 'avx512fp16' ... unknown" (same reason ci.yml's `app` job moved).
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
         with:
