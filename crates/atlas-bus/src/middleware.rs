@@ -20,6 +20,9 @@ pub trait OutboundMiddleware<E>: Send + Sync {
 /// Mutates an outgoing prompt context in place before dispatch. Runs in order;
 /// an implementation that can't contribute (timeout, disabled) should leave the
 /// context unchanged rather than error.
+// Newer clippy flags the `#[must_use]` that `#[async_trait]` puts on the boxed
+// future it returns (`double_must_use`); the attribute is the macro's, not ours.
+#[allow(clippy::double_must_use)]
 #[async_trait]
 pub trait InboundMiddleware<C: Send>: Send + Sync {
     async fn on_prompt(&self, cx: &mut C);
