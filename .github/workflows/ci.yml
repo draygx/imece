@@ -70,15 +70,25 @@ jobs:
     # Without this job every other check can be green while the app does not
     # build at all; `crates` only covers the libraries underneath it.
     #
-    # Runs on macOS because that is the supported platform (see CONTRIBUTING),
-    # and because Tauri on Linux would additionally need webkit2gtk/gtk3
-    # system packages installed before it could compile.
+    # Runs on Linux, the only platform İmece supports. Tauri needs the
+    # webkit2gtk/gtk3 system packages installed before it can compile, so they
+    # are installed first (same list as build-linux.yml). ubuntu-24.04, not
+    # 22.04: the `numkong` C dependency needs a GCC that knows avx512fp16
+    # (GCC 12+); 22.04's GCC 11 fails with "attribute 'avx512fp16' ... unknown".
     #
     # This is the slowest job in the pipeline by a wide margin on a cold cache.
     name: app (src-tauri)
-    runs-on: macos-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
+      - name: Install Linux system dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            libwebkit2gtk-4.1-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
       - uses: dtolnay/rust-toolchain@1.97.0
         with:
           components: clippy

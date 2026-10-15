@@ -797,7 +797,7 @@ impl AgentHost {
         let live = self
             .manager
             .connected(&Agent::Native)
-            .and_then(|connection| connection.downcast::<EngineConnection>());
+            .and_then(<dyn AgentConnection>::downcast::<EngineConnection>);
         let Some(live) = live else {
             return Ok(NativeModelsRefresh {
                 models,

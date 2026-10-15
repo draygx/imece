@@ -396,9 +396,10 @@ describe("the build scripts follow the target dir into the workspace", () => {
       .sort();
 
   it("finds the scripts on disk (parser health)", () => {
-    // Derived rather than listed: a hardcoded trio would keep passing the day
-    // someone adds a fourth script with the old path in it.
-    expect(shellScripts().length).toBeGreaterThan(2);
+    // Derived rather than listed: a hardcoded list would keep passing the day
+    // someone adds a script with the old path in it. Only checks that the
+    // directory scan finds something (the macOS .dmg scripts were removed).
+    expect(shellScripts().length).toBeGreaterThan(0);
   });
 
   it("no script still looks under src-tauri/target", () => {
