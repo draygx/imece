@@ -47,8 +47,8 @@ impl ShellKind {
     }
 }
 
-/// Marker for the block Atlas appends new variables under.
-const BLOCK_HEADER: &str = "# Added by Atlas — AI provider keys";
+/// Marker for the block İmece appends new variables under.
+const BLOCK_HEADER: &str = "# Added by İmece — AI provider keys";
 
 /// One `VAR=value` assignment found in a profile.
 #[derive(Debug, Clone, PartialEq, Eq)]

@@ -43,7 +43,7 @@ export function FeedbackPanel() {
 
   const user = snapshot.status === "signed-in" ? snapshot.user : null;
   const signedIn = !!user;
-  const displayName = user ? user.name || user.email || "your Atlas account" : null;
+  const displayName = user ? user.name || user.email || "your İmece account" : null;
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const radioRef = useRef<HTMLDivElement>(null);
@@ -239,7 +239,7 @@ export function FeedbackPanel() {
                 type="button"
                 onClick={() => a.setAnonymous(!anonymous)}
                 title={
-                  anonymous ? "Send with your Atlas account instead" : "Send anonymously instead"
+                  anonymous ? "Send with your İmece account instead" : "Send anonymously instead"
                 }
                 className="inline-flex min-w-0 items-center gap-1.5 text-[10px] text-text-tertiary hover:text-text-secondary transition-colors cursor-pointer"
               >

@@ -50,7 +50,7 @@ const CONTENT_CLASS =
  * they are walking away from.
  */
 const RESIDUAL_SESSION =
-  "Signed out on this device. Your Atlas session may stay active on the server until it expires.";
+  "Signed out on this device. Your İmece session may stay active on the server until it expires.";
 
 // `cursor-pointer`, not the `cursor-default` a native menu would use: every row
 // carrying this class does something when clicked, and the pointer says so.

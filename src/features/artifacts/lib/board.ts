@@ -163,7 +163,7 @@ export function agentLabel(agent: string): string {
   if (agent.includes("opencode")) return "OpenCode";
   if (agent.includes("cursor")) return "Cursor";
   if (agent.includes("kilo")) return "Kilo";
-  if (agent.includes("cersei")) return "Atlas";
+  if (agent.includes("cersei")) return "İmece";
   // Registry-installed external agent: resolve its marketplace name (falls
   // back to a prettified id for purged metadata).
   return agentMeta(agent).label;

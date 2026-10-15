@@ -302,7 +302,7 @@ function ProviderTableRow({
           ) : (
             <span
               className="flex items-center gap-1 text-[10px] font-medium text-text-tertiary border border-border-default rounded-full px-1.5 h-[18px]"
-              title="Set outside your shell profile — Atlas can read it but not edit it."
+              title="Set outside your shell profile — İmece can read it but not edit it."
             >
               <Lock size={9} />
               environment

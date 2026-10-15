@@ -164,7 +164,7 @@ export function methodBlockedReason(method: AuthMethodWire, env: AuthEnvStatus[]
   // `terminal`-kind with nothing runnable is the case R3's enrichment exists to
   // prevent; if it still happens the CLI must be run by hand.
   if (method.kind === "terminal" && !method.terminalCommand) {
-    return "Atlas could not find this agent's CLI to run the login.";
+    return "İmece could not find this agent's CLI to run the login.";
   }
   return null;
 }

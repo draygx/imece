@@ -368,7 +368,7 @@ fn fallback_models(provider: &str) -> Vec<&'static str> {
 
 fn http() -> reqwest::Client {
     reqwest::Client::builder()
-        .user_agent(concat!("Atlas/", env!("CARGO_PKG_VERSION"), " (model-chat)"))
+        .user_agent(concat!("İmece/", env!("CARGO_PKG_VERSION"), " (model-chat)"))
         .build()
         .unwrap_or_default()
 }

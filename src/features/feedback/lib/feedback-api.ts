@@ -22,7 +22,7 @@ export const CATEGORIES: ReadonlyArray<{
   {
     id: "feature_request",
     label: "Feature request",
-    placeholder: "What would you like Atlas to do?",
+    placeholder: "What would you like İmece to do?",
   },
   {
     id: "improvement",

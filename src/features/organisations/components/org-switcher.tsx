@@ -466,7 +466,7 @@ export function OrgSwitcher() {
               </div>
             ) : active.syncEnabled && active.remoteId ? (
               <div
-                title="This organisation is synced with your Atlas account"
+                title="This organisation is synced with your İmece account"
                 className="mx-1 my-1 flex h-[26px] w-[calc(100%-8px)] items-center gap-2 rounded-md px-1.5 text-[11px] text-[var(--text-secondary)] select-none"
               >
                 <Cloud size={12} className="shrink-0 text-[var(--text-tertiary)]" />
@@ -489,7 +489,7 @@ export function OrgSwitcher() {
                 }}
                 title={
                   signedIn
-                    ? "Create this organisation in your Atlas account"
+                    ? "Create this organisation in your İmece account"
                     : "Sign in to sync this organisation"
                 }
                 className="mx-1 my-1 flex h-[26px] w-[calc(100%-8px)] items-center gap-2 rounded-md px-1.5 text-[11px] text-[var(--text-secondary)] outline-none transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer"

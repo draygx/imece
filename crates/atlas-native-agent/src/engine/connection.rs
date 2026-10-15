@@ -892,11 +892,11 @@ fn handle_server_request(
             // way for the user to see why.
             tracing::warn!(
                 target: "atlas_native_agent::engine",
-                "refusing an engine server request Atlas does not serve yet: {other:?}",
+                "refusing an engine server request İmece does not serve yet: {other:?}",
             );
             let _ = answers.send(ServerAnswer {
                 request_id: other.id().clone(),
-                result: Err("Atlas does not serve this engine request yet".to_string()),
+                result: Err("İmece does not serve this engine request yet".to_string()),
             });
             return;
         }
@@ -986,7 +986,7 @@ fn serve_dynamic_tool(
     tokio::spawn(async move {
         let (text, success) = if params.tool != memory::TOOL_NAME {
             (
-                format!("Atlas does not implement the tool {:?}.", params.tool),
+                format!("İmece does not implement the tool {:?}.", params.tool),
                 false,
             )
         } else {
@@ -1282,7 +1282,7 @@ impl AgentConnection for EngineConnection {
     fn authenticate(&self, _method: acp::AuthMethodId) -> BoxFuture<'static, Result<()>> {
         async {
             Err(anyhow!(
-                "Atlas Agent signs in with your Atlas account, not with an agent auth method",
+                "İmece Agent signs in with your İmece account, not with an agent auth method",
             ))
         }
         .boxed()

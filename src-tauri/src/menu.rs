@@ -28,7 +28,7 @@ pub fn build(app: &tauri::AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
     // App menu (first submenu → becomes the macOS application menu).
     let app_menu = Submenu::with_items(
         app,
-        "Atlas",
+        "İmece",
         true,
         &[
             &PredefinedMenuItem::about(app, None, Some(AboutMetadata::default()))?,

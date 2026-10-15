@@ -200,7 +200,7 @@ pub fn browser_open_window(app: tauri::AppHandle, url: String) -> Result<String,
     let label = format!("atlas-browser-{seq}");
 
     WebviewWindowBuilder::new(&app, &label, WebviewUrl::External(parsed))
-        .title("Atlas Browser")
+        .title("İmece Browser")
         .inner_size(1100.0, 800.0)
         .min_inner_size(480.0, 360.0)
         .data_directory(profile)

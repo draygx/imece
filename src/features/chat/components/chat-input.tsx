@@ -110,7 +110,7 @@ interface ChatInputProps {
 export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput(
   {
     initialValue = "",
-    placeholder = "Message Atlas... (@ to mention, / for commands)",
+    placeholder = "Message İmece... (@ to mention, / for commands)",
     onChange,
     onSubmit,
     enterToSend = true,

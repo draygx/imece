@@ -81,7 +81,7 @@ fn parse_catalog(v: &serde_json::Value) -> BTreeMap<String, ModelPrice> {
 
 async fn fetch_catalog() -> Result<serde_json::Value, String> {
     let client = reqwest::Client::builder()
-        .user_agent(concat!("Atlas/", env!("CARGO_PKG_VERSION"), " (pricing)"))
+        .user_agent(concat!("İmece/", env!("CARGO_PKG_VERSION"), " (pricing)"))
         .build()
         .map_err(|e| e.to_string())?;
     let resp = client

@@ -555,7 +555,7 @@ pub fn byok_env_unset(app: AppHandle, env_var: String) -> Result<(), String> {
     let Some((path, _)) = locate_in_profiles(&env_var) else {
         // Live-env-only: nothing of ours to delete, and we will not guess.
         return Err(
-            "This key is set outside your shell profile, so Atlas can't remove it.".into(),
+            "This key is set outside your shell profile, so İmece can't remove it.".into(),
         );
     };
     let content = fs::read_to_string(&path).map_err(|e| format!("read {}: {e}", path.display()))?;

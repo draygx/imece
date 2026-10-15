@@ -460,7 +460,7 @@ impl<'a> Capture<'a> {
 /// scaffolding is noise at best and, for the directive, misattributes Atlas's
 /// words to the developer. Mirrors `NEXT_STEPS_MARKER` in
 /// `src/features/chat/lib/next-steps.ts`; the two must change together.
-const NEXT_STEPS_MARKER: &str = "═══ Atlas next-steps ═══";
+const NEXT_STEPS_MARKER: &str = "═══ İmece next-steps ═══";
 
 fn strip_host_machinery(role: Role, body: &str) -> String {
     match role {

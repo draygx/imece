@@ -3,7 +3,7 @@
 // (computing once on message insert) and the MessageItem renderer (as
 // a fallback for legacy messages) can use the same split logic.
 
-const ATLAS_CONTEXT_MARKER = "\n\n---\n# Atlas context\n\n";
+const ATLAS_CONTEXT_MARKER = "\n\n---\n# İmece context\n\n";
 
 export interface SplitContext {
   prose: string;

@@ -31,7 +31,7 @@ use crate::telemetry::TelemetryClient;
 /// Shown when the server rejects the stored credential. Deliberately says what
 /// happened and what to do about it: a title bar that silently reverts to a
 /// signed-out icon reads as a bug.
-const SESSION_ENDED: &str = "Your Atlas session ended. Sign in again to reconnect.";
+const SESSION_ENDED: &str = "Your İmece session ended. Sign in again to reconnect.";
 
 /// Managed handle to the auth core.
 pub struct AuthState {

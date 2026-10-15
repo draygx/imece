@@ -37,7 +37,7 @@ export function AccountButton({ compact = false }: { compact?: boolean } = {}) {
   const title = user
     ? `${user.name} (${user.email})`
     : signedIn
-      ? "Atlas account — connected"
+      ? "İmece account — connected"
       : connecting
         ? "Waiting for approval in your browser…"
         : "Account and settings";

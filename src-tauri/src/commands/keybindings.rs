@@ -90,7 +90,7 @@ pub struct KeybindingsLoadResult {
 fn keybindings_path() -> Result<PathBuf, String> {
     config_root()
         .map(|root| root.join(FILE_NAME))
-        .ok_or_else(|| "could not resolve the Atlas config directory".to_string())
+        .ok_or_else(|| "could not resolve the İmece config directory".to_string())
 }
 
 /// Repair what can be repaired, reporting each fix. Anything that can't be

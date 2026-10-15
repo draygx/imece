@@ -329,7 +329,7 @@ impl AcpConnection {
 
         if response.protocol_version < MINIMUM_SUPPORTED_VERSION {
             return Err(anyhow!(LoadError::Unsupported {
-                message: "This agent speaks an ACP version Atlas no longer supports.".into(),
+                message: "This agent speaks an ACP version İmece no longer supports.".into(),
             }));
         }
 

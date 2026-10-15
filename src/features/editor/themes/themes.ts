@@ -26,8 +26,8 @@ import type { EditorColorTheme, EditorThemeColors } from "./types";
  */
 const atlas: EditorColorTheme = {
   id: "atlas",
-  name: "Atlas",
-  description: "AMOLED black with restrained syntax hues and the Atlas yellow accent.",
+  name: "İmece",
+  description: "AMOLED black with restrained syntax hues and the İmece yellow accent.",
   dark: true,
   colors: {
     bg: "#000000",
@@ -85,7 +85,7 @@ const atlas: EditorColorTheme = {
  */
 const atlasMono: EditorColorTheme = {
   id: "atlas-mono",
-  name: "Atlas Mono",
+  name: "İmece Mono",
   description: "Monochrome AMOLED black with a single yellow accent.",
   dark: true,
   colors: {

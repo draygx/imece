@@ -1954,7 +1954,7 @@ impl atlas_native_agent::engine::auth::AtlasTokenSource for AccountTokenSource {
         Box::pin(async move {
             let Some(state) = self.app.try_state::<crate::commands::auth::AuthState>() else {
                 return Err(std::io::Error::other(
-                    "Atlas auth state is not ready yet — try again in a moment",
+                    "İmece auth state is not ready yet — try again in a moment",
                 ));
             };
             state.core().mint_access_token().await.map_err(|err| {
@@ -1962,7 +1962,7 @@ impl atlas_native_agent::engine::auth::AtlasTokenSource for AccountTokenSource {
                 // survive as text or the user is told only that auth failed.
                 // Signed-out is the common case and reads very differently from
                 // a rejected credential, so it keeps its own words.
-                std::io::Error::other(format!("Atlas account token unavailable: {err:?}"))
+                std::io::Error::other(format!("İmece account token unavailable: {err:?}"))
             })
         })
     }

@@ -2217,7 +2217,7 @@ function MemoryBlock({ block }: { block: InjectedBlock }) {
         <span className="text-[12px] text-[var(--text-secondary)]">
           {MEMORY_LABELS[block.label] ?? block.label.toLowerCase()}
         </span>
-        <span className="font-mono text-[10.5px] text-[var(--text-ghost)]">from Atlas memory</span>
+        <span className="font-mono text-[10.5px] text-[var(--text-ghost)]">from İmece memory</span>
         <span className="flex-1" />
         {lines > 0 && (
           <span className="font-mono text-[10.5px] text-[var(--text-ghost)]">
