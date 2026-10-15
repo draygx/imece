@@ -210,8 +210,27 @@ impl AcpConnection {
         );
         let transport = Lines::new(outgoing, incoming);
 
+        // A dedicated, append-only copy of this attempt's stderr, kept
+        // outside `debug_log`'s shared message ring (which also carries
+        // Incoming/Outgoing traffic): the `initialize` request below is sent
+        // as soon as the transport connects and can still be in flight when
+        // the child dies, so its write can land in the ring *after* the
+        // stderr line — which breaks `AcpDebugLog::trailing_stderr()`'s
+        // "only the trailing run" rule even though the stderr is still in
+        // there, just not at the very tail. `wait_for_exit` needs the stderr
+        // specifically to explain the exit, so it reads from here instead,
+        // where nothing else can interleave.
+        let stderr_tail = Arc::new(Mutex::new(String::new()));
+        // Signalled once the reader below has drained the pipe to EOF, so
+        // `wait_for_exit` can wait for the real event instead of guessing a
+        // sleep duration (see `STDERR_DRAIN_GRACE`). `notify_one` stores a
+        // permit if `wait_for_exit` has not started waiting yet, so the two
+        // tasks can finish in either order.
+        let stderr_done = Arc::new(tokio::sync::Notify::new());
         let stderr_task = tokio::spawn({
             let debug_log = debug_log.clone();
+            let stderr_tail = stderr_tail.clone();
+            let stderr_done = stderr_done.clone();
             async move {
                 use tokio::io::AsyncBufReadExt as _;
                 let mut lines = tokio::io::BufReader::new(stderr).lines();
@@ -219,7 +238,9 @@ impl AcpConnection {
                     let trimmed = line.trim_end_matches(['\n', '\r']);
                     tracing::warn!("agent stderr: {trimmed}");
                     debug_log.record_line(AcpDebugMessageDirection::Stderr, trimmed);
+                    push_stderr_tail(&stderr_tail, trimmed);
                 }
+                stderr_done.notify_one();
             }
         });
 
@@ -245,7 +266,7 @@ impl AcpConnection {
         // the select, the select drops `status_fut`, and `status_fut` drops
         // the child, whose `Drop` kills the whole process group. Nothing else
         // needs to reach in.
-        let mut status_fut = Box::pin(wait_for_exit(child, debug_log.clone()));
+        let mut status_fut = Box::pin(wait_for_exit(child, stderr_tail.clone(), stderr_done.clone()));
         let connection_rx = Box::pin(async move {
             connection_rx
                 .await
@@ -603,23 +624,48 @@ pub(crate) async fn with_request_deadline<T>(
     }
 }
 
+/// Caps `stderr_tail` the same way `debug_log` caps a single message
+/// ([`crate::debug_log::MAX_DEBUG_MESSAGE_BYTES`]), dropping from the front so
+/// the most recent output — the part that explains a death — survives.
+const STDERR_TAIL_CAP_BYTES: usize = crate::debug_log::MAX_DEBUG_MESSAGE_BYTES;
+
+fn push_stderr_tail(tail: &Arc<Mutex<String>>, line: &str) {
+    let mut tail = tail.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    if !tail.is_empty() {
+        tail.push('\n');
+    }
+    tail.push_str(line);
+    if tail.len() > STDERR_TAIL_CAP_BYTES {
+        let cut = tail.len() - STDERR_TAIL_CAP_BYTES;
+        let boundary = (cut..=tail.len())
+            .find(|&i| tail.is_char_boundary(i))
+            .unwrap_or(tail.len());
+        tail.drain(..boundary);
+    }
+}
+
 /// Waits for the child and turns its exit into a `LoadError` carrying the
 /// trailing stderr. The child is returned so the caller keeps owning it — and
 /// so that dropping it, whenever that happens, kills whatever it left behind.
-async fn wait_for_exit(mut child: AgentChild, debug_log: AcpDebugLog) -> (LoadError, AgentChild) {
+async fn wait_for_exit(
+    mut child: AgentChild,
+    stderr_tail: Arc<Mutex<String>>,
+    stderr_done: Arc<tokio::sync::Notify>,
+) -> (LoadError, AgentChild) {
     let status = child.wait().await;
     // The stderr reader is a separate task; under load it can still be a poll
     // behind the exit status, and the last line it has not recorded yet is
     // usually the one that says why the agent died. The pipe is closed now,
-    // so this is a bounded wait for the reader to catch up, not for the agent.
-    tokio::time::sleep(STDERR_DRAIN_GRACE).await;
+    // so the reader reaches EOF shortly — wait for that signal instead of
+    // guessing a sleep duration, bounded by STDERR_DRAIN_GRACE in case the
+    // reader task itself never gets scheduled (e.g. runtime shutdown).
+    let _ = tokio::time::timeout(STDERR_DRAIN_GRACE, stderr_done.notified()).await;
+    let stderr = stderr_tail.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
     let error = LoadError::Exited {
         status: status.ok().and_then(|status| status.code()),
-        stderr: debug_log
-            .trailing_stderr()
-            .map(Arc::from)
-            .unwrap_or_else(|| Arc::from("")),
+        stderr: Arc::from(stderr.as_str()),
     };
+    drop(stderr);
     (error, child)
 }
 
