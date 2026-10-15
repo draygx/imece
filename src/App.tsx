@@ -76,14 +76,7 @@ import {
 import { comms, listenComms, type CommsEnvelope } from "@/features/comms/lib/comms-api";
 import { commsActions, pruneTyping } from "@/features/comms/stores/comms-store";
 import { useUpdaterStore } from "@/features/updater/stores/updater-store";
-import {
-  updater,
-  listenUpdateProgress,
-  listenUpdateReady,
-  listenUpdateApplied,
-  listenUpdateError,
-  listenUpdateChecking,
-} from "@/features/updater/lib/updater-api";
+import { updater } from "@/features/updater/lib/updater-api";
 import { Toaster, toast } from "sonner";
 import {
   listenAuthChanged,
@@ -185,34 +178,19 @@ export function App() {
     };
   }, []);
 
-  // Auto-update: route the Rust updater events into the updater store, which
-  // drives the titlebar arc/badge and the <UpdateAvailableModal />. The
-  // check/download/verify/stage all run in Rust; here we just reflect the phase.
-  // See src/features/updater + commands::updater.
+  // Auto-update: hydrate the updater store from the current backend state.
+  // There is no working auto-updater on Linux yet (see commands::updater /
+  // updater_stub.rs), so `updater.state()` always reports "idle" today and
+  // nothing drives the store past that — this just keeps the titlebar
+  // badge / <UpdateAvailableModal /> correct for when a real backend exists.
   useEffect(() => {
     const a = useUpdaterStore.getState().actions;
-    const offs: Array<Promise<() => void>> = [
-      listenUpdateProgress((e) => a.setDownloading(e.version, e.downloaded, e.total, e.phase)),
-      listenUpdateReady((e) => a.setReady(e.version)),
-      listenUpdateApplied((e) => {
-        a.reset();
-        toast.success(`Updated to Atlas ${e.version}.`);
-      }),
-      listenUpdateError((e) => a.setError(e.message)),
-      listenUpdateChecking((e) => a.setChecking(e.checking)),
-    ];
-    // Hydrate from the current backend state (e.g. staged before this mount).
-    // Show the titlebar badge but don't pop the modal on launch — the live
-    // `atlas:update-ready` event opens it; hydration is badge-only.
     void updater.state().then((s) => {
       if (s.phase === "ready" && s.version) {
         a.setReady(s.version);
         a.dismissModal();
       }
     });
-    return () => {
-      for (const p of offs) void p.then((off) => off());
-    };
   }, []);
 
   // Account auth (ATL-35). Rust owns the credential and every transition; this

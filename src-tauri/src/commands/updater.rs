@@ -1,33 +1,17 @@
 //! In-app auto-updater — the IPC surface, plus platform dispatch.
 //!
-//! Atlas ships as an Apple-signed + notarized + stapled `.dmg` (no Tauri-updater
-//! `.app.tar.gz`/minisign artifact), so we don't use the Tauri updater plugin.
-//! That flow only makes sense on macOS — mounting a DMG, `codesign`/`spctl`
-//! verification, and swapping an `.app` bundle have no Windows/Linux
-//! equivalent — so the real implementation (`updater_macos.rs`) is compiled in
-//! only there. Every other platform gets `updater_stub.rs`, a no-op carrying
-//! the same signatures.
+//! İmece is Linux-only and has no in-app updater: the macOS implementation
+//! (mount a DMG, `codesign`/`spctl` verification, swap an `.app` bundle) was
+//! removed together with macOS support, and `updater_stub.rs` is a no-op that
+//! keeps the same signatures so the IPC surface below stays stable.
 //!
 //! The four `#[tauri::command]` verbs and the DTOs they return are declared
 //! **here, once**, per the "IPC verbs grouped into a single
-//! `commands/<domain>.rs`" convention in CONTRIBUTING.md. The platform modules
-//! expose plain `pub(super)` functions with identical signatures, so the two
-//! sides cannot drift: a change to one that isn't mirrored in the other stops
-//! compiling on that platform instead of failing at runtime. Declaring the
-//! commands once also keeps `tests/ipc-contract.test.ts` — which reads source
-//! text and cannot evaluate `#[cfg]` — from seeing four duplicate handlers.
-//!
-//! See `updater_macos.rs` for the staged-update design, the `atlas:update-*`
-//! event contract, and the Team-ID signature anchor.
+//! `commands/<domain>.rs`" convention in CONTRIBUTING.md.
 
 use serde::Serialize;
 use tauri::{AppHandle, State};
 
-#[cfg(target_os = "macos")]
-#[path = "updater_macos.rs"]
-mod imp;
-
-#[cfg(not(target_os = "macos"))]
 #[path = "updater_stub.rs"]
 mod imp;
 

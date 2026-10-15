@@ -321,31 +321,11 @@ mod tests {
 }
 
 /// The live working directory of a shell pid, used to resolve relative file
-/// paths clicked in the terminal. Linux reads the `/proc/<pid>/cwd` symlink;
-/// macOS shells out to `lsof` (no `/proc`). BLOCKING (lsof) — call off-thread.
+/// paths clicked in the terminal. Reads the `/proc/<pid>/cwd` symlink.
 pub fn cwd_of_pid(pid: u32) -> Option<String> {
-    #[cfg(target_os = "linux")]
-    {
-        std::fs::read_link(format!("/proc/{pid}/cwd"))
-            .ok()
-            .map(|p| p.to_string_lossy().into_owned())
-    }
-    #[cfg(target_os = "macos")]
-    {
-        // `lsof -a -d cwd -p <pid> -Fn` prints `n<path>` for the cwd fd.
-        let out = std::process::Command::new("lsof")
-            .args(["-a", "-d", "cwd", "-p", &pid.to_string(), "-Fn"])
-            .output()
-            .ok()?;
-        let s = String::from_utf8_lossy(&out.stdout);
-        s.lines()
-            .find_map(|l| l.strip_prefix('n').map(std::string::ToString::to_string))
-    }
-    #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-    {
-        let _ = pid;
-        None
-    }
+    std::fs::read_link(format!("/proc/{pid}/cwd"))
+        .ok()
+        .map(|p| p.to_string_lossy().into_owned())
 }
 
 fn detect_shell() -> String {

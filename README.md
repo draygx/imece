@@ -16,7 +16,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/pacifio/atlas/ci.yml?branch=main&label=CI)](https://github.com/pacifio/atlas/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/pacifio/atlas?include_prereleases&label=release)](https://github.com/pacifio/atlas/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-macOS-black)](#download)
+[![Platform](https://img.shields.io/badge/platform-Linux-black)](#build-from-source)
 [![Discord](https://img.shields.io/badge/Discord-join%20chat-5865F2?logo=discord&logoColor=white)](https://discord.gg/GmnFggaPfP)
 
 <sub>[Download](#download) · [Docs](https://docs.tryatlas.cc/) · [Website](https://www.tryatlas.cc/) · [Contributing](CONTRIBUTING.md) · [Issues](https://github.com/pacifio/atlas/issues)</sub>
@@ -40,10 +40,10 @@ Run Claude Code, Codex, Atlas's own agent, or anything from the ACP registry sid
 
 ## Download
 
-Grab the latest `.dmg` from [tryatlas.cc](https://www.tryatlas.cc/) or the [releases page](https://github.com/pacifio/atlas/releases).
+İmece ships no prebuilt installers yet: build it from source (see [Build from source](#build-from-source)). The `.dmg` on tryatlas.cc is the upstream Atlas app, which is macOS-only.
 
 > [!NOTE]
-> macOS is the supported platform. Linux and Windows build from the same Tauri codebase but are untested — see [Build from source](#build-from-source).
+> Linux is the only supported platform. macOS and Windows support was removed from this fork — see [Build from source](#build-from-source).
 
 <!-- #todo homebrew tap so this becomes `brew install atlas` -->
 
@@ -146,7 +146,7 @@ Works with no account and no network.
 
 To use the Claude Code agent, install the `claude` CLI and put it on your `PATH`. Atlas's native agent needs no external CLI.
 
-Requires **[Bun](https://bun.sh/)**, **Rust** (stable, via [rustup](https://rustup.rs/)), and **Xcode Command Line Tools**.
+Requires **[Bun](https://bun.sh/)**, **Rust** via [rustup](https://rustup.rs/) (the version is pinned in `rust-toolchain.toml`; rustup installs it automatically), and the Linux system packages below.
 
 <details>
 <summary>Linux system dependencies (GTK 3, WebKit2GTK 4.1, GLib headers)</summary>
@@ -182,8 +182,7 @@ The first Rust compile takes a few minutes; after that it is seconds. Use `bun r
 Production builds:
 
 ```bash
-bun run build:app       # .app bundle
-bun run build:app:dmg   # .app + .dmg installer
+bun run build:app:linux   # AppImage + .deb
 ```
 
 ## Contributing
