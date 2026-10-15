@@ -188,7 +188,7 @@ pub fn scratch_write_bytes(
         .headers()
         .get("x-filename")
         .and_then(|v| v.to_str().ok())
-        .map(|s| s.trim())
+        .map(str::trim)
         .filter(|s| !s.is_empty())
         .map(percent_decode)
         .unwrap_or_else(|| "pasted.png".to_string());
@@ -214,7 +214,7 @@ pub fn scratch_write_bytes(
         })
         .take(48)
         .collect();
-    let ext: String = ext.chars().filter(|c| c.is_ascii_alphanumeric()).collect();
+    let ext: String = ext.chars().filter(char::is_ascii_alphanumeric).collect();
     let ext = if ext.is_empty() {
         "png".to_string()
     } else {
