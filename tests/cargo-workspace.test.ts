@@ -63,7 +63,7 @@ const EXCLUDED_PATCH_PATHS: string[] = [];
 /** The one member allowed to have no dev opt-level override: the app crate is
  *  deliberately opt-level 0 so incremental rebuilds stay snappy. Keyed on
  *  PACKAGE names, unlike `EXCLUDED_CRATE_DIRS` above. */
-const DEV_OPT_LEVEL_0_MEMBERS = new Set(["atlas"]);
+const DEV_OPT_LEVEL_0_MEMBERS = new Set(["imece"]);
 
 /** Package names are `[a-z0-9-]`, but interpolating one into a `RegExp`
  *  unescaped is a habit that breaks the day a name isn't. */
