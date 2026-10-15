@@ -1,0 +1,10 @@
+# Pinned on purpose. CI used `dtolnay/rust-toolchain@stable`, so every new Rust
+# release could turn a new lint or deprecation into a hard error under
+# `-D warnings` (first seen on 1.99: clippy::double_must_use, then
+# `AtomicU64::fetch_update` -> `try_update`). We upgrade when we choose to.
+#
+# Keep in sync with the `dtolnay/rust-toolchain@<version>` lines in
+# .github/workflows/ci.yml and build-linux.yml.
+[toolchain]
+channel = "1.97.0"
+components = ["clippy", "rustfmt"]
