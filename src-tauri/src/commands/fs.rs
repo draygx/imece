@@ -482,17 +482,107 @@ pub async fn fs_duplicate(path: String) -> Result<String, String> {
     .map_err(|e| e.to_string())?
 }
 
-/// Open a folder in the system terminal. Not implemented on Linux yet (the
-/// macOS `open -a Terminal` implementation was removed with macOS support) —
-/// returns `Err("unsupported")` so the frontend can show a sensible toast.
+/// How a terminal emulator is told to start in a given directory.
+///
+/// There's no single "the terminal" on Linux, so [`fs_open_in_terminal`]
+/// tries a list of candidates. A terminal with a client/server model
+/// (`gnome-terminal` opens windows via an already-running
+/// `gnome-terminal-server`, which has its own working directory unrelated to
+/// whatever process ran the `gnome-terminal` command) ignores the spawned
+/// process's own working directory, so those need an explicit flag. A plain
+/// single-process terminal (no server to route through) picks its shell's
+/// starting directory from its own working directory, same as any other
+/// child process — so for those, `Command::current_dir` (set unconditionally
+/// below) is enough on its own.
+enum WorkdirFlag {
+    /// `--flag=<path>`, confirmed against that terminal's own docs.
+    Equals(&'static str),
+    /// `--flag <path>` as two separate argv entries, confirmed likewise.
+    Separate(&'static str),
+    /// No documented flag found; rely on the spawned process's own cwd.
+    None,
+}
+
+/// Tried in this order. Flags: `gnome-terminal`/`xfce4-terminal`/
+/// `lxterminal` per their Debian/Xfce man pages, `konsole` per KDE's own
+/// docs (and Dolphin's "Open Terminal Here" `Exec=konsole --workdir %f`),
+/// `tilix` per its upstream man page. `terminator` has no documented
+/// equivalent despite being asked about directly; it and everything past it
+/// fall back to the inherited working directory.
+const TERMINAL_CANDIDATES: &[(&str, WorkdirFlag)] = &[
+    ("gnome-terminal", WorkdirFlag::Equals("--working-directory")),
+    ("konsole", WorkdirFlag::Separate("--workdir")),
+    ("xfce4-terminal", WorkdirFlag::Equals("--working-directory")),
+    ("lxterminal", WorkdirFlag::Equals("--working-directory")),
+    ("tilix", WorkdirFlag::Equals("--working-directory")),
+    ("terminator", WorkdirFlag::None),
+    ("kitty", WorkdirFlag::None),
+    ("alacritty", WorkdirFlag::None),
+    ("foot", WorkdirFlag::None),
+    ("wezterm", WorkdirFlag::None),
+    ("xterm", WorkdirFlag::None),
+];
+
+/// Open a folder in the user's terminal emulator.
 #[tauri::command]
 pub async fn fs_open_in_terminal(path: String) -> Result<(), String> {
-    tokio::task::spawn_blocking(move || {
-        let _ = path;
-        Err::<(), String>("unsupported".to_string())
-    })
-    .await
-    .map_err(|e| e.to_string())?
+    tokio::task::spawn_blocking(move || open_in_terminal_sync(&path))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+/// Looks up `basename` (e.g. `"konsole"`, matched case-sensitively against
+/// [`TERMINAL_CANDIDATES`]) and returns the flag args to start it in `dir`,
+/// or `[]` for an unrecognized name — [`open_in_terminal_sync`] relies on
+/// `Command::current_dir` for those instead.
+fn workdir_args(basename: &str, dir: &Path) -> Vec<std::ffi::OsString> {
+    let flag = TERMINAL_CANDIDATES
+        .iter()
+        .find(|(candidate, _)| *candidate == basename)
+        .map(|(_, flag)| flag)
+        .unwrap_or(&WorkdirFlag::None);
+
+    match flag {
+        WorkdirFlag::Equals(f) => vec![format!("{f}={}", dir.display()).into()],
+        WorkdirFlag::Separate(f) => vec![(*f).into(), dir.as_os_str().to_owned()],
+        WorkdirFlag::None => vec![],
+    }
+}
+
+fn open_in_terminal_sync(path: &str) -> Result<(), String> {
+    let dir = Path::new(path);
+    if !dir.is_dir() {
+        return Err(format!("Not a directory: {path}"));
+    }
+
+    // `$TERMINAL` is a long-standing convention (ranger, many window-manager
+    // configs, …) for "the terminal the user actually wants"; try it first.
+    let mut names: Vec<String> = Vec::new();
+    if let Some(t) = std::env::var_os("TERMINAL") {
+        names.push(t.to_string_lossy().into_owned());
+    }
+    names.extend(TERMINAL_CANDIDATES.iter().map(|(name, _)| name.to_string()));
+
+    for name in names {
+        let Ok(binary) = which::which(&name) else {
+            continue;
+        };
+        // Match by basename so a `$TERMINAL` pointing at a full path (e.g.
+        // `/usr/bin/alacritty`) still looks up the right flag, if any.
+        let basename = Path::new(&name)
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_else(|| name.clone());
+
+        let mut cmd = std::process::Command::new(&binary);
+        cmd.current_dir(dir).args(workdir_args(&basename, dir));
+
+        if cmd.spawn().is_ok() {
+            return Ok(());
+        }
+    }
+
+    Err("no terminal emulator found".to_string())
 }
 
 /// Append an arbitrary pattern to the project's `.gitignore`, sharing
@@ -694,6 +784,35 @@ mod asset_grant_tests {
             "/Users/other/Desktop",
         ] {
             assert!(!asset_grant_allowed(Path::new(bad), &ws, Some(home)), "{bad}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod open_in_terminal_tests {
+    use super::workdir_args;
+    use std::path::Path;
+
+    #[test]
+    fn known_terminals_get_their_documented_flag() {
+        let dir = Path::new("/home/me/project");
+
+        assert_eq!(workdir_args("gnome-terminal", dir), ["--working-directory=/home/me/project"]);
+        assert_eq!(workdir_args("xfce4-terminal", dir), ["--working-directory=/home/me/project"]);
+        assert_eq!(workdir_args("lxterminal", dir), ["--working-directory=/home/me/project"]);
+        assert_eq!(workdir_args("tilix", dir), ["--working-directory=/home/me/project"]);
+        assert_eq!(workdir_args("konsole", dir), ["--workdir", "/home/me/project"]);
+    }
+
+    #[test]
+    fn terminals_without_a_documented_flag_get_none() {
+        let dir = Path::new("/home/me/project");
+
+        // These rely on `Command::current_dir` alone (set by the caller,
+        // `open_in_terminal_sync`) — no flag args.
+        for name in ["terminator", "kitty", "alacritty", "foot", "wezterm", "xterm", "made-up-terminal"]
+        {
+            assert!(workdir_args(name, dir).is_empty(), "{name}");
         }
     }
 }
