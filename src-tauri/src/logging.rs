@@ -41,11 +41,7 @@ pub fn log_dir() -> Option<PathBuf> {
 }
 
 fn default_log_dir() -> Option<PathBuf> {
-    if cfg!(target_os = "macos") {
-        dirs::home_dir().map(|home| home.join("Library").join("Logs").join(BUNDLE_ID))
-    } else {
-        dirs::data_local_dir().map(|dir| dir.join(BUNDLE_ID).join("logs"))
-    }
+    dirs::data_local_dir().map(|dir| dir.join(BUNDLE_ID).join("logs"))
 }
 
 pub fn init() {

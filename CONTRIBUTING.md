@@ -10,7 +10,7 @@ If you're not sure where to begin, `#dev` on [Discord](https://discord.gg/GmnFgg
 
 Areas where help goes furthest right now:
 
-- **Linux and Windows testing** of the production bundle — terminal font, PATH resolution, general GUI behaviour.
+- **Linux testing** of the production bundle — terminal font, PATH resolution, general GUI behaviour.
 - **More ACP agents.** `atlas-acp` already speaks the wire format, so adding Gemini CLI, OpenCode, or Kilo Code is mostly plugin discovery and auth.
 - **LSP support** for diagnostics and go-to-definition in the editor.
 - **MCP server integration** for tool-call extensibility.
@@ -50,13 +50,13 @@ Atlas has a lot of surfaces — a change that looks right in one panel often rea
 
 ## Quickstart
 
-**macOS is the only currently-supported platform.** Linux and Windows build from the same Tauri codebase but are untested — a Windows build is planned, and reports from either OS are genuinely welcome in the meantime.
+**Linux is the only supported platform.** macOS and Windows support was removed from this fork.
 
 You need:
 
 - [Bun](https://bun.sh/)
-- [Rust](https://rustup.rs/), stable
-- Xcode Command Line Tools
+- [Rust](https://rustup.rs/) (the version is pinned in `rust-toolchain.toml`; rustup installs it automatically)
+- The Linux system packages listed in the README (GTK 3, WebKit2GTK 4.1)
 
 We suggest using [mise](https://mise.jdx.dev/) to manage the Bun version — the repo ships an `mise.toml` pinning it, so `mise install` picks up the right version automatically. Not required; installing Bun directly works too.
 

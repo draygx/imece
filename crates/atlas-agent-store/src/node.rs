@@ -51,17 +51,11 @@ const USER_NPMRC: &str = "update-notifier=false\n";
 /// something is in flight, `None` when the agent is ready).
 pub type LoadingStatus = watch::Sender<Option<String>>;
 
-#[cfg(not(windows))]
 pub(crate) const NODE_PATH: &str = "bin/node";
-#[cfg(windows)]
-pub(crate) const NODE_PATH: &str = "node.exe";
 
 // `bin/npm` in the distribution is a symlink to npm's CLI entry point, so
-// `node bin/npm …` runs npm without a shell. Windows ships no such symlink.
-#[cfg(not(windows))]
+// `node bin/npm …` runs npm without a shell.
 const NPM_PATH: &str = "bin/npm";
-#[cfg(windows)]
-const NPM_PATH: &str = "node_modules/npm/bin/npm-cli.js";
 
 #[derive(Clone)]
 pub struct NodeRuntime(Arc<Inner>);
@@ -408,15 +402,6 @@ pub fn npm_command_env(node_binary: &Path) -> HashMap<String, String> {
     if let Ok(node_ca_certs) = std::env::var(NODE_CA_CERTS_ENV_VAR) {
         if !node_ca_certs.is_empty() {
             env.insert(NODE_CA_CERTS_ENV_VAR.to_string(), node_ca_certs);
-        }
-    }
-
-    #[cfg(windows)]
-    {
-        for key in ["SYSTEMROOT", "ComSpec"] {
-            if let Ok(value) = std::env::var(key) {
-                env.insert(key.to_string(), value);
-            }
         }
     }
 

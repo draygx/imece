@@ -127,23 +127,9 @@ pub fn find_on_path(program: &str, path_var: &OsStr) -> Option<PathBuf> {
         .find(|candidate| is_executable_file(candidate))
 }
 
-/// On Windows an executable is found by extension; elsewhere the name is the
-/// name.
+/// The executable's name is the name (no extension probing).
 fn executable_names(program: &str) -> Vec<String> {
-    #[cfg(windows)]
-    {
-        if Path::new(program).extension().is_some() {
-            return vec![program.to_string()];
-        }
-        return ["exe", "cmd", "bat"]
-            .iter()
-            .map(|extension| format!("{program}.{extension}"))
-            .collect();
-    }
-    #[cfg(not(windows))]
-    {
-        vec![program.to_string()]
-    }
+    vec![program.to_string()]
 }
 
 fn is_executable_file(path: &Path) -> bool {
@@ -153,15 +139,8 @@ fn is_executable_file(path: &Path) -> bool {
     if !metadata.is_file() {
         return false;
     }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt as _;
-        metadata.permissions().mode() & 0o111 != 0
-    }
-    #[cfg(not(unix))]
-    {
-        true
-    }
+    use std::os::unix::fs::PermissionsExt as _;
+    metadata.permissions().mode() & 0o111 != 0
 }
 
 /// A convenience for the marketplace: detections keyed by registry id, so a

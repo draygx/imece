@@ -483,12 +483,8 @@ fn sanitize_icon_name(id: &str) -> String {
 /// The registry's platform key for this host, or `None` where the registry has
 /// no concept of us. Ported from `agent_registry_store.rs:581-618`.
 pub fn current_platform_key() -> Option<&'static str> {
-    let os = if cfg!(target_os = "macos") {
-        "darwin"
-    } else if cfg!(target_os = "linux") {
+    let os = if cfg!(target_os = "linux") {
         "linux"
-    } else if cfg!(target_os = "windows") {
-        "windows"
     } else {
         return None;
     };
@@ -502,12 +498,8 @@ pub fn current_platform_key() -> Option<&'static str> {
     };
 
     Some(match (os, arch) {
-        ("darwin", "aarch64") => "darwin-aarch64",
-        ("darwin", "x86_64") => "darwin-x86_64",
         ("linux", "aarch64") => "linux-aarch64",
         ("linux", "x86_64") => "linux-x86_64",
-        ("windows", "aarch64") => "windows-aarch64",
-        ("windows", "x86_64") => "windows-x86_64",
         _ => return None,
     })
 }
