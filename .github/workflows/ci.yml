@@ -72,11 +72,13 @@ jobs:
     #
     # Runs on Linux, the only platform İmece supports. Tauri needs the
     # webkit2gtk/gtk3 system packages installed before it can compile, so they
-    # are installed first (same list as build-linux.yml).
+    # are installed first (same list as build-linux.yml). ubuntu-24.04, not
+    # 22.04: the `numkong` C dependency needs a GCC that knows avx512fp16
+    # (GCC 12+); 22.04's GCC 11 fails with "attribute 'avx512fp16' ... unknown".
     #
     # This is the slowest job in the pipeline by a wide margin on a cold cache.
     name: app (src-tauri)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
       - name: Install Linux system dependencies
