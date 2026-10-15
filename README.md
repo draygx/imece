@@ -182,8 +182,7 @@ The first Rust compile takes a few minutes; after that it is seconds. Use `bun r
 Production builds:
 
 ```bash
-bun run build:app       # .app bundle
-bun run build:app:dmg   # .app + .dmg installer
+bun run build:app:linux   # AppImage + .deb
 ```
 
 ## Contributing

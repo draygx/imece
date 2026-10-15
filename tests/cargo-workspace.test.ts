@@ -63,7 +63,7 @@ const EXCLUDED_PATCH_PATHS: string[] = [];
 /** The one member allowed to have no dev opt-level override: the app crate is
  *  deliberately opt-level 0 so incremental rebuilds stay snappy. Keyed on
  *  PACKAGE names, unlike `EXCLUDED_CRATE_DIRS` above. */
-const DEV_OPT_LEVEL_0_MEMBERS = new Set(["atlas"]);
+const DEV_OPT_LEVEL_0_MEMBERS = new Set(["imece"]);
 
 /** Package names are `[a-z0-9-]`, but interpolating one into a `RegExp`
  *  unescaped is a habit that breaks the day a name isn't. */
@@ -396,9 +396,10 @@ describe("the build scripts follow the target dir into the workspace", () => {
       .sort();
 
   it("finds the scripts on disk (parser health)", () => {
-    // Derived rather than listed: a hardcoded trio would keep passing the day
-    // someone adds a fourth script with the old path in it.
-    expect(shellScripts().length).toBeGreaterThan(2);
+    // Derived rather than listed: a hardcoded list would keep passing the day
+    // someone adds a script with the old path in it. Only checks that the
+    // directory scan finds something (the macOS .dmg scripts were removed).
+    expect(shellScripts().length).toBeGreaterThan(0);
   });
 
   it("no script still looks under src-tauri/target", () => {
