@@ -40,13 +40,6 @@ pub struct OrgIdentity {
     pub role: Option<String>,
 }
 
-#[derive(Debug, Clone, Default, Serialize, Deserialize)]
-pub struct RemoteUpdateConfig {
-    pub uri_mac_arm: Option<String>,
-    pub uri_mac_intel: Option<String>,
-    pub uri_linux: Option<String>,
-}
-
 // Internal no-op event type (only to satisfy mpsc::Receiver<QueuedEvent> return)
 pub(crate) struct QueuedEvent;
 
@@ -118,8 +111,3 @@ pub fn redact_message(msg: &str, max_chars: usize) -> String {
 
 /// No-op flush loop. Returns immediately since there is nothing to flush.
 pub async fn run_flush_loop(_client: Arc<TelemetryClient>, _rx: mpsc::Receiver<QueuedEvent>) {}
-
-/// Stub for update URI flag (used in updater_macos.rs).
-pub fn update_uri_flag(_config: &RemoteUpdateConfig) -> Option<String> {
-    None
-}

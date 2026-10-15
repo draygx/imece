@@ -62,23 +62,14 @@ pub struct Embedder {
     dim: usize,
 }
 
-/// The platform's GPU device, per Atlas policy:
-/// - macOS → Metal, else CPU (CUDA never applies on Apple Silicon)
-/// - Linux/Windows → CUDA, else CPU
+/// The GPU device: CUDA when the `cuda` feature is on, else CPU.
 ///
-/// `None` when the platform's GPU feature is off or device init fails (e.g.
+/// `None` when the GPU feature is off or device init fails (e.g.
 /// headless CI). A successful device does NOT guarantee candle's GPU kernels
 /// compile/run on this machine — hence the guarded load + request-time
 /// fallback.
 pub(crate) fn gpu_device() -> Option<Device> {
-    #[cfg(all(target_os = "macos", feature = "metal"))]
-    {
-        match Device::new_metal(0) {
-            Ok(d) => return Some(d),
-            Err(e) => eprintln!("atlas-embed: Metal init failed ({e}); using CPU"),
-        }
-    }
-    #[cfg(all(not(target_os = "macos"), feature = "cuda"))]
+    #[cfg(feature = "cuda")]
     {
         match Device::new_cuda(0) {
             Ok(d) => return Some(d),
@@ -90,10 +81,7 @@ pub(crate) fn gpu_device() -> Option<Device> {
 
 /// Whether the platform-appropriate GPU backend is compiled into this build.
 pub(crate) fn gpu_compiled() -> bool {
-    cfg!(any(
-        all(target_os = "macos", feature = "metal"),
-        all(not(target_os = "macos"), feature = "cuda")
-    ))
+    cfg!(feature = "cuda")
 }
 
 impl Embedder {

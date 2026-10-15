@@ -482,26 +482,14 @@ pub async fn fs_duplicate(path: String) -> Result<String, String> {
     .map_err(|e| e.to_string())?
 }
 
-/// Open a folder in the system terminal. macOS only for now —
-/// returns `Err("unsupported")` on other platforms so the frontend
-/// can show a sensible toast.
+/// Open a folder in the system terminal. Not implemented on Linux yet (the
+/// macOS `open -a Terminal` implementation was removed with macOS support) —
+/// returns `Err("unsupported")` so the frontend can show a sensible toast.
 #[tauri::command]
 pub async fn fs_open_in_terminal(path: String) -> Result<(), String> {
     tokio::task::spawn_blocking(move || {
-        #[cfg(target_os = "macos")]
-        {
-            use std::process::Command;
-            Command::new("open")
-                .args(["-a", "Terminal", &path])
-                .spawn()
-                .map(|_| ())
-                .map_err(|e| format!("Failed to open Terminal: {e}"))
-        }
-        #[cfg(not(target_os = "macos"))]
-        {
-            let _ = path;
-            Err::<(), String>("unsupported".to_string())
-        }
+        let _ = path;
+        Err::<(), String>("unsupported".to_string())
     })
     .await
     .map_err(|e| e.to_string())?
