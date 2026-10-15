@@ -31,7 +31,7 @@ pub async fn agents_start_diagnostics(plugin_id: String, app: AppHandle) -> Resu
 fn gather(plugin_id: &str, data_dir: &Path) -> String {
     let mut out = String::new();
     out.push_str(&format!(
-        "Atlas {} — start diagnostics for `{plugin_id}` at {}\n",
+        "İmece {} — start diagnostics for `{plugin_id}` at {}\n",
         env!("CARGO_PKG_VERSION"),
         chrono::Local::now().to_rfc3339()
     ));

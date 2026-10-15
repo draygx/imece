@@ -155,7 +155,7 @@ impl EngineProvider {
     pub fn gateway(base_url: impl Into<String>) -> Self {
         Self {
             id: GATEWAY_PROVIDER_ID.to_string(),
-            name: "Atlas".to_string(),
+            name: "İmece".to_string(),
             base_url: base_url.into(),
             wire: WireDialect::Chat,
             env_key: None,

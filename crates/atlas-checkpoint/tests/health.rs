@@ -301,7 +301,7 @@ fn a_second_window_reports_stopped_rather_than_silently_not_recording() {
     );
     assert_eq!(health.state, HealthState::Stopped);
     assert!(
-        health.issues.iter().any(|i| i.reason.contains("Another Atlas window")),
+        health.issues.iter().any(|i| i.reason.contains("Another İmece window")),
         "{:?}",
         health.issues
     );
@@ -327,7 +327,7 @@ fn a_workspace_never_opened_this_process_is_not_another_window() {
     );
     assert_eq!(health.state, HealthState::Ok, "{:?}", health.issues);
     assert!(
-        !health.issues.iter().any(|i| i.reason.contains("Another Atlas window")),
+        !health.issues.iter().any(|i| i.reason.contains("Another İmece window")),
         "{:?}",
         health.issues
     );

@@ -110,7 +110,7 @@ impl GrantError {
             GrantError::Denied => "Connection denied in the browser.".into(),
             GrantError::Expired => "That code expired. Get a new one to try again.".into(),
             GrantError::Cancelled => "Sign-in cancelled.".into(),
-            GrantError::Start(e) => format!("Could not reach Atlas: {e}"),
+            GrantError::Start(e) => format!("Could not reach İmece: {e}"),
         }
     }
 }
@@ -166,7 +166,7 @@ impl AuthFailure {
         match self {
             AuthFailure::NoCredential => "Sign in to sync organisations.".into(),
             AuthFailure::Rejected => {
-                "Your Atlas session ended. Sign in again to reconnect.".into()
+                "Your İmece session ended. Sign in again to reconnect.".into()
             }
             // For create, the realistic Denied is a 400 duplicate slug/name; a
             // 403 on a caller-scoped create would be a server fault. Either way
@@ -175,7 +175,7 @@ impl AuthFailure {
                 "Couldn't sync — that organisation name or handle may already be taken.".into()
             }
             AuthFailure::Indeterminate { .. } => {
-                "Couldn't reach Atlas. Check your connection and try again.".into()
+                "Couldn't reach İmece. Check your connection and try again.".into()
             }
         }
     }

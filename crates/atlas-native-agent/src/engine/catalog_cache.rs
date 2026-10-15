@@ -366,10 +366,10 @@ impl std::fmt::Display for CatalogueUnavailable {
         match &self.error {
             Some(error) => write!(
                 f,
-                "Atlas Agent can't load its model list ({error}). Check your connection and try again."
+                "İmece Agent can't load its model list ({error}). Check your connection and try again."
             ),
             None => f.write_str(
-                "Atlas Agent has no models to offer: the gateway lists none this organisation may use.",
+                "İmece Agent has no models to offer: the gateway lists none this organisation may use.",
             ),
         }
     }

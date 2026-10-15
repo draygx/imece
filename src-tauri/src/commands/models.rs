@@ -175,7 +175,7 @@ pub async fn download_files(
     use tokio::io::AsyncWriteExt;
 
     let client = reqwest::Client::builder()
-        .user_agent("Atlas-IDE")
+        .user_agent("İmece-IDE")
         .build()
         .map_err(|e| format!("http client: {e}"))?;
 

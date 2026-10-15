@@ -734,7 +734,7 @@ pub fn run() {
             commands::skills::pack_components_list,
         ])
         .build(tauri::generate_context!())
-        .expect("error while building Atlas")
+        .expect("error while building İmece")
         .run(|app_handle, event| {
             // Apply-on-quit: if the user chose "Later" for a staged update, swap
             // it in on the way out so the next launch is the new version.

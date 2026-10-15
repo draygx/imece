@@ -335,7 +335,7 @@ fn select_native_agent(config_dir: &Path) -> Arc<dyn atlas_agent_servers::AgentS
     tracing::info!(
         provider = %settings.provider.base_url,
         home = %settings.home.path().display(),
-        "native agent: Atlas Agent",
+        "native agent: İmece Agent",
     );
     Arc::new(EngineAgentServer::new(settings))
 }
@@ -563,7 +563,7 @@ impl AgentHost {
             // is a storage key every recorded thread resolves through (D7), so
             // the two deliberately disagree — this is the only place the user
             // ever sees either of them.
-            return "Atlas Agent".to_string();
+            return "İmece Agent".to_string();
         }
         self.store
             .agent_display_name(&atlas_acp_thread::AgentId::new(plugin_id))

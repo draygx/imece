@@ -183,7 +183,7 @@ export function UsageBar() {
 
           <div className="flex items-center gap-1 text-[9px] text-text-tertiary pt-1 border-t border-border-subtle">
             <Clock size={9} />
-            {display.source === "recorded" ? "Recorded by Atlas" : `Session: ${elapsed}m`}
+            {display.source === "recorded" ? "Recorded by İmece" : `Session: ${elapsed}m`}
           </div>
         </div>
       )}

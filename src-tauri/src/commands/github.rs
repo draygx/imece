@@ -75,7 +75,7 @@ pub async fn search_github(query: String) -> Result<Vec<GithubRepo>, String> {
 
     let client = reqwest::Client::builder()
         .timeout(Duration::from_secs(10))
-        .user_agent("Atlas-IDE")
+        .user_agent("İmece-IDE")
         .build()
         .unwrap_or_default();
 

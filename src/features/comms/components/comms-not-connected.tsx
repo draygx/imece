@@ -48,7 +48,7 @@ export function CommsNotConnected({ org }: { org: Organisation | null }) {
       </div>
       <p className="relative max-w-[220px] text-[11px] leading-relaxed text-text-secondary">
         {org
-          ? "Team chat needs this organisation synced to your Atlas account."
+          ? "Team chat needs this organisation synced to your İmece account."
           : "Select an organisation to use team chat."}
       </p>
       {org && (

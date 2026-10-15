@@ -6,7 +6,7 @@
 
 /** Marker line prefixing the injected directive so it can be stripped from a
  *  user message on resume (the agent transcript records the full prompt). */
-const NEXT_STEPS_MARKER = "═══ Atlas next-steps ═══";
+const NEXT_STEPS_MARKER = "═══ İmece next-steps ═══";
 
 /** Appended to the wire prompt (not the visible user message) so the agent
  *  emits a hidden suggestions block. */

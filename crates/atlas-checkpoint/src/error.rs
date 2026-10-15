@@ -32,14 +32,14 @@ impl fmt::Display for Error {
             Self::Storage(detail) => write!(f, "session store is not writable: {detail}"),
             Self::AlreadyLocked => write!(
                 f,
-                "another Atlas window is already recording this workspace"
+                "another İmece window is already recording this workspace"
             ),
             Self::RedactionFailed(detail) => {
                 write!(f, "redaction failed, content was not stored: {detail}")
             }
             Self::SchemaTooNew { found, supported } => write!(
                 f,
-                "session store was written by a newer Atlas (schema {found}, this build supports {supported})"
+                "session store was written by a newer İmece (schema {found}, this build supports {supported})"
             ),
             Self::Blob(detail) => write!(f, "spilled payload unavailable: {detail}"),
         }

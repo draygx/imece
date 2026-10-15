@@ -589,7 +589,7 @@ impl std::fmt::Display for ConfigError {
             }
             ConfigError::UnsupportedVersion(v) => write!(
                 f,
-                "config.toml has schemaVersion {v}, newer than this Atlas build supports ({CONFIG_SCHEMA_VERSION}) — it was likely created by a newer Atlas version"
+                "config.toml has schemaVersion {v}, newer than this İmece build supports ({CONFIG_SCHEMA_VERSION}) — it was likely created by a newer İmece version"
             ),
             ConfigError::Busy => write!(
                 f,
@@ -1332,7 +1332,7 @@ pub fn bootstrap(
         // banner rather than passing for a healthy load.
         let mut manager = ConfigManager::load();
         manager.status = ConfigStatus::UsingDefaults {
-            error: "could not resolve the Atlas config directory".to_string(),
+            error: "could not resolve the İmece config directory".to_string(),
         };
         return MigrationOutcome { manager, mark_migrated: false };
     };

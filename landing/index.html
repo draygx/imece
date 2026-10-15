@@ -4,18 +4,18 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="theme-color" content="#000000" />
-<title>Atlas — Every coding agent, one workspace, your whole team</title>
-<meta name="description" content="Atlas is a native macOS workspace for coding agents. Install Claude Code, Codex, OpenCode and any ACP agent, run them across projects, capture every session on an organisation-wide timeline, and chat with your team in the same window." />
+<title>İmece — Every coding agent, one workspace, your whole team</title>
+<meta name="description" content="İmece is a native Linux workspace for coding agents. Install Claude Code, Codex, OpenCode and any ACP agent, run them across projects, capture every session on an organisation-wide timeline, and chat with your team in the same window." />
 
 <!-- Open Graph / Twitter — used by every link-preview-rendering service. -->
 <meta property="og:type" content="website" />
-<meta property="og:site_name" content="Atlas" />
-<meta property="og:title" content="Atlas — Every coding agent, one workspace, your whole team" />
-<meta property="og:description" content="Install any coding agent, run them across projects, capture every session on a team timeline, and chat with your team — in one native macOS window." />
+<meta property="og:site_name" content="İmece" />
+<meta property="og:title" content="İmece — Every coding agent, one workspace, your whole team" />
+<meta property="og:description" content="Install any coding agent, run them across projects, capture every session on a team timeline, and chat with your team — in one native Linux window." />
 <meta property="og:image" content="/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Atlas — Every coding agent, one workspace, your whole team" />
-<meta name="twitter:description" content="Install any coding agent, run them across projects, capture every session, chat with your team. Native macOS." />
+<meta name="twitter:title" content="İmece — Every coding agent, one workspace, your whole team" />
+<meta name="twitter:description" content="Install any coding agent, run them across projects, capture every session, chat with your team. Native Linux." />
 <meta name="twitter:image" content="/og-image.png" />
 <meta name="twitter:site" content="@antarys_ai" />
 
@@ -2620,7 +2620,7 @@
 <section class="product-section" id="product">
   <div class="product-frame-outer">
     <div class="product-shot">
-      <img src="app.png" alt="Atlas — a session on the timeline, with the agent chat, terminal and team chat open in one window" width="3024" height="1890" loading="eager" decoding="async" />
+      <img src="app.png" alt="İmece — a session on the timeline, with the agent chat, terminal and team chat open in one window" width="3024" height="1890" loading="eager" decoding="async" />
     </div>
   </div>
 </section>
@@ -2668,7 +2668,7 @@
             <span class="mc-pill mc-pill-right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>Options <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>
           </div>
           <div class="mc-menu" data-agent-menu hidden>
-            <button type="button" class="mc-item" data-agent="atlas" data-model="gemini-3.1-pro"><span class="mc-glyph"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4h3L6 20H3zM13 4h3l-4 16H9zM19 4h3l-4 16h-3z"/></svg></span>Atlas Agent</button>
+            <button type="button" class="mc-item" data-agent="atlas" data-model="gemini-3.1-pro"><span class="mc-glyph"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4h3L6 20H3zM13 4h3l-4 16H9zM19 4h3l-4 16h-3z"/></svg></span>İmece Agent</button>
             <button type="button" class="mc-item" data-agent="claude" data-model="Fable"><span class="mc-glyph"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 8h14v9H5z" opacity=".9"/><path d="M8 5h8v3H8zM7 17h10v2H7zM9 10h2v2H9zM13 10h2v2h-2z" /><path d="M3 10h2v5H3zM19 10h2v5h-2z"/></svg></span>Claude Code</button>
             <button type="button" class="mc-item" data-agent="codex" data-model="gpt-5-codex"><span class="mc-glyph"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="9" opacity=".95"/><circle cx="12" cy="12" r="4" fill="#000"/><circle cx="12" cy="12" r="1.6"/></svg></span>Codex</button>
             <button type="button" class="mc-item" data-agent="opencode" data-model="kimi-k2"><span class="mc-glyph"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16v18H4z"/><path d="M8 7h8v10H8z" fill="#000"/><path d="M10 9h4v6h-4z"/></svg></span>OpenCode</button>
@@ -4240,7 +4240,7 @@
     <div class="footer-row">
       <div class="footer-brand">
         <div class="footer-brand-line">
-          <img src="icon-sm.svg" alt="Atlas" class="footer-logo" />
+          <img src="icon-sm.svg" alt="İmece" class="footer-logo" />
           <span class="footer-sep">|</span>
           <span class="footer-co">Atlas</span>
         </div>
@@ -4337,7 +4337,7 @@
       const pill = chat.querySelector('[data-agent-pill]');
       const menu = chat.querySelector('[data-agent-menu]');
       const glyphs = chat.querySelector('[data-agent-glyphs]').content;
-      const names = { atlas: 'Atlas Agent', claude: 'Claude Code', codex: 'Codex', opencode: 'OpenCode', cursor: 'Cursor', pi: 'pi ACP' };
+      const names = { atlas: 'İmece Agent', claude: 'Claude Code', codex: 'Codex', opencode: 'OpenCode', cursor: 'Cursor', pi: 'pi ACP' };
       const modes = [
         ['Default', 'var(--text-tertiary)'], ['Accept edits', 'var(--status-success)'],
         ['Plan mode', 'var(--accent-primary)'], ['Bypass permissions', 'var(--status-error)'], ['Auto', 'var(--status-warning)'],

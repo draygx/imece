@@ -52,7 +52,7 @@ export const useNativeModelsStore = createSelectors(
               // The sessions themselves show the Restart affordance; this
               // just says why it appeared.
               toast.info(
-                "Model list updated — open Atlas Agent chats will restart on their next message.",
+                "Model list updated — open İmece Agent chats will restart on their next message.",
               );
             }
             return true;

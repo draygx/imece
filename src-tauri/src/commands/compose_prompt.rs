@@ -258,7 +258,7 @@ pub async fn compose_prompt(
         prose
     } else {
         format!(
-            "{prose}\n\n---\n# Atlas context\n\n{joined}\n",
+            "{prose}\n\n---\n# İmece context\n\n{joined}\n",
             joined = present.join("\n\n")
         )
     };

@@ -58,7 +58,7 @@ export const DEFAULT_ATLAS_THEME_ID = "atlas-black";
 export const ATLAS_THEMES: AtlasTheme[] = [
   {
     id: "atlas-black",
-    name: "Atlas Black",
+    name: "İmece Black",
     description: "Pure AMOLED black — maximum contrast, zero glare.",
     // Preview only — the applier CLEARS overrides for this id so the original
     // AMOLED tokens in tokens.css apply verbatim.

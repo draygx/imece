@@ -836,7 +836,7 @@ export function MessageInput({
   running = false,
   stopping = false,
   disabled: disabledProp = false,
-  placeholder = "Message Atlas... (@ to mention, / for commands)",
+  placeholder = "Message İmece... (@ to mention, / for commands)",
 }: MessageInputProps) {
   const { enqueueMessage, removeQueueItem, setAcpModes, setAcpModesPending, setCerseiEffort } =
     useChatStore.use.actions();

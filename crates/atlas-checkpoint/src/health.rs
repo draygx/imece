@@ -163,9 +163,9 @@ pub fn evaluate(store: &Store, workspace_id: &str, host: HostSignals) -> Result<
     if !host.worker_alive {
         issues.push(HealthIssue {
             state: HealthState::Stopped,
-            reason: "Atlas's capture worker has stopped, so nothing new is being recorded."
+            reason: "İmece's capture worker has stopped, so nothing new is being recorded."
                 .into(),
-            next_step: "Restart Atlas to resume recording. What was already captured is safe."
+            next_step: "Restart İmece to resume recording. What was already captured is safe."
                 .into(),
         });
     }
@@ -176,7 +176,7 @@ pub fn evaluate(store: &Store, workspace_id: &str, host: HostSignals) -> Result<
     if host.holds_writer == Some(false) {
         issues.push(HealthIssue {
             state: HealthState::Stopped,
-            reason: "Another Atlas window is recording this Workspace.".into(),
+            reason: "Another İmece window is recording this Workspace.".into(),
             next_step: "Sessions are being captured by the other window. Close it to record here."
                 .into(),
         });

@@ -109,7 +109,7 @@ export function AiGrantBar() {
       <div
         data-testid="ai-grant-bar"
         className={STRIP}
-        title="Atlas Agent works with organisations synced to your account"
+        title="İmece Agent works with organisations synced to your account"
       >
         <span className="min-w-0 truncate">
           <span className="font-semibold text-[var(--text-primary)]">
@@ -117,7 +117,7 @@ export function AiGrantBar() {
           </span>
           <span className="text-[var(--text-tertiary)]">
             {" "}
-            is local — sync it to use Atlas Agent
+            is local — sync it to use İmece Agent
           </span>
         </span>
 
@@ -128,7 +128,7 @@ export function AiGrantBar() {
             disabled={syncing}
             title={
               account
-                ? "Create this organisation in your Atlas account"
+                ? "Create this organisation in your İmece account"
                 : "Sign in to sync this organisation"
             }
             className={cn(ACTION, syncing ? "cursor-default" : "cursor-pointer")}
@@ -179,7 +179,7 @@ export function AiGrantBar() {
           title={
             requested
               ? "Your request has been recorded"
-              : "Tell Atlas your organisation needs AI access"
+              : "Tell İmece your organisation needs AI access"
           }
           className={cn(ACTION, requesting || requested ? "cursor-default" : "cursor-pointer")}
         >

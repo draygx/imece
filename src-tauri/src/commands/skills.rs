@@ -402,7 +402,7 @@ const TOOL_REGISTRY: &[ToolDef] = &[
     },
     ToolDef {
         id: "atlas",
-        display_name: "Atlas",
+        display_name: "İmece",
         // The native in-process "Atlas" (cersei) agent. Enabled skills are
         // symlinked into a DEDICATED dir that only the in-process `AtlasSkillTool`
         // reads — kept separate from `.agents/skills` (the canonical store) so this
