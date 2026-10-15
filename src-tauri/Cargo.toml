@@ -43,6 +43,11 @@ tauri = { version = "2", features = ["protocol-asset", "macos-private-api", "uns
 # hidden `.atlas/` dir, which the asset protocol won't serve). Pinned to the
 # version already in the lockfile so no new resolution is pulled in.
 base64 = "0.21"
+# Clipboard access (clipboard.rs). On Linux this talks to X11 directly, or
+# Wayland's data-control protocol when "wayland-data-control" is enabled
+# (compositor-level clipboard access without a window, which this app needs
+# since clipboard reads/writes aren't always tied to a focused surface).
+arboard.workspace = true
 # Allowlist HTML sanitizer (html5ever-based) for the browser reader. Replaces
 # a hand-rolled string-level denylist whose bypass list kept growing —
 # <meta refresh>, <base>, unquoted javascript: hrefs, `</script >` variants.
@@ -149,6 +154,10 @@ atlas-git = { path = "../crates/atlas-git" }
 atlas-checkpoint = { path = "../crates/atlas-checkpoint" }
 dirs = "6"
 sha2 = "0.10"
+# PATH lookup for the terminal-emulator candidates in
+# `commands::fs::fs_open_in_terminal`. Already resolved in the lockfile via
+# the vendored Codex crates.
+which.workspace = true
 # URL parsing for the embedded browser (`commands::browser`). Already in the
 # lockfile transitively via tauri/reqwest; declared here to name the type.
 url = "2"

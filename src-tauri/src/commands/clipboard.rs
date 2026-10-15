@@ -1,13 +1,23 @@
 //! Read file references off the system clipboard, and write text to it.
 //!
-//! When a user copies a file in Finder and pastes it into the chat input, the
-//! WKWebView `paste` event exposes a `File` object but NOT its absolute path
-//! (the web sandbox strips it). So the frontend asks Rust to read the native
-//! pasteboard's file URLs directly and inserts those paths into the composer.
+//! When a user copies a file in a file manager and pastes it into the chat
+//! input, the WKWebView-equivalent `paste` event exposes a `File` object but
+//! NOT its absolute path (the web sandbox strips it). So the frontend asks
+//! Rust to read the native clipboard's file list directly and inserts those
+//! paths into the composer.
 //!
 //! The write half exists for the same class of reason: `navigator.clipboard`
 //! requires a live user activation, which a copy that happens *after* an
 //! `await` no longer has. See [`clipboard_write_text`].
+//!
+//! Backed by `arboard`, which talks to X11 directly or to Wayland's
+//! data-control protocol (the `wayland-data-control` feature). On Linux the
+//! clipboard is "hosted" by whichever process last wrote to it: on X11 that
+//! is a background thread `arboard` spawns once per process (it keeps
+//! serving requests after the `Clipboard` value used to set it is dropped,
+//! so a short-lived command handle is fine); on Wayland the write forks a
+//! short-lived helper process to do the same. Either way we don't need to
+//! hold a `Clipboard` open across calls.
 
 /// Put `text` on the system clipboard, bypassing the web clipboard API.
 ///
@@ -15,26 +25,29 @@
 /// scope. WKWebView drops that activation across an `await`, so any copy that
 /// follows a network round-trip — inviting a teammate and copying the invite
 /// links the server just minted, say — fails with a bare `NotAllowedError` no
-/// matter how the promise is chained. The native pasteboard has no such rule.
+/// matter how the promise is chained. The native clipboard has no such rule.
 ///
 /// Callers should still try the web API first (it is cross-platform and needs
 /// no IPC) and fall back here; `src/lib/clipboard.ts` does exactly that.
 #[tauri::command]
 pub fn clipboard_write_text(text: String) -> Result<(), String> {
-    // The macOS (NSPasteboard) implementation was removed with macOS support.
-    // A Linux implementation is still to be written.
-    let _ = text;
-    Err("clipboard writes are not implemented on Linux yet".to_string())
+    let mut clipboard = arboard::Clipboard::new().map_err(|e| e.to_string())?;
+    clipboard.set_text(text).map_err(|e| e.to_string())
 }
 
-/// Absolute POSIX paths of the files currently on the clipboard, in pasteboard
+/// Absolute POSIX paths of the files currently on the clipboard, in clipboard
 /// order. Empty when the clipboard holds no file references — e.g. plain text,
 /// or a raw screenshot bitmap that has no backing file on disk.
 #[tauri::command]
 pub fn clipboard_file_paths() -> Vec<String> {
-    // The macOS (NSPasteboard) implementation was removed with macOS support.
-    // A Linux implementation is still to be written.
-    Vec::new()
+    let Ok(mut clipboard) = arboard::Clipboard::new() else {
+        return Vec::new();
+    };
+    clipboard
+        .get()
+        .file_list()
+        .map(|paths| paths.into_iter().map(|p| p.to_string_lossy().into_owned()).collect())
+        .unwrap_or_default()
 }
 
 /// Largest paste we will spool to disk — the Spaces media ceiling.
