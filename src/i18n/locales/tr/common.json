@@ -194,5 +194,47 @@
     "title": "Düzenler",
     "description": "Panelleri ve sekmeleri hazır bir çalışma alanına yeniden düzenleyin. Düzenler arasında geçiş yapmak için herhangi bir zamanda <kbd>{{hint}}</kbd> tuşuna basın.",
     "appliedToast": "“{{name}}” düzeni uygulandı"
+  },
+  "agents": {
+    "searchPlaceholder": "Kayıt defterinde ara",
+    "filters": {
+      "all": "Tümü",
+      "installed": "Kurulu",
+      "notInstalled": "Kurulu Değil"
+    },
+    "refresh": "Yenile",
+    "refreshing": "Yenileniyor…",
+    "lastUpdated": "Son güncelleme: {{date}}",
+    "refreshRegistry": "Kayıt defterini yenile",
+    "lastRefreshFailed": "Son yenileme başarısız oldu ({{error}}) — önbelleğe alınmış veriler gösteriliyor{{dateSuffix}}.",
+    "fromDateSuffix": " ({{date}} tarihli)",
+    "loadingRegistry": "ACP kayıt defteri yükleniyor…",
+    "noAgentsMatch": "Eşleşen ajan yok.",
+    "couldNotReachRegistry": "ACP kayıt defterine ulaşılamadı.",
+    "registryEmpty": "ACP kayıt defteri boş.",
+    "retrying": "Yeniden deneniyor…",
+    "tryAgain": "Tekrar dene",
+    "detectedOnSystem": "Sisteminizde algılandı",
+    "registryHeading": "Kayıt Defteri",
+    "unverifiedBadge": "doğrulanmamış",
+    "unverifiedTitle": "Bu ajanın ikili dosyası bir sağlama toplamı yayınlamıyor.",
+    "notSupportedOnPlatform": "Bu platformda desteklenmiyor",
+    "downloadTrendLabel": "Son 6 ayda ≈{{count}} indirme",
+    "installing": "Kuruluyor…",
+    "remove": "Kaldır",
+    "removeConfirm": "{{name}} kaldırılsın mı? Bu ajandan gelen sohbet geçmişi saklanır.",
+    "foundAt": "{{path}} konumunda bulundu",
+    "foundOnSystem": "Sisteminizde bulundu",
+    "detected": "Algılandı",
+    "acceptDetectedWithPath": "Zaten sahip olduğunuz kopyayı çalıştırarak ekleyin ({{path}}). Hiçbir şey indirilmez.",
+    "acceptDetectedNoPath": "Sisteminizde zaten bulunan kopyayı çalıştırarak ekleyin. Hiçbir şey indirilmez.",
+    "install": "Kur",
+    "toasts": {
+      "loadFailed": "ACP kayıt defteri yüklenemedi: {{error}}",
+      "installed": "{{name}} kuruldu",
+      "installFailed": "{{name}} kurulamadı: {{error}}",
+      "removed": "{{name}} kaldırıldı",
+      "removeFailed": "{{name}} kaldırılamadı: {{error}}"
+    }
   }
 }
