@@ -73,7 +73,7 @@ export function ConnectDialog() {
             <MonitorSmartphone className="mt-0.5 size-4 text-text-tertiary" />
             <div>
               <Dialog.Title className="text-sm font-medium">
-                Connect your Atlas account
+                Connect your İmece account
               </Dialog.Title>
               <Dialog.Description className="mt-0.5 text-xs text-text-secondary">
                 Approve this device in your browser to finish.

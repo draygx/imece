@@ -162,7 +162,7 @@ export function KeybindingsTable({
             <div key={id} className={cn(GRID, "h-[28px] px-2 text-[11px] text-text-tertiary")}>
               <span />
               <span className="truncate font-mono text-[10.5px]">{id}</span>
-              <span className="text-text-muted">not in this version of Atlas</span>
+              <span className="text-text-muted">not in this version of İmece</span>
               <span />
               <button
                 type="button"
