@@ -384,6 +384,7 @@
   "chat": {
     "composer": {
       "placeholder": "Message İmece... (@ to mention, / for commands)",
+      "ariaLabel": "Chat message",
       "memory": {
         "title": "Codebase index that grounds the agent's memory recall — click to re-index",
         "indexing": "Indexing…",
@@ -438,7 +439,52 @@
       "queueMessage": "Queue message (sends after current finishes)",
       "sendToAgent": "Send to agent ({{shortcut}})",
       "editQueueItem": "Edit / merge into input",
-      "removeFromQueue": "Remove from queue"
+      "removeFromQueue": "Remove from queue",
+      "addMenu": {
+        "triggerTitle": "Attach files, media, repos, or a past session",
+        "addFilesOrPhotos": "Add files or photos",
+        "addFiles": "Add files",
+        "attachMedia": "Attach media",
+        "takeScreenshot": "Take a screenshot",
+        "selectedRegion": "Selected region",
+        "wholeDesktop": "Whole desktop",
+        "addFromGithub": "Add from GitHub",
+        "openProjectToClone": "Open a project to clone repos into it.",
+        "searchGithubRepos": "Search GitHub repos…  (Enter)",
+        "downloaded": "Downloaded",
+        "alreadyDownloadedTitle": "Already downloaded · {{path}}",
+        "searching": "Searching…",
+        "typeRepoNameHint": "Type a repo name and press Enter.",
+        "noRepositoriesFound": "No repositories found.",
+        "downloadedBadge": "downloaded",
+        "attachSession": "Attach a session",
+        "openProjectToBrowseSessions": "Open a project to browse its sessions.",
+        "searchSessions": "Search sessions…",
+        "loadingSessions": "Loading sessions…",
+        "noPastSessions": "No past sessions in this project.",
+        "noMatches": "No matches.",
+        "messageCount": "{{count}} messages",
+        "referenceWorkspace": "Reference workspace",
+        "searchWorkspaces": "Search workspaces…",
+        "loadingWorkspaces": "Loading workspaces…",
+        "noOtherProjects": "No other projects in this organisation."
+      },
+      "optionsPill": {
+        "default": "Default",
+        "defaultDescription": "Agent loaded with default configuration.",
+        "options": "Options",
+        "loadingTitle": "Loading the options this agent offers…",
+        "optionsTitle": "Agent options — knobs this agent advertises",
+        "defaultTitle": "Agent loaded with default configuration"
+      },
+      "slashPicker": {
+        "loadingCommands": "Loading commands…",
+        "noCommandsMatch": "No commands match \"/{{query}}\".",
+        "argsHintTitle": "This command takes arguments — type them after the command, then press Enter.",
+        "loadingAgentCommands": "Loading agent commands…",
+        "footerDefault": "Commands",
+        "footerHint": "↑↓ · ↵ run · ⎋ close"
+      }
     },
     "thinking": "Thinking",
     "header": {

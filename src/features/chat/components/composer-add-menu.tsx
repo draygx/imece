@@ -8,6 +8,7 @@
 // eat the keystrokes — the same pattern the workspace "+" AddProjectMenu uses.
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { invoke } from "@tauri-apps/api/core";
 import {
@@ -116,6 +117,7 @@ export function ComposerAddMenu({
   onPickSession,
   onPickWorkspace,
 }: ComposerAddMenuProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
   // The composer hosts two floating menus (this + menu and the grouped
@@ -148,7 +150,7 @@ export function ComposerAddMenu({
               ? "opacity-50 cursor-default"
               : "hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer",
           )}
-          title="Attach files, media, repos, or a past session"
+          title={t("chat.composer.addMenu.triggerTitle")}
         >
           <Plus size={13} />
         </button>
@@ -163,16 +165,20 @@ export function ComposerAddMenu({
         >
           <DropdownMenu.Item className={ITEM_CLASS} onSelect={onAddFilesOrPhotos}>
             <Paperclip size={11} />
-            <span>{imageSupported ? "Add files or photos" : "Add files"}</span>
+            <span>
+              {imageSupported
+                ? t("chat.composer.addMenu.addFilesOrPhotos")
+                : t("chat.composer.addMenu.addFiles")}
+            </span>
           </DropdownMenu.Item>
           <DropdownMenu.Item className={ITEM_CLASS} onSelect={onAttachMedia}>
             <ImageIcon size={11} />
-            <span>Attach media</span>
+            <span>{t("chat.composer.addMenu.attachMedia")}</span>
           </DropdownMenu.Item>
           <DropdownMenu.Sub>
             <DropdownMenu.SubTrigger className={ITEM_CLASS}>
               <Camera size={11} />
-              <span>Take a screenshot</span>
+              <span>{t("chat.composer.addMenu.takeScreenshot")}</span>
               <ChevronRight size={11} className="ml-auto text-[var(--text-tertiary)]" />
             </DropdownMenu.SubTrigger>
             <DropdownMenu.Portal>
@@ -186,11 +192,11 @@ export function ComposerAddMenu({
                   onSelect={() => onTakeScreenshot("region")}
                 >
                   <Crop size={11} />
-                  <span>Selected region</span>
+                  <span>{t("chat.composer.addMenu.selectedRegion")}</span>
                 </DropdownMenu.Item>
                 <DropdownMenu.Item className={ITEM_CLASS} onSelect={() => onTakeScreenshot("full")}>
                   <Monitor size={11} />
-                  <span>Whole desktop</span>
+                  <span>{t("chat.composer.addMenu.wholeDesktop")}</span>
                 </DropdownMenu.Item>
               </DropdownMenu.SubContent>
             </DropdownMenu.Portal>
@@ -226,7 +232,7 @@ export function ComposerAddMenu({
             className="flex w-full items-center gap-1.5 rounded px-2 py-1.5 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
           >
             <Plus size={11} />
-            Add more agents
+            {t("chat.composer.groups.addMoreAgents")}
           </button>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
@@ -242,6 +248,7 @@ function GithubSubmenu({
   projectPath: string | null;
   onCloneRepo: (repo: GithubRepo) => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<GithubRepo[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -281,7 +288,7 @@ function GithubSubmenu({
     <DropdownMenu.Sub onOpenChange={(o) => o && loadCloned()}>
       <DropdownMenu.SubTrigger className={ITEM_CLASS}>
         <GithubIcon size={11} />
-        <span>Add from GitHub</span>
+        <span>{t("chat.composer.addMenu.addFromGithub")}</span>
         <ChevronRight size={11} className="ml-auto text-[var(--text-tertiary)]" />
       </DropdownMenu.SubTrigger>
       <DropdownMenu.Portal>
@@ -292,14 +299,14 @@ function GithubSubmenu({
         >
           {!projectPath ? (
             <div className="px-3 py-1.5 text-[11px] text-[var(--text-tertiary)]">
-              Open a project to clone repos into it.
+              {t("chat.composer.addMenu.openProjectToClone")}
             </div>
           ) : (
             <>
               <SearchBox
                 value={query}
                 onChange={setQuery}
-                placeholder="Search GitHub repos…  (Enter)"
+                placeholder={t("chat.composer.addMenu.searchGithubRepos")}
                 onEnter={runSearch}
               />
               <div className="max-h-[300px] overflow-y-auto">
@@ -307,14 +314,14 @@ function GithubSubmenu({
                 {cloned.length > 0 && (
                   <>
                     <div className="px-3 pt-1 pb-0.5 text-[9px] uppercase tracking-wide text-[var(--text-tertiary)]">
-                      Downloaded
+                      {t("chat.composer.addMenu.downloaded")}
                     </div>
                     {cloned.map((c) => (
                       <DropdownMenu.Item
                         key={c.name}
                         disabled
                         className={cn(ITEM_CLASS, "opacity-60 data-[disabled]:opacity-60")}
-                        title={`Already downloaded · ${c.path}`}
+                        title={t("chat.composer.addMenu.alreadyDownloadedTitle", { path: c.path })}
                       >
                         <FolderGit2 size={11} className="shrink-0 text-[var(--text-tertiary)]" />
                         <span className="truncate">{c.display_name}</span>
@@ -332,15 +339,15 @@ function GithubSubmenu({
                 {loading ? (
                   <div className="flex items-center gap-2 px-3 h-[26px] text-[11px] text-[var(--text-tertiary)]">
                     <Loader2 size={11} className="animate-spin" />
-                    Searching…
+                    {t("chat.composer.addMenu.searching")}
                   </div>
                 ) : results === null ? (
                   <div className="px-3 py-1.5 text-[11px] text-[var(--text-tertiary)]">
-                    Type a repo name and press Enter.
+                    {t("chat.composer.addMenu.typeRepoNameHint")}
                   </div>
                 ) : results.length === 0 ? (
                   <div className="px-3 py-1.5 text-[11px] text-[var(--text-tertiary)]">
-                    No repositories found.
+                    {t("chat.composer.addMenu.noRepositoriesFound")}
                   </div>
                 ) : (
                   results.map((repo) => {
@@ -375,7 +382,7 @@ function GithubSubmenu({
                             </span>
                             {already ? (
                               <span className="ml-auto shrink-0 text-[9px] text-[var(--text-tertiary)]">
-                                downloaded
+                                {t("chat.composer.addMenu.downloadedBadge")}
                               </span>
                             ) : (
                               <span className="ml-auto flex shrink-0 items-center gap-0.5 text-[9px] text-[var(--text-tertiary)]">
@@ -412,6 +419,7 @@ function SessionsSubmenu({
   agentId?: string;
   onPickSession: (session: PastSessionRef) => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [sessions, setSessions] = useState<PastSessionRef[] | null>(null);
 
@@ -432,7 +440,7 @@ function SessionsSubmenu({
     <DropdownMenu.Sub onOpenChange={(o) => o && load()}>
       <DropdownMenu.SubTrigger className={ITEM_CLASS}>
         <MessageSquareText size={11} />
-        <span>Attach a session</span>
+        <span>{t("chat.composer.addMenu.attachSession")}</span>
         <ChevronRight size={11} className="ml-auto text-[var(--text-tertiary)]" />
       </DropdownMenu.SubTrigger>
       <DropdownMenu.Portal>
@@ -443,20 +451,26 @@ function SessionsSubmenu({
         >
           {!projectPath ? (
             <div className="px-3 py-1.5 text-[11px] text-[var(--text-tertiary)]">
-              Open a project to browse its sessions.
+              {t("chat.composer.addMenu.openProjectToBrowseSessions")}
             </div>
           ) : (
             <>
-              <SearchBox value={query} onChange={setQuery} placeholder="Search sessions…" />
+              <SearchBox
+                value={query}
+                onChange={setQuery}
+                placeholder={t("chat.composer.addMenu.searchSessions")}
+              />
               <div className="max-h-[300px] overflow-y-auto">
                 {sessions === null ? (
                   <div className="flex items-center gap-2 px-3 h-[26px] text-[11px] text-[var(--text-tertiary)]">
                     <Loader2 size={11} className="animate-spin" />
-                    Loading sessions…
+                    {t("chat.composer.addMenu.loadingSessions")}
                   </div>
                 ) : filtered.length === 0 ? (
                   <div className="px-3 py-1.5 text-[11px] text-[var(--text-tertiary)]">
-                    {sessions.length === 0 ? "No past sessions in this project." : "No matches."}
+                    {sessions.length === 0
+                      ? t("chat.composer.addMenu.noPastSessions")
+                      : t("chat.composer.addMenu.noMatches")}
                   </div>
                 ) : (
                   filtered.map((s) => (
@@ -473,8 +487,7 @@ function SessionsSubmenu({
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[var(--text-primary)]">{s.title}</div>
                         <div className="text-[10px] text-[var(--text-tertiary)]">
-                          {s.messageCount} message
-                          {s.messageCount === 1 ? "" : "s"}
+                          {t("chat.composer.addMenu.messageCount", { count: s.messageCount })}
                         </div>
                       </div>
                     </DropdownMenu.Item>
@@ -503,6 +516,7 @@ function WorkspaceSubmenu({
   agentId?: string;
   onPickWorkspace: (workspace: MentionWorkspace) => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [workspaces, setWorkspaces] = useState<MentionWorkspace[] | null>(null);
 
@@ -528,7 +542,7 @@ function WorkspaceSubmenu({
     <DropdownMenu.Sub>
       <DropdownMenu.SubTrigger className={ITEM_CLASS}>
         <Boxes size={11} />
-        <span>Reference workspace</span>
+        <span>{t("chat.composer.addMenu.referenceWorkspace")}</span>
         <ChevronRight size={11} className="ml-auto text-[var(--text-tertiary)]" />
       </DropdownMenu.SubTrigger>
       <DropdownMenu.Portal>
@@ -537,16 +551,22 @@ function WorkspaceSubmenu({
           className={cn(CONTENT_CLASS, "w-[300px]")}
           style={{ zIndex: 9999 }}
         >
-          <SearchBox value={query} onChange={setQuery} placeholder="Search workspaces…" />
+          <SearchBox
+            value={query}
+            onChange={setQuery}
+            placeholder={t("chat.composer.addMenu.searchWorkspaces")}
+          />
           <div className="max-h-[300px] overflow-y-auto">
             {workspaces === null ? (
               <div className="flex items-center gap-2 px-3 h-[26px] text-[11px] text-[var(--text-tertiary)]">
                 <Loader2 size={11} className="animate-spin" />
-                Loading workspaces…
+                {t("chat.composer.addMenu.loadingWorkspaces")}
               </div>
             ) : workspaces.length === 0 ? (
               <div className="px-3 py-1.5 text-[11px] text-[var(--text-tertiary)]">
-                {query ? "No matches." : "No other projects in this organisation."}
+                {query
+                  ? t("chat.composer.addMenu.noMatches")
+                  : t("chat.composer.addMenu.noOtherProjects")}
               </div>
             ) : (
               workspaces.map((w) => (
