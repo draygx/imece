@@ -380,5 +380,52 @@
       "removeFailed": "Anahtar kaldırılamadı: {{error}}",
       "readFailed": "Bu değer okunamadı."
     }
+  },
+  "chat": {
+    "thinking": "Düşünüyor",
+    "header": {
+      "newSession": "Yeni oturum",
+      "switchSession": "Oturum değiştir",
+      "findInChat": "Sohbette bul",
+      "findInChatWithHint": "Sohbette bul ({{hint}})",
+      "more": "Diğer",
+      "filterMessages": "Mesajları filtrele",
+      "roleFilter": {
+        "all": "Tümü",
+        "user": "Kullanıcı",
+        "assistant": "Asistan"
+      },
+      "bashCalls": "Bash çağrıları",
+      "plans": "Planlar",
+      "branchFromHere": "Buradan dallan"
+    },
+    "newChatFallbackTitle": "Yeni sohbet",
+    "pinNoLongerInThread": "Bu mesaj artık bu iş parçacığında değil",
+    "couldNotGatherDiagnostics": "Tanılama bilgileri toplanamadı: {{error}}",
+    "diagnosticsCopied": "Tanılama bilgileri kopyalandı",
+    "couldNotCopyDiagnostics": "Tanılama bilgileri panoya kopyalanamadı",
+    "agentCouldNotRestart": "Ajan yeniden başlatılamadı. Çalışma zamanını (Node/npx) kontrol edip tekrar deneyin.",
+    "agentSendError": "Ajan gönderme hatası: {{error}}",
+    "startingAgent": "{{agent}} başlatılıyor",
+    "filesChanged": "{{count}} dosya değişti",
+    "changesFallbackTitle": "Değişiklikler",
+    "disconnectedWithError": "Ajan başlarken çıktı ({{error}}). Mesajınız sıraya geri alındı — tekrar denemek için yeniden başlatın.",
+    "disconnectedGeneric": "Ajan süreci sonlandı. Konuşmanız güvende — kaldığınız yerden sürdürmek için yeniden başlatın.",
+    "restarting": "Yeniden başlatılıyor…",
+    "restartAgent": "Ajanı yeniden başlat",
+    "jumpToLatest": "En yeniye atla",
+    "newMessagesCount": "{{count}} yeni mesaj",
+    "scrollToBottom": "Aşağı kaydır",
+    "inputPlaceholder": "İmece'ye ne yapması gerektiğini sorun…",
+    "welcome": {
+      "title": "İmece",
+      "subtitle": "Ajanlarla kod yazın. Araçlar, planlar ve düzenlemeler hep canlı.",
+      "suggestions": {
+        "analyzeCodebase": "Bu kod tabanını analiz et",
+        "createFeature": "Yeni bir özellik oluştur",
+        "reviewChanges": "Son değişiklikleri incele",
+        "writeTests": "Testler yaz..."
+      }
+    }
   }
 }

@@ -17,6 +17,7 @@
 // from the first within a release.
 
 import { forwardRef, memo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useActionShortcut } from "@/features/keybindings/lib/use-action-shortcut";
 import * as Popover from "@radix-ui/react-popover";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -107,6 +108,7 @@ function ChatHeaderImpl({
   onForkSession,
   onNewSession,
 }: ChatHeaderProps) {
+  const { t } = useTranslation();
   const findHint = useActionShortcut("chat.find")?.label;
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -117,7 +119,7 @@ function ChatHeaderImpl({
     // this element a fill would hide the very effect it sits on.
     <div className="relative shrink-0">
       <div className="flex h-[46px] items-center gap-2 px-6">
-        <HeaderCircleButton title="New session" onClick={onNewSession}>
+        <HeaderCircleButton title={t("chat.header.newSession")} onClick={onNewSession}>
           <Plus size={13} />
         </HeaderCircleButton>
 
@@ -135,7 +137,7 @@ function ChatHeaderImpl({
                 "text-[12px] font-medium leading-none text-[var(--text-primary)]",
                 "cursor-pointer outline-none",
               )}
-              title="Switch session"
+              title={t("chat.header.switchSession")}
             >
               <span className="truncate">{title}</span>
               <ChevronDown
@@ -193,7 +195,11 @@ function ChatHeaderImpl({
         />
 
         <HeaderCircleButton
-          title={findHint ? `Find in chat (${findHint})` : "Find in chat"}
+          title={
+            findHint
+              ? t("chat.header.findInChatWithHint", { hint: findHint })
+              : t("chat.header.findInChat")
+          }
           onClick={onOpenSearch}
         >
           <Search size={13} />
@@ -201,7 +207,7 @@ function ChatHeaderImpl({
 
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <HeaderCircleButton title="More">
+            <HeaderCircleButton title={t("chat.header.more")}>
               <MoreHorizontal size={14} />
             </HeaderCircleButton>
           </DropdownMenu.Trigger>
@@ -212,7 +218,7 @@ function ChatHeaderImpl({
               style={{ zIndex: 9999 }}
               className="min-w-[180px] rounded-md border border-[var(--border-default)] bg-[var(--bg-secondary)] py-1 shadow-[var(--shadow-overlay)]"
             >
-              <MenuLabel>Filter messages</MenuLabel>
+              <MenuLabel>{t("chat.header.filterMessages")}</MenuLabel>
               {(["all", "user", "assistant"] as const).map((f) => (
                 <DropdownMenu.Item
                   key={f}
@@ -231,7 +237,7 @@ function ChatHeaderImpl({
                   ) : (
                     <ListFilter size={11} />
                   )}
-                  <span className="flex-1">{f}</span>
+                  <span className="flex-1">{t(`chat.header.roleFilter.${f}`)}</span>
                   {roleFilter === f && <Check size={11} />}
                 </DropdownMenu.Item>
               ))}
@@ -243,7 +249,7 @@ function ChatHeaderImpl({
                 className="flex h-[26px] cursor-default items-center gap-2 px-3 text-[11px] text-[var(--text-secondary)] outline-none hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
               >
                 <TerminalSquare size={11} />
-                <span className="flex-1">Bash calls</span>
+                <span className="flex-1">{t("chat.header.bashCalls")}</span>
                 {bashPanelOpen && <Check size={11} />}
               </DropdownMenu.Item>
               <DropdownMenu.Item
@@ -251,7 +257,7 @@ function ChatHeaderImpl({
                 className="flex h-[26px] cursor-default items-center gap-2 px-3 text-[11px] text-[var(--text-secondary)] outline-none hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
               >
                 <ClipboardList size={11} />
-                <span className="flex-1">Plans</span>
+                <span className="flex-1">{t("chat.header.plans")}</span>
                 {plansPanelOpen && <Check size={11} />}
               </DropdownMenu.Item>
               {onForkSession && (
@@ -262,7 +268,7 @@ function ChatHeaderImpl({
                     className="flex h-[26px] cursor-default items-center gap-2 px-3 text-[11px] text-[var(--text-secondary)] outline-none hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
                   >
                     <GitBranch size={11} />
-                    <span className="flex-1">Branch from here</span>
+                    <span className="flex-1">{t("chat.header.branchFromHere")}</span>
                   </DropdownMenu.Item>
                 </>
               )}

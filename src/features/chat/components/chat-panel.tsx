@@ -26,6 +26,7 @@ import {
 } from "@/features/agents/lib/agent-meta";
 import { bindFailureAction, errInfo, promptSignIn } from "../lib/agent-signin";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 /** Tab+agent pairs whose bind failure has already been surfaced, so the
  *  focus-triggered retry doesn't re-toast the same error on every focus.
@@ -202,6 +203,7 @@ async function rebindDisconnectedSession(tabId: string): Promise<boolean> {
 // walked its whole transcript's row list. Streaming re-renders still arrive
 // through this panel's own store subscription.
 export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
+  const { t } = useTranslation();
   // Subscribe to ONLY this tab's session. Streaming chunks on other tabs
   // shouldn't repaint this panel — immer preserves reference equality for
   // unchanged sub-paths, so `s.sessions[tabId]` only changes when this tab
@@ -308,13 +310,13 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
   // message (what the history list shows) so a chat that hasn't been titled yet
   // still reads as itself rather than "New Chat".
   const headerTitle = useMemo(() => {
-    const t = stripInjectedContext(session?.title ?? "").trim();
-    if (t && t !== "New Chat") return t;
+    const trimmedTitle = stripInjectedContext(session?.title ?? "").trim();
+    if (trimmedTitle && trimmedTitle !== "New Chat") return trimmedTitle;
     const first = stripInjectedContext(session?.firstUserContent ?? "")
       .replace(/\s+/g, " ")
       .trim();
-    return first.slice(0, 60) || "New chat";
-  }, [session?.title, session?.firstUserContent]);
+    return first.slice(0, 60) || t("chat.newChatFallbackTitle");
+  }, [session?.title, session?.firstUserContent, t]);
 
   const filteredMessages = useMemo(
     () =>
@@ -907,7 +909,10 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
   // Same stable-identity discipline for the OTHER memo'd siblings that render
   // once per streaming frame with ChatPanel: fresh inline closures here would
   // defeat their memo() exactly like they would the composer's.
-  const onPermissionSend = useCallback((t: string) => handleSendRef.current?.(t, []), []);
+  const onPermissionSend = useCallback(
+    (message: string) => handleSendRef.current?.(message, []),
+    [],
+  );
   const onOpenSearchStable = useCallback(() => setSearchPaletteOpen(true), []);
   // Same shape as the bash panel's jump: the transcript projects
   // `filteredMessages`, so the filter must be cleared first and the index
@@ -927,13 +932,13 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
           userMessages: messages.filter((m) => m.role === "user").length,
           textLen: pin.text.length,
         });
-        toast.error("That message is no longer in this thread");
+        toast.error(t("chat.pinNoLongerInThread"));
         return;
       }
       setRoleFilter("all");
       window.dispatchEvent(new CustomEvent("atlas:chat-jump", { detail: { index } }));
     },
-    [tabId],
+    [tabId, t],
   );
   const onToggleBashStable = useCallback(() => {
     setBashPanelOpen((v) => !v);
@@ -1052,11 +1057,11 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
     try {
       text = await agents.startDiagnostics(pid);
     } catch (e) {
-      toast.error(`Could not gather diagnostics: ${errInfo(e).message}`);
+      toast.error(t("chat.couldNotGatherDiagnostics", { error: errInfo(e).message }));
       return;
     }
-    if (await copyText(text)) toast.success("Diagnostics copied");
-    else toast.error("Could not copy diagnostics to the clipboard");
+    if (await copyText(text)) toast.success(t("chat.diagnosticsCopied"));
+    else toast.error(t("chat.couldNotCopyDiagnostics"));
   };
 
   const handleStop = () => {
@@ -1141,11 +1146,7 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
     if (bound?.disconnected) {
       const ok = await rebindDisconnectedSession(tabId);
       if (!ok) {
-        addMessage(
-          tabId,
-          "assistant",
-          "The agent could not be restarted. Check its runtime (Node/npx) and try again.",
-        );
+        addMessage(tabId, "assistant", t("chat.agentCouldNotRestart"));
         return;
       }
       bound = useChatStore.getState().sessions[tabId];
@@ -1264,7 +1265,9 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      useChatStore.getState().actions.addMessage(tabId, "assistant", `agent send error: ${msg}`);
+      useChatStore
+        .getState()
+        .actions.addMessage(tabId, "assistant", t("chat.agentSendError", { error: msg }));
       useChatStore.getState().actions.updateSessionStatus(tabId, "error");
       logEvent({
         source: "agent",
@@ -1313,7 +1316,8 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
                 onShowJumpChange={onShowJumpChange}
                 workingLabel={
                   session.pendingSend
-                    ? (startingStatus ?? `Starting ${agentMeta(session.agentType).label}`)
+                    ? (startingStatus ??
+                      t("chat.startingAgent", { agent: agentMeta(session.agentType).label }))
                     : undefined
                 }
                 workingEpoch={bindEpoch}
@@ -1415,8 +1419,8 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
             textSources={turnDiff.sources}
             title={
               turnDiff.files.length === 1
-                ? (turnDiff.files[0].split("/").pop() ?? "Changes")
-                : `${turnDiff.files.length} files changed`
+                ? (turnDiff.files[0].split("/").pop() ?? t("chat.changesFallbackTitle"))
+                : t("chat.filesChanged", { count: turnDiff.files.length })
             }
           />
         </Suspense>
@@ -1441,6 +1445,7 @@ export const ChatPanel = memo(function ChatPanel({ tabId }: ChatPanelProps) {
 /** Shown when the session's agent process died: one explicit affordance to
  *  respawn + resume. Sending a message does the same thing implicitly. */
 function DisconnectedBanner({ tabId }: { tabId: string }) {
+  const { t } = useTranslation();
   const disconnected = useChatStore((s) => !!s.sessions[tabId]?.disconnected);
   const bindError = useChatStore((s) => s.sessions[tabId]?.bindError);
   const [restarting, setRestarting] = useState(false);
@@ -1449,8 +1454,8 @@ function DisconnectedBanner({ tabId }: { tabId: string }) {
     <div className="max-w-[720px] mx-auto mb-2 flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[12px]">
       <span className="select-text text-[var(--text-secondary)]">
         {bindError
-          ? `The agent exited while starting (${bindError.slice(0, 160)}). Your message is back in the queue — restart to try again.`
-          : "The agent process exited. Your conversation is safe — restart to continue where you left off."}
+          ? t("chat.disconnectedWithError", { error: bindError.slice(0, 160) })
+          : t("chat.disconnectedGeneric")}
       </span>
       <button
         disabled={restarting}
@@ -1464,7 +1469,7 @@ function DisconnectedBanner({ tabId }: { tabId: string }) {
         }}
         className="shrink-0 px-2.5 h-6 rounded-md bg-[var(--text-primary)] text-[var(--bg-primary)] text-[11px] font-medium hover:bg-[var(--text-secondary)] disabled:opacity-50 cursor-pointer"
       >
-        {restarting ? "Restarting…" : "Restart agent"}
+        {restarting ? t("chat.restarting") : t("chat.restartAgent")}
       </button>
     </div>
   );
@@ -1516,6 +1521,7 @@ const ChatComposer = memo(function ChatComposer({
   jumpCount: number;
   onScrollToBottom: () => void;
 }) {
+  const { t } = useTranslation();
   // OpenCode / Cursor / Kilo auth used to raise a "copy `cursor-agent login`"
   // pill here. It is gone: `atlas:auth-required` now routes ONLY to the
   // AgentLoginDialog (see message-input.tsx), which runs the login for the
@@ -1543,7 +1549,7 @@ const ChatComposer = memo(function ChatComposer({
                 <button
                   key="jump-to-bottom"
                   onClick={onScrollToBottom}
-                  title="Jump to latest"
+                  title={t("chat.jumpToLatest")}
                   style={{ backdropFilter: "blur(4px)" }}
                   className={cn(
                     "atlas-pill-in inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full",
@@ -1556,8 +1562,8 @@ const ChatComposer = memo(function ChatComposer({
                   <ChevronDown size={11} />
                   <span>
                     {jumpCount > 0
-                      ? `${jumpCount} new message${jumpCount === 1 ? "" : "s"}`
-                      : "Scroll to bottom"}
+                      ? t("chat.newMessagesCount", { count: jumpCount })
+                      : t("chat.scrollToBottom")}
                   </span>
                 </button>
               )}
@@ -1571,7 +1577,7 @@ const ChatComposer = memo(function ChatComposer({
           onStop={onStop}
           running={running}
           stopping={stopping}
-          placeholder="Ask İmece what to do ..."
+          placeholder={t("chat.inputPlaceholder")}
         />
       </div>
     </>
@@ -1579,13 +1585,14 @@ const ChatComposer = memo(function ChatComposer({
 });
 
 const WELCOME_SUGGESTIONS = [
-  { text: "Analyze this codebase", Icon: Search },
-  { text: "Create a new feature", Icon: Sparkles },
-  { text: "Review recent changes", Icon: GitCompare },
-  { text: "Write tests for...", Icon: FlaskConical },
+  { key: "analyzeCodebase", Icon: Search },
+  { key: "createFeature", Icon: Sparkles },
+  { key: "reviewChanges", Icon: GitCompare },
+  { key: "writeTests", Icon: FlaskConical },
 ] as const;
 
 function WelcomeState() {
+  const { t } = useTranslation();
   return (
     // No entrance animations here, deliberately. Every `atlas-fade-in` element
     // is `animation-fill-mode: both`, and a filled accelerated opacity
@@ -1620,35 +1627,38 @@ function WelcomeState() {
         />
 
         <h2 className="bg-gradient-to-b from-white to-white/55 bg-clip-text text-[22px] font-semibold tracking-tight text-transparent">
-          Atlas
+          {t("chat.welcome.title")}
         </h2>
         <p className="mt-1.5 text-[13px] text-[var(--text-tertiary)]">
-          Code with Agents. Tools, plans, and edits all live.
+          {t("chat.welcome.subtitle")}
         </p>
 
         <div className="mt-7 grid w-full grid-cols-2 gap-2.5">
-          {WELCOME_SUGGESTIONS.map(({ text, Icon }) => (
-            <button
-              key={text}
-              onClick={() =>
-                window.dispatchEvent(new CustomEvent("atlas:chat-prefill", { detail: { text } }))
-              }
-              className="group relative flex flex-col gap-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-3 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.7)] cursor-pointer"
-            >
-              <div className="flex items-center justify-between">
-                <span className="grid h-7 w-7 place-items-center rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-tertiary)] transition-colors group-hover:text-[var(--text-primary)]">
-                  <Icon size={13} />
+          {WELCOME_SUGGESTIONS.map(({ key, Icon }) => {
+            const text = t(`chat.welcome.suggestions.${key}`);
+            return (
+              <button
+                key={key}
+                onClick={() =>
+                  window.dispatchEvent(new CustomEvent("atlas:chat-prefill", { detail: { text } }))
+                }
+                className="group relative flex flex-col gap-2.5 rounded-xl border border-[var(--border-default)] bg-[var(--bg-secondary)] p-3 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.7)] cursor-pointer"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="grid h-7 w-7 place-items-center rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] text-[var(--text-tertiary)] transition-colors group-hover:text-[var(--text-primary)]">
+                    <Icon size={13} />
+                  </span>
+                  <ArrowRight
+                    size={13}
+                    className="-translate-x-1 text-[var(--text-ghost)] opacity-0 transition-all group-hover:translate-x-0 group-hover:text-[var(--text-secondary)] group-hover:opacity-100"
+                  />
+                </div>
+                <span className="text-[12px] font-medium leading-snug text-[var(--text-secondary)] transition-colors group-hover:text-[var(--text-primary)]">
+                  {text}
                 </span>
-                <ArrowRight
-                  size={13}
-                  className="-translate-x-1 text-[var(--text-ghost)] opacity-0 transition-all group-hover:translate-x-0 group-hover:text-[var(--text-secondary)] group-hover:opacity-100"
-                />
-              </div>
-              <span className="text-[12px] font-medium leading-snug text-[var(--text-secondary)] transition-colors group-hover:text-[var(--text-primary)]">
-                {text}
-              </span>
-            </button>
-          ))}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>
