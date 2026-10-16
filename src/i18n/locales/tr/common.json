@@ -194,5 +194,35 @@
     "title": "Düzenler",
     "description": "Panelleri ve sekmeleri hazır bir çalışma alanına yeniden düzenleyin. Düzenler arasında geçiş yapmak için herhangi bir zamanda <kbd>{{hint}}</kbd> tuşuna basın.",
     "appliedToast": "“{{name}}” düzeni uygulandı"
+  },
+  "models": {
+    "searchPlaceholder": "Modelleri filtrele…",
+    "loading": "Modeller yükleniyor…",
+    "table": {
+      "model": "Model",
+      "size": "Boyut",
+      "dim": "Boyut (vektör)",
+      "status": "Durum",
+      "use": "Kullan"
+    },
+    "inUseBadge": "Kullanımda",
+    "downloaded": "İndirildi",
+    "download": "İndir",
+    "useForEmbeddings": "Gömme (embedding) için {{name}} kullan",
+    "downloadFirst": "Önce bu modeli indirin",
+    "use": "Kullan",
+    "removeDownload": "İndirmeyi kaldır",
+    "confirmSwitch": {
+      "title": "Gömme modeli değiştirilsin mi?",
+      "description": "<name>{{name}}</name> kullanmak belleğinizi yeni bir vektör uzayında yeniden gömer. İmece bu projenin bellek indeksini silip arka planda yeniden oluşturacak. Notlarınız ve dosyalarınız etkilenmez.",
+      "cancel": "İptal",
+      "confirm": "Değiştir ve yeniden oluştur"
+    },
+    "toasts": {
+      "downloadFailed": "İndirme başarısız: {{error}}",
+      "removed": "{{name}} kaldırıldı",
+      "using": "{{name}} kullanılıyor",
+      "rebuildingIndex": "Bellek indeksi yeni modelle yeniden oluşturuluyor…"
+    }
   }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Search, Download, Check, Trash2, Loader2, AlertTriangle } from "lucide-react";
+import { Trans, useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { useProjectStore } from "@/features/project/stores/project-store";
 import { useModelsStore } from "../stores/models-store";
@@ -19,6 +20,7 @@ function fmtSize(mb: number): string {
 }
 
 export function ModelsManager() {
+  const { t } = useTranslation();
   const loaded = useModelsStore.use.loaded();
   const list = useModelsStore.use.list();
   const downloading = useModelsStore.use.downloading();
@@ -43,14 +45,18 @@ export function ModelsManager() {
     try {
       await actions.download(m.id);
     } catch (e) {
-      toast.error(`Download failed: ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(
+        t("models.toasts.downloadFailed", {
+          error: e instanceof Error ? e.message : String(e),
+        }),
+      );
     }
   };
 
   const doRemove = async (m: ModelStatus) => {
     try {
       await actions.remove(m.id);
-      toast.success(`Removed ${m.name}`);
+      toast.success(t("models.toasts.removed", { name: m.name }));
     } catch (e) {
       toast.error(`${e instanceof Error ? e.message : String(e)}`);
     }
@@ -69,10 +75,10 @@ export function ModelsManager() {
     setConfirm(null);
     try {
       const needsReindex = await actions.select(id);
-      toast.success(`Using ${name}`);
+      toast.success(t("models.toasts.using", { name }));
       if (needsReindex && projectPath) {
         await models.reindex(projectPath);
-        toast("Rebuilding the memory index with the new model…");
+        toast(t("models.toasts.rebuildingIndex"));
       }
     } catch (e) {
       toast.error(`${e instanceof Error ? e.message : String(e)}`);
@@ -97,7 +103,7 @@ export function ModelsManager() {
                 setQuery("");
               }
             }}
-            placeholder="Filter models…"
+            placeholder={t("models.searchPlaceholder")}
             className={cn(
               "w-full h-7 pl-8 pr-2.5 rounded-md bg-bg-elevated border border-border-default",
               "text-[11px] text-text-primary placeholder:text-text-tertiary",
@@ -110,16 +116,18 @@ export function ModelsManager() {
       {/* Table */}
       <div className="flex-1 min-h-0 overflow-auto">
         {!loaded ? (
-          <div className="p-8 text-center text-[11px] text-text-tertiary">Loading models…</div>
+          <div className="p-8 text-center text-[11px] text-text-tertiary">
+            {t("models.loading")}
+          </div>
         ) : (
           <div className="min-w-[560px]">
             {/* header */}
             <div className="sticky top-0 z-10 flex items-center gap-3 px-4 h-8 bg-bg-primary border-b border-border-default text-[10px] uppercase tracking-wider text-text-tertiary">
-              <div className={COL.name}>Model</div>
-              <div className={COL.size}>Size</div>
-              <div className={COL.dim}>Dim</div>
-              <div className={COL.status}>Status</div>
-              <div className={COL.use}>Use</div>
+              <div className={COL.name}>{t("models.table.model")}</div>
+              <div className={COL.size}>{t("models.table.size")}</div>
+              <div className={COL.dim}>{t("models.table.dim")}</div>
+              <div className={COL.status}>{t("models.table.status")}</div>
+              <div className={COL.use}>{t("models.table.use")}</div>
             </div>
             {rows.map((m) => {
               const dl = downloading[m.id];
@@ -134,7 +142,7 @@ export function ModelsManager() {
                       <span className="text-[12px] font-medium text-text-primary">{m.name}</span>
                       {m.selected && (
                         <span className="text-[9px] uppercase tracking-wide text-[var(--bg-base)] bg-accent rounded px-1 py-px">
-                          In use
+                          {t("models.inUseBadge")}
                         </span>
                       )}
                     </div>
@@ -153,7 +161,7 @@ export function ModelsManager() {
                       <ProgressBar dl={dl} />
                     ) : m.downloaded ? (
                       <span className="inline-flex items-center gap-1 text-[10px] text-text-secondary">
-                        <Check size={12} className="text-text-secondary" /> Downloaded
+                        <Check size={12} className="text-text-secondary" /> {t("models.downloaded")}
                       </span>
                     ) : (
                       <button
@@ -161,14 +169,14 @@ export function ModelsManager() {
                         onClick={() => void doDownload(m)}
                         className="inline-flex items-center gap-1 h-6 rounded-md px-2 text-[10px] font-medium border border-border-default bg-bg-elevated text-text-primary hover:bg-bg-hover transition-colors"
                       >
-                        <Download size={11} /> Download
+                        <Download size={11} /> {t("models.download")}
                       </button>
                     )}
                   </div>
                   <div className={cn(COL.use, "flex items-center justify-end gap-1")}>
                     {m.selected ? (
                       <span className="inline-flex items-center gap-1 h-6 px-2 text-[10px] font-medium text-text-secondary">
-                        <Check size={11} /> In use
+                        <Check size={11} /> {t("models.inUseBadge")}
                       </span>
                     ) : (
                       <button
@@ -179,25 +187,25 @@ export function ModelsManager() {
                         disabled={busy || !m.downloaded}
                         title={
                           m.downloaded
-                            ? `Use ${m.name} for embeddings`
-                            : "Download this model first"
+                            ? t("models.useForEmbeddings", { name: m.name })
+                            : t("models.downloadFirst")
                         }
                         aria-label={
                           m.downloaded
-                            ? `Use ${m.name} for embeddings`
-                            : "Download this model first"
+                            ? t("models.useForEmbeddings", { name: m.name })
+                            : t("models.downloadFirst")
                         }
                         onClick={() => void doUse(m)}
                         className="h-6 rounded-md px-2 text-[10px] font-medium border border-border-default bg-bg-elevated text-text-primary hover:bg-bg-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                       >
-                        {busy ? <Loader2 size={11} className="animate-spin" /> : "Use"}
+                        {busy ? <Loader2 size={11} className="animate-spin" /> : t("models.use")}
                       </button>
                     )}
                     {m.downloaded && !m.selected && (
                       <button
                         type="button"
-                        title="Remove download"
-                        aria-label="Remove download"
+                        title={t("models.removeDownload")}
+                        aria-label={t("models.removeDownload")}
                         disabled={busy}
                         onClick={() => void doRemove(m)}
                         className="h-6 w-6 flex items-center justify-center rounded-md text-text-tertiary hover:text-[var(--status-error)] hover:bg-bg-hover transition-colors disabled:opacity-50"
@@ -257,6 +265,7 @@ function ConfirmReindex({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
@@ -269,11 +278,15 @@ function ConfirmReindex({
         <div className="flex items-start gap-2.5">
           <AlertTriangle size={16} className="text-[var(--status-warning)] shrink-0 mt-0.5" />
           <div>
-            <p className="text-[13px] font-semibold text-text-primary">Switch embedding model?</p>
+            <p className="text-[13px] font-semibold text-text-primary">
+              {t("models.confirmSwitch.title")}
+            </p>
             <p className="text-[11px] text-text-secondary mt-1 leading-relaxed">
-              Using <span className="text-text-primary">{name}</span> re-embeds your memory in a new
-              vector space. Atlas will wipe this project's memory index and rebuild it in the
-              background. Your notes and files are untouched.
+              <Trans
+                i18nKey="models.confirmSwitch.description"
+                values={{ name }}
+                components={{ name: <span className="text-text-primary" /> }}
+              />
             </p>
           </div>
         </div>
@@ -283,14 +296,14 @@ function ConfirmReindex({
             onClick={onCancel}
             className="h-7 rounded-md px-3 text-[11px] font-medium border border-border-default bg-bg-elevated text-text-secondary hover:bg-bg-hover transition-colors"
           >
-            Cancel
+            {t("models.confirmSwitch.cancel")}
           </button>
           <button
             type="button"
             onClick={onConfirm}
             className="h-7 rounded-md px-3 text-[11px] font-medium bg-accent text-[var(--bg-base)] hover:opacity-90 transition-opacity"
           >
-            Switch & rebuild
+            {t("models.confirmSwitch.confirm")}
           </button>
         </div>
       </div>
