@@ -6,6 +6,7 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { Loader2, X, type LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 
@@ -80,10 +81,11 @@ export function SkillDescriptions({
   skills: ModalSkill[];
   fallback?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   if (skills.length === 0) {
     return (
       <div className="text-[12px] text-text-tertiary">
-        {fallback ?? "No description published."}
+        {fallback ?? t("skills.modal.noDescription")}
       </div>
     );
   }
@@ -93,7 +95,7 @@ export function SkillDescriptions({
       <p className="text-[13px] leading-relaxed text-text-secondary">{s.description}</p>
     ) : (
       <div className="text-[12px] text-text-tertiary">
-        {fallback ?? "No description published."}
+        {fallback ?? t("skills.modal.noDescription")}
       </div>
     );
   }
