@@ -382,6 +382,64 @@
     }
   },
   "chat": {
+    "composer": {
+      "placeholder": "Message İmece... (@ to mention, / for commands)",
+      "memory": {
+        "title": "Codebase index that grounds the agent's memory recall — click to re-index",
+        "indexing": "Indexing…",
+        "indexedCount": "{{count}} indexed",
+        "indexMemory": "Index memory"
+      },
+      "effort": {
+        "title": "Reasoning effort (thinking budget) — Anthropic models",
+        "think": "Think",
+        "thinkLevel": "Think: {{effort}}"
+      },
+      "usage": {
+        "compactingTitle": "Compacting the context window to stay within the model's limit",
+        "compacting": "Compacting…",
+        "tokensTitle": "{{total}} tokens ({{input}} in / {{output}} out){{cost}}",
+        "tokensTitleCostSuffix": " · est. ${{cost}}",
+        "tokensRow": "{{tokens}} tok{{cost}}"
+      },
+      "groups": {
+        "addMoreAgents": "Add more agents",
+        "loadingModes": "Loading modes…",
+        "searchModels": "Search models…",
+        "refreshModels": "Refresh models",
+        "noModels": "No models",
+        "modelListError": "Couldn't load the model list. Check your connection or sign in, then refresh.",
+        "codingAgent": "Coding agent",
+        "codingAgentWithHint": "Coding agent — pick here, {{hint}} cycles",
+        "permissionMode": "Permission mode — pick here, ⇧⇥ cycles",
+        "loading": "Loading…",
+        "mode": "Mode",
+        "model": "Model"
+      },
+      "slashCommands": {
+        "signIn": "Sign in to {{agent}}.",
+        "fork": "Branch this conversation into a new tab",
+        "queue": "Queue a message to run when the agent is free"
+      },
+      "slashFooterLabel": "{{agent}} commands",
+      "attachmentSizeWarning": "These attachments together are near the 2 MB request limit — the send may be refused. Consider removing one.",
+      "attachFilesTitle": "Attach files or photos",
+      "attachMediaTitle": "Attach media",
+      "mediaFilterName": "Media",
+      "screenshotFailed": "Screenshot failed: {{error}}",
+      "openProjectBeforeClone": "Open a project before cloning a repo.",
+      "cloneRepoFailed": "Couldn't clone {{repo}}: {{error}}",
+      "queuedCount": "Queued · {{count}}",
+      "syncingRepo": "Syncing {{repo}}…",
+      "dropFiles": "Drop files to attach",
+      "removeImage": "Remove image",
+      "stopping": "Stopping… (waiting for the agent to wind down)",
+      "stopGeneration": "Stop generation",
+      "queueMessage": "Queue message (sends after current finishes)",
+      "sendToAgent": "Send to agent ({{shortcut}})",
+      "editQueueItem": "Edit / merge into input",
+      "removeFromQueue": "Remove from queue"
+    },
     "thinking": "Thinking",
     "header": {
       "newSession": "New session",

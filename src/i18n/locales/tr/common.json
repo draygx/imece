@@ -382,6 +382,64 @@
     }
   },
   "chat": {
+    "composer": {
+      "placeholder": "İmece'ye mesaj yazın... (bahsetmek için @, komut için /)",
+      "memory": {
+        "title": "Aracının bellek hatırlamasını temellendiren kod tabanı dizini — yeniden dizinlemek için tıklayın",
+        "indexing": "Dizine ekleniyor…",
+        "indexedCount": "{{count}} dizine eklendi",
+        "indexMemory": "Belleği dizine ekle"
+      },
+      "effort": {
+        "title": "Akıl yürütme çabası (düşünme bütçesi) — Anthropic modelleri",
+        "think": "Düşün",
+        "thinkLevel": "Düşün: {{effort}}"
+      },
+      "usage": {
+        "compactingTitle": "Modelin sınırı içinde kalmak için bağlam penceresi sıkıştırılıyor",
+        "compacting": "Sıkıştırılıyor…",
+        "tokensTitle": "{{total}} jeton ({{input}} giriş / {{output}} çıkış){{cost}}",
+        "tokensTitleCostSuffix": " · tahmini ${{cost}}",
+        "tokensRow": "{{tokens}} jeton{{cost}}"
+      },
+      "groups": {
+        "addMoreAgents": "Daha fazla aracı ekle",
+        "loadingModes": "Modlar yükleniyor…",
+        "searchModels": "Modellerde ara…",
+        "refreshModels": "Modelleri yenile",
+        "noModels": "Model yok",
+        "modelListError": "Model listesi yüklenemedi. Bağlantınızı kontrol edin veya oturum açın, sonra yenileyin.",
+        "codingAgent": "Kodlama aracı",
+        "codingAgentWithHint": "Kodlama aracı — buradan seçin, {{hint}} ile geçiş yapın",
+        "permissionMode": "İzin modu — buradan seçin, ⇧⇥ ile geçiş yapın",
+        "loading": "Yükleniyor…",
+        "mode": "Mod",
+        "model": "Model"
+      },
+      "slashCommands": {
+        "signIn": "{{agent}} için oturum açın.",
+        "fork": "Bu konuşmayı yeni bir sekmeye ayır",
+        "queue": "Aracı uygun olduğunda çalıştırılacak bir mesajı kuyruğa ekle"
+      },
+      "slashFooterLabel": "{{agent}} komutları",
+      "attachmentSizeWarning": "Bu ekler toplamda 2 MB istek sınırına yaklaşıyor — gönderim reddedilebilir. Birini kaldırmayı düşünün.",
+      "attachFilesTitle": "Dosya veya fotoğraf ekle",
+      "attachMediaTitle": "Medya ekle",
+      "mediaFilterName": "Medya",
+      "screenshotFailed": "Ekran görüntüsü alınamadı: {{error}}",
+      "openProjectBeforeClone": "Depo klonlamadan önce bir proje açın.",
+      "cloneRepoFailed": "{{repo}} klonlanamadı: {{error}}",
+      "queuedCount": "Kuyrukta · {{count}}",
+      "syncingRepo": "{{repo}} eşitleniyor…",
+      "dropFiles": "Eklemek için dosyaları sürükleyin",
+      "removeImage": "Görseli kaldır",
+      "stopping": "Durduruluyor… (aracının yavaşlaması bekleniyor)",
+      "stopGeneration": "Üretimi durdur",
+      "queueMessage": "Mesajı kuyruğa al (geçerli iş bitince gönderilir)",
+      "sendToAgent": "Aracıya gönder ({{shortcut}})",
+      "editQueueItem": "Düzenle / girdiye birleştir",
+      "removeFromQueue": "Kuyruktan kaldır"
+    },
     "thinking": "Düşünüyor",
     "header": {
       "newSession": "Yeni oturum",
