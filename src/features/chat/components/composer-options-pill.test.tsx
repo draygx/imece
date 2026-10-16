@@ -5,7 +5,7 @@
 // was absent for the three or four seconds an agent takes to spawn, handshake
 // and answer `session/new` — and the composer re-flowed when it popped in.
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, cleanup, render, screen } from "@testing-library/react";
 
 vi.mock("@tauri-apps/api/core", () => ({ invoke: vi.fn(async () => undefined) }));
@@ -14,9 +14,20 @@ vi.mock("@tauri-apps/api/event", () => ({
   emit: vi.fn(async () => {}),
 }));
 
+// `useTranslation()` reaches the shared i18next instance that `main.tsx`
+// initializes as a side effect for the real app — a plain component test
+// never imports `main.tsx`, so without this the instance is never
+// `init()`ed and `t()` returns raw keys ("chat.composer.optionsPill.options")
+// instead of resolved strings. Forced to English because the assertions
+// below check this pill's rendered English copy, not its Turkish translation.
+import i18next from "@/i18n";
 import { useChatStore } from "../stores/chat-store";
 import { saveCachedAcpConfigOptions } from "../lib/acp-config-options-cache";
 import { ComposerOptionsPill } from "./composer-options-pill";
+
+beforeAll(async () => {
+  await i18next.changeLanguage("en");
+});
 
 const TAB = "tab-1";
 
