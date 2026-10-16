@@ -387,7 +387,7 @@ function ProviderEditor({
     <div className="bg-[var(--bg-elevated)]/40 border-t border-border-subtle px-3 py-3">
       {readOnly && (
         <p className="mb-2.5 max-w-[640px] text-[10.5px] leading-snug text-text-tertiary">
-          <span className="font-mono">{envVar}</span> is set outside your shell profile — Atlas
+          <span className="font-mono">{envVar}</span> is set outside your shell profile — İmece
           found it in the environment but not in any file it reads, so it can&apos;t edit or remove
           it here. Change it wherever it&apos;s exported (a login script, launchd, or a wrapper).
         </p>
