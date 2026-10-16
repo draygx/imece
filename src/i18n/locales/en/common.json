@@ -225,6 +225,48 @@
       "rebuildingIndex": "Rebuilding the memory index with the new model…"
     }
   },
+  "agents": {
+    "searchPlaceholder": "Search registry",
+    "filters": {
+      "all": "All",
+      "installed": "Installed",
+      "notInstalled": "Not Installed"
+    },
+    "refresh": "Refresh",
+    "refreshing": "Refreshing…",
+    "lastUpdated": "Last updated {{date}}",
+    "refreshRegistry": "Refresh the registry",
+    "lastRefreshFailed": "Last refresh failed ({{error}}) — showing cached data{{dateSuffix}}.",
+    "fromDateSuffix": " from {{date}}",
+    "loadingRegistry": "Loading the ACP registry…",
+    "noAgentsMatch": "No agents match.",
+    "couldNotReachRegistry": "Couldn't reach the ACP registry.",
+    "registryEmpty": "The ACP registry is empty.",
+    "retrying": "Retrying…",
+    "tryAgain": "Try again",
+    "detectedOnSystem": "Detected on your system",
+    "registryHeading": "Registry",
+    "unverifiedBadge": "unverified",
+    "unverifiedTitle": "This agent's binary download publishes no checksum.",
+    "notSupportedOnPlatform": "Not supported on this platform",
+    "downloadTrendLabel": "≈{{count}} downloads in the last 6 months",
+    "installing": "Installing…",
+    "remove": "Remove",
+    "removeConfirm": "Remove {{name}}? Chat history from this agent is kept.",
+    "foundAt": "Found at {{path}}",
+    "foundOnSystem": "Found on your system",
+    "detected": "Detected",
+    "acceptDetectedWithPath": "Add it, running your own copy at {{path}}. Nothing is downloaded.",
+    "acceptDetectedNoPath": "Add it, running the copy already on your system. Nothing is downloaded.",
+    "install": "Install",
+    "toasts": {
+      "loadFailed": "Couldn't load the ACP registry: {{error}}",
+      "installed": "{{name}} installed",
+      "installFailed": "Couldn't install {{name}}: {{error}}",
+      "removed": "{{name}} removed",
+      "removeFailed": "Couldn't remove {{name}}: {{error}}"
+    }
+  },
   "skills": {
     "tabs": {
       "discover": "Discover",

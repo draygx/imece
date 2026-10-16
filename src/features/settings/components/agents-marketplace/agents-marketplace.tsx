@@ -17,6 +17,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 import { Check, Download, Globe, Loader2, RefreshCw, Search, X } from "lucide-react";
 import { GithubIcon } from "@/components/github-icon";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 import { AgentMonogram, ExternalAgentIcon } from "@/components/agent-icons";
@@ -133,6 +134,7 @@ type Filter = "all" | "installed" | "not-installed";
 const STALE_AFTER_MS = 60 * 60 * 1000;
 
 export function AgentsMarketplace() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
   useSyncExternalStore(subscribeInstalling, () => installVersion);
@@ -153,9 +155,9 @@ export function AgentsMarketplace() {
     // Only shout when there is nothing to fall back on. With cached entries on
     // screen the inline "showing cached data" note says it without a toast.
     if (registryError && useAgentRegistryStore.getState().registryEntries.length === 0) {
-      toast.error(`Couldn't load the ACP registry: ${registryError}`);
+      toast.error(t("agents.toasts.loadFailed", { error: registryError }));
     }
-  }, []);
+  }, [t]);
 
   // Stale-while-revalidate: paint the cache now, confirm it in the background,
   // and only reach for the network when what we hold is actually old.
@@ -188,37 +190,43 @@ export function AgentsMarketplace() {
     };
   }, []);
 
-  const install = useCallback(async (entry: AcpRegistryEntry, kind: "detected" | "registry") => {
-    if (installingIds.has(entry.id)) return;
-    installingIds.add(entry.id);
-    notifyInstalling();
-    try {
-      if (kind === "detected") await acpRegistry.installDetected(entry.id);
-      else await acpRegistry.install(entry.id);
-      toast.success(`${entry.name} installed`);
-    } catch (e) {
-      toast.error(`Couldn't install ${entry.name}: ${String(e)}`);
-    } finally {
-      installingIds.delete(entry.id);
-      progressById.delete(entry.id);
+  const install = useCallback(
+    async (entry: AcpRegistryEntry, kind: "detected" | "registry") => {
+      if (installingIds.has(entry.id)) return;
+      installingIds.add(entry.id);
       notifyInstalling();
-    }
-    // One re-read now that the installed map moved: it refreshes the cards'
-    // Install/Remove state and every other agent surface at once.
-    await hydrateAgentRegistry();
-  }, []);
+      try {
+        if (kind === "detected") await acpRegistry.installDetected(entry.id);
+        else await acpRegistry.install(entry.id);
+        toast.success(t("agents.toasts.installed", { name: entry.name }));
+      } catch (e) {
+        toast.error(t("agents.toasts.installFailed", { name: entry.name, error: String(e) }));
+      } finally {
+        installingIds.delete(entry.id);
+        progressById.delete(entry.id);
+        notifyInstalling();
+      }
+      // One re-read now that the installed map moved: it refreshes the cards'
+      // Install/Remove state and every other agent surface at once.
+      await hydrateAgentRegistry();
+    },
+    [t],
+  );
 
-  const uninstall = useCallback(async (entry: AcpRegistryEntry) => {
-    try {
-      await acpRegistry.uninstall(entry.id);
-      toast.success(`${entry.name} removed`);
-    } catch (e) {
-      toast.error(`Couldn't remove ${entry.name}: ${String(e)}`);
-    }
-    // One re-read now that the installed map moved: it refreshes the cards'
-    // Install/Remove state and every other agent surface at once.
-    await hydrateAgentRegistry();
-  }, []);
+  const uninstall = useCallback(
+    async (entry: AcpRegistryEntry) => {
+      try {
+        await acpRegistry.uninstall(entry.id);
+        toast.success(t("agents.toasts.removed", { name: entry.name }));
+      } catch (e) {
+        toast.error(t("agents.toasts.removeFailed", { name: entry.name, error: String(e) }));
+      }
+      // One re-read now that the installed map moved: it refreshes the cards'
+      // Install/Remove state and every other agent surface at once.
+      await hydrateAgentRegistry();
+    },
+    [t],
+  );
 
   // Catalog-backed annotations: which of these the user already has on their
   // system. Subscribes to the primitive signature (Record selectors
@@ -271,7 +279,7 @@ export function AgentsMarketplace() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search registry"
+              placeholder={t("agents.searchPlaceholder")}
               className="w-full h-7 pl-7 pr-7 rounded-md bg-[var(--bg-secondary)] border border-[var(--border-default)] text-[12px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)] outline-none focus:border-[var(--border-focus,var(--border-default))]"
             />
             {query && (
@@ -286,9 +294,9 @@ export function AgentsMarketplace() {
           <div className="inline-flex items-center gap-0.5 rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated,var(--bg-secondary))] p-0.5">
             {(
               [
-                ["all", "All"],
-                ["installed", "Installed"],
-                ["not-installed", "Not Installed"],
+                ["all", t("agents.filters.all")],
+                ["installed", t("agents.filters.installed")],
+                ["not-installed", t("agents.filters.notInstalled")],
               ] as const
             ).map(([id, label]) => (
               <button
@@ -314,18 +322,22 @@ export function AgentsMarketplace() {
             className="flex items-center gap-1.5 h-6 px-2 rounded-md text-[11px] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors cursor-pointer disabled:cursor-default disabled:hover:bg-transparent"
             title={
               refreshedAt
-                ? `Last updated ${new Date(refreshedAt).toLocaleString()}`
-                : "Refresh the registry"
+                ? t("agents.lastUpdated", { date: new Date(refreshedAt).toLocaleString() })
+                : t("agents.refreshRegistry")
             }
           >
             <RefreshCw size={11} className={cn(refreshing && "animate-spin")} />
-            {refreshing ? "Refreshing…" : "Refresh"}
+            {refreshing ? t("agents.refreshing") : t("agents.refresh")}
           </button>
         </div>
         {error && registryEntries.length > 0 && (
           <p className="text-[10px] text-[var(--text-tertiary)]">
-            Last refresh failed ({error}) — showing cached data
-            {refreshedAt ? ` from ${new Date(refreshedAt).toLocaleString()}` : ""}.
+            {t("agents.lastRefreshFailed", {
+              error,
+              dateSuffix: refreshedAt
+                ? t("agents.fromDateSuffix", { date: new Date(refreshedAt).toLocaleString() })
+                : "",
+            })}
           </p>
         )}
       </div>
@@ -340,16 +352,16 @@ export function AgentsMarketplace() {
           // blocking spinner. With a cache in hand we always paint the cache.
           <div className="h-full flex flex-col items-center justify-center gap-2">
             <Loader2 size={18} className="animate-spin text-[var(--text-tertiary)]" />
-            <p className="text-[11px] text-[var(--text-tertiary)]">Loading the ACP registry…</p>
+            <p className="text-[11px] text-[var(--text-tertiary)]">{t("agents.loadingRegistry")}</p>
           </div>
         ) : entries.length === 0 ? (
           <div className="h-full flex flex-col items-center justify-center gap-2 text-center">
             <p className="text-[12px] text-[var(--text-tertiary)]">
               {registryEntries.length > 0
-                ? "No agents match."
+                ? t("agents.noAgentsMatch")
                 : error
-                  ? "Couldn't reach the ACP registry."
-                  : "The ACP registry is empty."}
+                  ? t("agents.couldNotReachRegistry")
+                  : t("agents.registryEmpty")}
             </p>
             {registryEntries.length === 0 && error && (
               <>
@@ -360,7 +372,7 @@ export function AgentsMarketplace() {
                   className="flex items-center gap-1.5 h-6 px-2.5 rounded-md text-[10.5px] font-medium text-[var(--text-primary)] border border-[var(--border-default)] bg-[var(--bg-elevated,var(--bg-primary))] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer disabled:cursor-default"
                 >
                   <RefreshCw size={10} className={cn(refreshing && "animate-spin")} />
-                  {refreshing ? "Retrying…" : "Try again"}
+                  {refreshing ? t("agents.retrying") : t("agents.tryAgain")}
                 </button>
               </>
             )}
@@ -379,7 +391,9 @@ export function AgentsMarketplace() {
                 >
                   {detectedIds.size > 0 && (
                     <h3 className="mb-1.5 text-[10.5px] font-medium uppercase tracking-wide text-[var(--text-tertiary)]">
-                      {section === "detected" ? "Detected on your system" : "Registry"}
+                      {section === "detected"
+                        ? t("agents.detectedOnSystem")
+                        : t("agents.registryHeading")}
                     </h3>
                   )}
                   <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-2.5">
@@ -425,6 +439,7 @@ const AgentCard = memo(function AgentCard({
   onInstall: (entry: AcpRegistryEntry, kind: "detected" | "registry") => void;
   onUninstall: (entry: AcpRegistryEntry) => void;
 }) {
+  const { t } = useTranslation();
   const pct =
     installing && progress?.total
       ? Math.min(100, (progress.received / progress.total) * 100)
@@ -457,15 +472,15 @@ const AgentCard = memo(function AgentCard({
             {entry.unverified && entry.distributionKind === "binary" && (
               <span
                 className="text-[9px] px-1 rounded bg-[var(--bg-hover)] text-[var(--text-tertiary)]"
-                title="This agent's binary download publishes no checksum."
+                title={t("agents.unverifiedTitle")}
               >
-                unverified
+                {t("agents.unverifiedBadge")}
               </span>
             )}
           </div>
           {!entry.platformSupported && (
             <p className="text-[10px] text-[var(--warning,#c90)]">
-              Not supported on this platform
+              {t("agents.notSupportedOnPlatform")}
               {entry.unsupportedReason ? ` — ${entry.unsupportedReason}` : ""}
             </p>
           )}
@@ -496,7 +511,7 @@ const AgentCard = memo(function AgentCard({
           points={trend.points}
           width={64}
           height={20}
-          label={`≈${trend.total.toLocaleString()} downloads in the last 6 months`}
+          label={t("agents.downloadTrendLabel", { count: trend.total.toLocaleString() })}
         />
         {entry.repository && (
           <button
@@ -536,13 +551,14 @@ function CardAction({
   onInstall: (entry: AcpRegistryEntry, kind: "detected" | "registry") => void;
   onUninstall: (entry: AcpRegistryEntry) => void;
 }) {
+  const { t } = useTranslation();
   const state = cardState(entry, catalog);
   const kind = installKind(state);
   if (installing) {
     return (
       <span className="flex items-center gap-1.5 h-6 px-2 rounded-md text-[10.5px] font-medium text-[var(--text-secondary)] border border-[var(--border-default)] tabular-nums">
         <Loader2 size={10} className="animate-spin" />
-        {pct !== null ? `${Math.round(pct)}%` : "Installing…"}
+        {pct !== null ? `${Math.round(pct)}%` : t("agents.installing")}
       </span>
     );
   }
@@ -550,13 +566,13 @@ function CardAction({
     return (
       <button
         onClick={() => {
-          if (confirm(`Remove ${entry.name}? Chat history from this agent is kept.`)) {
+          if (confirm(t("agents.removeConfirm", { name: entry.name }))) {
             onUninstall(entry);
           }
         }}
         className="h-6 px-2.5 rounded-md text-[10.5px] font-medium text-[var(--text-secondary)] border border-[var(--border-default)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
       >
-        Remove
+        {t("agents.remove")}
       </button>
     );
   }
@@ -571,22 +587,24 @@ function CardAction({
         <span
           className="flex items-center gap-1 h-6 px-2 rounded-md text-[10.5px] font-medium text-[var(--text-tertiary)] border border-[var(--border-default)]"
           title={
-            catalog?.resolvedPath ? `Found at ${catalog.resolvedPath}` : "Found on your system"
+            catalog?.resolvedPath
+              ? t("agents.foundAt", { path: catalog.resolvedPath })
+              : t("agents.foundOnSystem")
           }
         >
           <Check size={10} />
-          Detected
+          {t("agents.detected")}
         </span>
         <button
           onClick={() => onInstall(entry, kind)}
           title={
             catalog?.resolvedPath
-              ? `Add it, running your own copy at ${catalog.resolvedPath}. Nothing is downloaded.`
-              : "Add it, running the copy already on your system. Nothing is downloaded."
+              ? t("agents.acceptDetectedWithPath", { path: catalog.resolvedPath })
+              : t("agents.acceptDetectedNoPath")
           }
           className="flex items-center gap-1 h-6 px-2.5 rounded-md text-[10.5px] font-medium text-[var(--text-primary)] border border-[var(--border-default)] bg-[var(--bg-elevated,var(--bg-primary))] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
         >
-          Install
+          {t("agents.install")}
         </button>
       </span>
     );
@@ -603,7 +621,7 @@ function CardAction({
       )}
     >
       <Download size={10} />
-      Install
+      {t("agents.install")}
     </button>
   );
 }
