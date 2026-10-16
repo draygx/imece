@@ -5,6 +5,7 @@
 // so the two surfaces read as one family.
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 import { AtlasIcon } from "@/components/atlas-icon";
@@ -16,16 +17,17 @@ import { InstalledSkills } from "./marketplace/installed-skills";
 
 type SubTab = "discover" | "installed";
 
-const TABS: { id: SubTab; label: string }[] = [
-  { id: "discover", label: "Discover" },
-  { id: "installed", label: "My Skills" },
-];
-
 export function SkillsAndPacks() {
+  const { t } = useTranslation();
   const [tab, setTab] = useState<SubTab>("discover");
   const [scope, setScope] = useState<Scope>("global");
   const projectPath = useProjectStore.use.currentProject()?.path ?? null;
   const hasProject = projectPath != null;
+
+  const TABS: { id: SubTab; label: string }[] = [
+    { id: "discover", label: t("skills.tabs.discover") },
+    { id: "installed", label: t("skills.tabs.mySkills") },
+  ];
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
@@ -35,15 +37,17 @@ export function SkillsAndPacks() {
       <div className="flex h-[29px] shrink-0 items-center gap-1 border-b border-border-default px-2">
         <div className="flex items-center gap-1.5 px-1.5">
           <AtlasIcon size={13} />
-          <span className="text-[12px] font-semibold text-text-primary">Skills</span>
+          <span className="text-[12px] font-semibold text-text-primary">
+            {t("settings.nav.sections.skills")}
+          </span>
         </div>
         <span className="mx-1 h-3.5 w-px bg-border-default" />
-        {TABS.map((t) => (
+        {TABS.map((tabDef) => (
           <UnderlineTab
-            key={t.id}
-            active={tab === t.id}
-            onClick={() => setTab(t.id)}
-            label={t.label}
+            key={tabDef.id}
+            active={tab === tabDef.id}
+            onClick={() => setTab(tabDef.id)}
+            label={tabDef.label}
           />
         ))}
 
@@ -56,9 +60,9 @@ export function SkillsAndPacks() {
                 key={s}
                 active={scope === s}
                 disabled={disabled}
-                title={disabled ? "Open a project to use project scope" : undefined}
+                title={disabled ? t("skills.scopeDisabledTitle") : undefined}
                 onClick={() => setScope(s)}
-                label={s}
+                label={t(`skills.scopeTab.${s}`)}
               />
             );
           })}
