@@ -170,6 +170,8 @@ pub async fn git_rename_branch(
     new_name: String,
     app: AppHandle,
 ) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&old_name, "branch name")?;
+    atlas_git::reject_flag_like(&new_name, "branch name")?;
     tokio::task::spawn_blocking(move || {
         git_mut(&app, &path, &["branch", "-m", &old_name, &new_name])?;
         Ok(())
@@ -185,6 +187,7 @@ pub async fn git_branch_delete(
     force: bool,
     app: AppHandle,
 ) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&name, "branch name")?;
     tokio::task::spawn_blocking(move || {
         let flag = if force { "-D" } else { "-d" };
         git_mut(&app, &path, &["branch", flag, &name])?;
@@ -196,6 +199,7 @@ pub async fn git_branch_delete(
 
 #[tauri::command]
 pub async fn git_merge_branch(path: String, branch: String, app: AppHandle) -> Result<String, GitErrorPayload> {
+    atlas_git::reject_flag_like(&branch, "branch name")?;
     tokio::task::spawn_blocking(move || git_mut(&app, &path, &["merge", "--no-edit", &branch]))
         .await
         .map_err(join_err)?
@@ -223,6 +227,7 @@ pub struct MergePreview {
 }
 
 fn merge_preview(path: &str, branch: &str) -> Result<MergePreview, GitErrorPayload> {
+    atlas_git::reject_flag_like(branch, "branch name")?;
     let head = git_out(path, &["rev-parse", "HEAD"])?.trim().to_string();
     let theirs = git_out(path, &["rev-parse", "--verify", &format!("{branch}^{{commit}}")])
         .map_err(|_| GitErrorPayload::internal(format!("branch '{branch}' not found")))?
@@ -422,6 +427,7 @@ pub async fn git_rebase(
     op_id: Option<String>,
     app: AppHandle,
 ) -> Result<String, GitErrorPayload> {
+    atlas_git::reject_flag_like(&base, "base branch")?;
     tokio::task::spawn_blocking(move || {
         run_remote_op(&app, &path, "rebase", op_id, &["rebase", &base])
     })
@@ -537,6 +543,17 @@ pub async fn git_remote_add(
     url: String,
     app: AppHandle,
 ) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&name, "remote name")?;
+    atlas_git::reject_flag_like(&url, "remote URL")?;
+    // `ext::<shell command>` is a git "transport helper" that runs an
+    // arbitrary shell command on fetch/push — never a legitimate remote URL
+    // for this feature. Reject it the same way github.rs/skills.rs already
+    // do for their own clone-URL inputs.
+    if url.to_ascii_lowercase().starts_with("ext::") {
+        return Err(GitErrorPayload::internal(
+            "the 'ext::' git transport is not allowed as a remote URL",
+        ));
+    }
     tokio::task::spawn_blocking(move || {
         git_mut(&app, &path, &["remote", "add", &name, &url])?;
         Ok(())
@@ -547,6 +564,7 @@ pub async fn git_remote_add(
 
 #[tauri::command]
 pub async fn git_remote_remove(path: String, name: String, app: AppHandle) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&name, "remote name")?;
     tokio::task::spawn_blocking(move || {
         git_mut(&app, &path, &["remote", "remove", &name])?;
         Ok(())
@@ -707,6 +725,7 @@ pub async fn git_reset(
     mode: String,
     app: AppHandle,
 ) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&target, "reset target")?;
     tokio::task::spawn_blocking(move || {
         let flag = match mode.as_str() {
             "soft" => "--soft",
@@ -722,6 +741,7 @@ pub async fn git_reset(
 
 #[tauri::command]
 pub async fn git_revert(path: String, sha: String, app: AppHandle) -> Result<String, GitErrorPayload> {
+    atlas_git::reject_flag_like(&sha, "commit sha")?;
     tokio::task::spawn_blocking(move || {
         // Plain revert first; merge commits need a parent (-m 1).
         match git_mut(&app, &path, &["revert", "--no-edit", &sha]) {
@@ -740,6 +760,7 @@ pub async fn git_revert(path: String, sha: String, app: AppHandle) -> Result<Str
 
 #[tauri::command]
 pub async fn git_cherry_pick(path: String, sha: String, app: AppHandle) -> Result<String, GitErrorPayload> {
+    atlas_git::reject_flag_like(&sha, "commit sha")?;
     tokio::task::spawn_blocking(move || git_mut(&app, &path, &["cherry-pick", &sha]))
         .await
         .map_err(join_err)?
@@ -765,6 +786,10 @@ pub async fn git_create_tag(
     message: Option<String>,
     app: AppHandle,
 ) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&name, "tag name")?;
+    if let Some(t) = target.as_deref().filter(|t| !t.is_empty()) {
+        atlas_git::reject_flag_like(t, "tag target")?;
+    }
     tokio::task::spawn_blocking(move || {
         let mut args = vec!["tag".to_string(), "-a".to_string(), name];
         args.push("-m".into());
@@ -782,6 +807,7 @@ pub async fn git_create_tag(
 
 #[tauri::command]
 pub async fn git_delete_tag(path: String, name: String, app: AppHandle) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&name, "tag name")?;
     tokio::task::spawn_blocking(move || {
         git_mut(&app, &path, &["tag", "-d", &name])?;
         Ok(())
@@ -794,6 +820,7 @@ pub async fn git_delete_tag(path: String, name: String, app: AppHandle) -> Resul
 
 #[tauri::command]
 pub async fn git_show(path: String, sha: String) -> Result<CommitDetail, GitErrorPayload> {
+    atlas_git::reject_flag_like(&sha, "commit sha")?;
     tokio::task::spawn_blocking(move || {
         let fmt = format!("%H{US}%h{US}%an{US}%ae{US}%ad{US}%s{US}%b");
         let meta = git_out(

@@ -96,6 +96,24 @@ impl GitErrorPayload {
     }
 }
 
+/// Rejects a ref/branch/sha argument that could be misread as a git
+/// command-line flag. `git check-ref-format` allows a ref to start with a
+/// `-` (only `git branch`/`checkout -b`'s own creation path refuses it), so
+/// a ref fetched from a remote — or a sha/branch name otherwise round-tripped
+/// from untrusted input — can be literally named e.g. `--exec=...` or
+/// `--upload-pack=...`. Passed as a bare positional argument to a git
+/// subcommand built on parse-options, that value is read as a flag instead
+/// of a revision, which for `rebase --exec` means arbitrary command
+/// execution. Call this on every such value before it reaches `GitCommand`.
+pub fn reject_flag_like(value: &str, what: &str) -> Result<(), GitErrorPayload> {
+    if value.starts_with('-') {
+        return Err(GitErrorPayload::internal(format!(
+            "{what} '{value}' starts with '-' and was rejected: it could be misread as a git option"
+        )));
+    }
+    Ok(())
+}
+
 struct Pattern {
     re: Regex,
     code: GitErrorCode,

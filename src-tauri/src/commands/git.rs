@@ -533,6 +533,7 @@ pub async fn git_list_branches(path: String) -> Result<Vec<GitBranch>, String> {
 
 #[tauri::command]
 pub async fn git_checkout(path: String, branch: String) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&branch, "branch name")?;
     tokio::task::spawn_blocking(move || {
         GitCommand::new(&path, &["checkout", &branch]).run()?;
         Ok(())
@@ -543,6 +544,7 @@ pub async fn git_checkout(path: String, branch: String) -> Result<(), GitErrorPa
 
 #[tauri::command]
 pub async fn git_create_branch(path: String, name: String) -> Result<(), GitErrorPayload> {
+    atlas_git::reject_flag_like(&name, "branch name")?;
     tokio::task::spawn_blocking(move || {
         GitCommand::new(&path, &["checkout", "-b", &name]).run()?;
         Ok(())
