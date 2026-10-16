@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { Trans, useTranslation } from "react-i18next";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Search,
@@ -42,12 +43,6 @@ import { byok, type EnvEntry } from "../lib/byok-api";
 
 type SortKey = "name" | "category" | "configured";
 
-const SORT_LABELS: Record<SortKey, string> = {
-  name: "Name (A–Z)",
-  category: "Category",
-  configured: "Set first",
-};
-
 // Column widths shared by the header + every row so cells line up. Fixed
 // widths (Provider grows) inside a min-width track so columns never collapse
 // or overlap — the table scrolls horizontally when the panel is narrow.
@@ -63,6 +58,12 @@ const COL = {
 const TABLE_MIN_W = 200 + 200 + 120 + 100 + 200 + 32; // 852
 
 export function ProvidersSettings() {
+  const { t } = useTranslation();
+  const SORT_LABELS: Record<SortKey, string> = {
+    name: t("providers.sort.nameAz"),
+    category: t("providers.sort.category"),
+    configured: t("providers.sort.setFirst"),
+  };
   const entries = useByokStore.use.entries();
   const profile = useByokStore.use.profile();
   const loaded = useByokStore.use.loaded();
@@ -115,14 +116,14 @@ export function ProvidersSettings() {
 
   const tabs: Array<{ id: ProviderCategory | "All"; label: string; count: number }> = useMemo(
     () => [
-      { id: "All", label: "All", count: PROVIDERS.length },
+      { id: "All", label: t("providers.allCategory"), count: PROVIDERS.length },
       ...PROVIDER_CATEGORIES.map((c) => ({
         id: c,
         label: c,
         count: PROVIDERS.filter((p) => p.category === c).length,
       })),
     ],
-    [],
+    [t],
   );
 
   return (
@@ -158,7 +159,7 @@ export function ProvidersSettings() {
                 setQuery("");
               }
             }}
-            placeholder="Search providers…"
+            placeholder={t("providers.searchPlaceholder")}
             spellCheck={false}
             className="flex-1 min-w-0 bg-transparent outline-none text-[11px] text-text-primary placeholder:text-text-tertiary"
           />
@@ -168,8 +169,8 @@ export function ProvidersSettings() {
           <DropdownMenu.Trigger asChild>
             <button
               className="flex items-center justify-center w-6 h-6 shrink-0 rounded text-text-tertiary hover:text-text-primary hover:bg-bg-hover cursor-pointer outline-none transition-colors"
-              title="Filters & sort"
-              aria-label="Filters & sort"
+              title={t("providers.filtersAndSort")}
+              aria-label={t("providers.filtersAndSort")}
             >
               <MoreHorizontal size={14} />
             </button>
@@ -189,13 +190,13 @@ export function ProvidersSettings() {
                 <span className="inline-flex w-3.5 justify-center">
                   {configuredOnly && <Check size={11} className="text-text-primary" />}
                 </span>
-                Set only
+                {t("providers.setOnly")}
               </DropdownMenu.CheckboxItem>
 
               <DropdownMenu.Separator className="my-1 h-px bg-[var(--border-subtle)]" />
 
               <DropdownMenu.Label className="px-3 pb-1 pt-1 text-[9px] uppercase tracking-wider text-text-tertiary">
-                Sort by
+                {t("providers.sortBy")}
               </DropdownMenu.Label>
               {(Object.keys(SORT_LABELS) as SortKey[]).map((k) => (
                 <DropdownMenu.Item
@@ -215,17 +216,17 @@ export function ProvidersSettings() {
       <div className="flex-1 min-h-0 overflow-auto hide-scrollbar">
         <div style={{ minWidth: TABLE_MIN_W }}>
           <div className="sticky top-0 z-10 flex items-center h-[28px] border-b border-border-default bg-bg-base px-3 text-[10px] uppercase tracking-wider text-text-tertiary">
-            <span className={COL.provider}>Provider</span>
-            <span className={COL.env}>Env Var</span>
-            <span className={COL.category}>Category</span>
-            <span className={COL.key}>Key</span>
-            <span className={COL.source}>Source</span>
+            <span className={COL.provider}>{t("providers.table.provider")}</span>
+            <span className={COL.env}>{t("providers.table.envVar")}</span>
+            <span className={COL.category}>{t("providers.table.category")}</span>
+            <span className={COL.key}>{t("providers.table.key")}</span>
+            <span className={COL.source}>{t("providers.table.source")}</span>
             <span className={COL.chevron} />
           </div>
 
           {rows.length === 0 ? (
             <div className="grid place-items-center h-[160px] text-[11px] text-text-tertiary">
-              No providers match.
+              {t("providers.noMatches")}
             </div>
           ) : (
             rows.map((p) => (
@@ -258,6 +259,7 @@ function ProviderTableRow({
   expanded: boolean;
   onToggle: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="border-b border-border-subtle">
       <button
@@ -289,7 +291,7 @@ function ProviderTableRow({
           {!entry ? (
             <>
               <Minus size={12} className="text-text-tertiary shrink-0" />
-              <span className="text-[11px] text-text-tertiary">Not set</span>
+              <span className="text-[11px] text-text-tertiary">{t("providers.notSet")}</span>
             </>
           ) : entry.editable ? (
             <span
@@ -302,10 +304,10 @@ function ProviderTableRow({
           ) : (
             <span
               className="flex items-center gap-1 text-[10px] font-medium text-text-tertiary border border-border-default rounded-full px-1.5 h-[18px]"
-              title="Set outside your shell profile — İmece can read it but not edit it."
+              title={t("providers.environmentBadgeTitle")}
             >
               <Lock size={9} />
-              environment
+              {t("providers.environmentBadge")}
             </span>
           )}
         </span>
@@ -328,6 +330,7 @@ function ProviderEditor({
   entry: EnvEntry | undefined;
   targetFile: string | null;
 }) {
+  const { t } = useTranslation();
   const pending = useByokStore.use.pending();
   const { save, remove } = useByokStore.use.actions();
   const [draft, setDraft] = useState("");
@@ -344,20 +347,27 @@ function ProviderEditor({
       const file = await save(envVar, draft);
       setDraft("");
       setRevealed(null);
-      toast.success(`${provider.name} key written to ${tildePath(file)}`, {
-        action: {
-          label: "Reveal",
-          onClick: () => {
-            revealItemInDir(file).catch((err) => {
-              toast.error(
-                `Couldn't reveal in Finder: ${err instanceof Error ? err.message : String(err)}`,
-              );
-            });
+      toast.success(
+        t("providers.toasts.keyWritten", { provider: provider.name, file: tildePath(file) }),
+        {
+          action: {
+            label: t("providers.toasts.revealAction"),
+            onClick: () => {
+              revealItemInDir(file).catch((err) => {
+                toast.error(
+                  t("providers.toasts.revealFailed", {
+                    error: err instanceof Error ? err.message : String(err),
+                  }),
+                );
+              });
+            },
           },
         },
-      });
+      );
     } catch (e) {
-      toast.error(`Couldn't save key: ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(
+        t("providers.toasts.saveFailed", { error: e instanceof Error ? e.message : String(e) }),
+      );
     }
   };
 
@@ -365,9 +375,11 @@ function ProviderEditor({
     try {
       await remove(envVar);
       setRevealed(null);
-      toast.success(`Removed ${envVar} from your shell profile`);
+      toast.success(t("providers.toasts.removed", { envVar }));
     } catch (e) {
-      toast.error(`Couldn't remove key: ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(
+        t("providers.toasts.removeFailed", { error: e instanceof Error ? e.message : String(e) }),
+      );
     }
   };
 
@@ -379,7 +391,7 @@ function ProviderEditor({
     try {
       setRevealed((await byok.reveal(envVar)) ?? "");
     } catch {
-      toast.error("Couldn't read that value.");
+      toast.error(t("providers.toasts.readFailed"));
     }
   };
 
@@ -387,9 +399,11 @@ function ProviderEditor({
     <div className="bg-[var(--bg-elevated)]/40 border-t border-border-subtle px-3 py-3">
       {readOnly && (
         <p className="mb-2.5 max-w-[640px] text-[10.5px] leading-snug text-text-tertiary">
-          <span className="font-mono">{envVar}</span> is set outside your shell profile — İmece
-          found it in the environment but not in any file it reads, so it can&apos;t edit or remove
-          it here. Change it wherever it&apos;s exported (a login script, launchd, or a wrapper).
+          <Trans
+            i18nKey="providers.readOnlyNotice"
+            values={{ envVar }}
+            components={{ code: <span className="font-mono" /> }}
+          />
         </p>
       )}
 
@@ -401,7 +415,7 @@ function ProviderEditor({
           <button
             type="button"
             onClick={() => void onReveal()}
-            title={revealed !== null ? "Hide" : "Reveal"}
+            title={revealed !== null ? t("providers.hide") : t("providers.reveal")}
             className="flex items-center justify-center h-6 w-6 rounded text-text-tertiary hover:text-text-primary hover:bg-bg-hover transition-colors"
           >
             {revealed !== null ? <EyeOff size={12} /> : <Eye size={12} />}
@@ -412,7 +426,7 @@ function ProviderEditor({
               onClick={() => void copyText(revealed)}
               className="h-6 rounded-md px-2 text-[10.5px] text-text-tertiary hover:text-text-primary hover:bg-bg-hover transition-colors"
             >
-              Copy
+              {t("providers.copy")}
             </button>
           )}
         </div>
@@ -423,7 +437,7 @@ function ProviderEditor({
           <div className="flex-1 min-w-0 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-[11px] font-medium text-text-primary">
-                {entry ? "Replace key" : "API key"}
+                {entry ? t("providers.replaceKey") : t("providers.apiKey")}
               </label>
               {provider.docsUrl && (
                 <button
@@ -431,7 +445,7 @@ function ProviderEditor({
                   onClick={() => void openUrl(provider.docsUrl!)}
                   className="flex items-center gap-1 text-[10px] text-text-tertiary hover:text-text-primary transition-colors"
                 >
-                  Get key
+                  {t("providers.getKey")}
                   <ExternalLink size={10} />
                 </button>
               )}
@@ -440,7 +454,7 @@ function ProviderEditor({
               value={draft}
               onValueChange={setDraft}
               onSubmit={() => void onSave()}
-              placeholder={provider.placeholder ?? "Paste your API key"}
+              placeholder={provider.placeholder ?? t("providers.pasteApiKey")}
               disabled={busy}
               autoFocus
             />
@@ -457,7 +471,7 @@ function ProviderEditor({
                 )}
               >
                 {busy && <AtlasLoader size={11} />}
-                {entry ? "Update" : "Save"}
+                {entry ? t("providers.update") : t("providers.save")}
               </button>
               {entry && (
                 <button
@@ -467,14 +481,14 @@ function ProviderEditor({
                   className="flex items-center gap-1 h-7 rounded-md px-2.5 text-[11px] text-text-tertiary hover:text-[var(--danger,#e5484d)] hover:bg-bg-hover transition-colors disabled:opacity-50"
                 >
                   <Trash2 size={12} />
-                  Remove
+                  {t("providers.remove")}
                 </button>
               )}
             </div>
             <p className="pt-0.5 font-mono text-[10px] text-text-tertiary">
-              {entry ? "Rewrites" : "Appends"}{" "}
+              {entry ? t("providers.rewrites") : t("providers.appends")}{" "}
               <span className="text-text-secondary">export {envVar}=…</span>
-              {writesTo ? ` in ${tildePath(writesTo)}` : ""}
+              {writesTo ? t("providers.inFile", { file: tildePath(writesTo) }) : ""}
             </p>
           </div>
         </div>
