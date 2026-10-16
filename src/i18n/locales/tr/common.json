@@ -17,7 +17,182 @@
   "settings": {
     "general": {
       "languageLabel": "Dil",
-      "languageDescription": "İmece arayüz dili. Türkçe varsayılandır; İngilizce yedek seçenek olarak kalır."
+      "languageDescription": "İmece arayüz dili. Türkçe varsayılandır; İngilizce yedek seçenek olarak kalır.",
+      "sectionTitle": "Genel",
+      "sectionSubtitle": "Uygulama tercihleri"
+    },
+    "nav": {
+      "sections": {
+        "general": "Genel",
+        "appearance": "Görünüm",
+        "layouts": "Düzenler",
+        "providers": "API Anahtarları",
+        "skills": "Yetenekler",
+        "agents": "Ajanlar",
+        "models": "Yerel Modeller",
+        "updates": "Güncellemeler",
+        "keybindings": "Kısayol Tuşları",
+        "about": "Hakkında"
+      },
+      "showSidebar": "Kenar çubuğunu göster",
+      "hideSidebar": "Kenar çubuğunu gizle",
+      "hide": "Gizle"
+    },
+    "configError": {
+      "title": "İmece son geçerli ayarları kullanıyor — config.toml dosyasında bir sorun var",
+      "openConfig": "Yapılandırmayı aç",
+      "resetting": "Sıfırlanıyor…",
+      "recreateDefaults": "Varsayılanları yeniden oluştur",
+      "dismiss": "Yoksay",
+      "resetSuccess": "config.toml varsayılanlara sıfırlandı (önceki dosya yanına yedeklendi)",
+      "resetFailed": "Sıfırlama başarısız: {{error}}"
+    },
+    "enterToSend": {
+      "label": "Enter ile gönder",
+      "description": "Enter mesajınızı gönderir; Shift+Enter yeni satır ekler — Slack/Discord/ChatGPT kuralı. Eski davranışa dönmek için kapatın: sadece ⌘/Ctrl+Enter gönderir, Enter her zaman yeni satır ekler. ⌘/Ctrl+Enter her durumda gönderir."
+    },
+    "terminalNotifications": {
+      "sectionTitle": "Terminal bildirimleri",
+      "sectionSubtitle": "İmece içinde nerede olursanız olun, bir komut bittiğinde veya girdi istediğinde haberdar olun",
+      "label": "Terminal bildirimleri",
+      "description": "Başarısız olan, eşik süresinden uzun çalışan veya girdi isteyen bir komut bildirim merkezinde bir öğe oluşturur, terminali ekran dışındaysa bir toast gösterir ve İmece arka plandaysa bir bildirim gönderir. O terminale bakarken hiçbir şey tetiklenmez.",
+      "notifySuccessAfter": {
+        "label": "Şu süreden sonra başarıda bildir",
+        "description": "Bundan daha hızlı tamamlanan bir komut sessiz kalır. Başarısızlıklar her zaman bildirir (aşağıda).",
+        "options": {
+          "5s": "5 saniye",
+          "10s": "10 saniye",
+          "30s": "30 saniye",
+          "1m": "1 dakika",
+          "5m": "5 dakika"
+        }
+      },
+      "notifyOnFailure": {
+        "label": "Başarısızlıkta bildir",
+        "description": "Komutun ne kadar sürdüğüne bakılmaksızın sıfır olmayan bir çıkış kodu bildirir. Ctrl-C bir başarısızlık sayılmaz."
+      },
+      "notifyOnAttention": {
+        "label": "Girdi gerektiğinde bildir",
+        "description": "Terminal ekranda değilken bir parola istemi, terminal zili veya bir programın kendi bildirimi (OSC 9 / 777)."
+      },
+      "native": {
+        "label": "macOS bildirimleri",
+        "description": "İmece penceresi odakta değilken ayrıca bir sistem bildirimi gönderir."
+      },
+      "sound": {
+        "label": "Ses",
+        "description": "Terminal bildirimleriyle birlikte kısa bir ses çal."
+      }
+    },
+    "behaviour": {
+      "sectionTitle": "Davranış",
+      "sectionSubtitle": "Dosyalar, günlükler ve düzenleyici",
+      "autoGitignore": {
+        "label": ".atlas'ı .gitignore'a otomatik ekle",
+        "description": "Git ile takip edilen bir proje açtığınızda İmece, projenin .gitignore dosyasına `.atlas/` ekler (gerekirse birini oluşturur). İmece önbelleklerini ve durumunu `.atlas/` içinde tutar — bunu sürüm kontrolünün dışında tutmak neredeyse her zaman istediğiniz şeydir. Git olmayan projelerde hiçbir şey yapmaz."
+      },
+      "showHiddenFiles": {
+        "label": "Gizli dosyaları göster",
+        "description": "Dosya ağacında gizli dosyaları ve gizli dizinleri (örn. `.git`, `.atlas`, `.env`) göster. Hiçbir şeyin sessizce gizlenmemesi için varsayılan olarak AÇIK'tır. Sadece projenizin görünür dosyalarını gösteren daha sade bir ağaç için kapatın."
+      },
+      "gitBlameInline": {
+        "label": "Satır içi Git blame",
+        "description": "İmlecinizi takip ederek, geçerli satırı en son kimin, ne zaman değiştirdiğini ve commit özetini satırın sonunda soluk bir not olarak gösterir. Sadece bir git deposu içindeki dosyalar için."
+      },
+      "enableLogs": {
+        "label": "İmece Günlüklerini Etkinleştir",
+        "description": "İmece'ye özel olayları (oturum açma, ajan başlatma/bitirme, tarayıcı/dosya açma vb.) Günlükler sekmesinde `atlas` kaynağı altında kaydet. Bir şeyler ters gittiğinde Günlükler sekmesini açıp `atlas`'a göre filtreleyip bir zaman çizelgesi paylaşabilmeniz için varsayılan olarak AÇIK'tır. Gürültü sizi rahatsız ediyorsa kapatın."
+      },
+      "shareTelemetry": {
+        "label": "Kullanım verilerini paylaş",
+        "description": "İmece'de telemetri devre dışıdır — bu anahtarın hiçbir etkisi yoktur. Cihazınızdan hiçbir kullanım verisi çıkmaz."
+      },
+      "linkTelemetryToAccount": {
+        "label": "Kullanım verilerini hesabıma bağla",
+        "description": "Oturum açıkken, kullanım verilerini anonim bir cihaz kimliği yerine İmece hesabınıza atfeder. Oturum açıkken de anonim kalmak için bunu kapatın — zaten bağlanmış geçmiş bağlı kalır."
+      },
+      "sendFeedback": {
+        "label": "Geri bildirim gönder",
+        "description": "Bir hata bildirin, bir özellik isteyin veya neyin can sıkıcı olduğunu söyleyin — isteğe bağlı bir ekran görüntüsüyle. Sağ alt köşede bir panel açar.",
+        "button": "Geri bildirim gönder"
+      },
+      "adaptiveSuggestions": {
+        "label": "Sonraki adım önerileri",
+        "description": "Her turdan sonra, kodlama ajanı tıklanabilir çipler halinde 2-3 takip eylemi önerir (tıklama = gönder). Ajanın kendi canlı oturum bağlamını kullanır — ek bir API anahtarı gerekmez — ve istek/öneriler iş akışından gizlenir."
+      },
+      "cli": {
+        "label": "İmece CLI",
+        "description": "Kabuğunuza bir `atlas` komutu ekler — geçerli klasörü bir proje olarak açmak için herhangi bir terminalde `atlas .` yazın. Eski bir kopyanın asla kalmaması için her başlatmada otomatik olarak yenilenir. {{status}}.",
+        "install": "Yükle",
+        "reinstall": "Yeniden yükle",
+        "installing": "Yükleniyor…",
+        "installedAt": "{{path}} konumuna yüklendi",
+        "installedAtWithVersion": "{{path}} konumuna yüklendi (sürüm {{installedVersion}}, geçerli {{currentVersion}})",
+        "installedAtVersionUnknown": "{{path}} konumuna yüklendi (sürüm bilinmiyor, geçerli {{currentVersion}})",
+        "willInstallTo": "{{path}} konumuna yüklenecek",
+        "installSuccess": "İmece araçları yüklendi",
+        "installFailed": "Yükleme başarısız: {{error}}"
+      },
+      "modelPricing": {
+        "label": "Model fiyatlandırması",
+        "description": "models.dev'den model başı fiyatlar (1M token / USD), model seçicide gösterilir. Başlatıldığında otomatik olarak yenilenir ve sadece fiyatlar değiştiğinde güncellenir. {{status}}",
+        "pricedModels": "{{count}} model fiyatlandırıldı.",
+        "notYetFetched": "Henüz alınmadı.",
+        "update": "Fiyatlandırmayı güncelle",
+        "updating": "Güncelleniyor…",
+        "updateSuccess": "Model fiyatlandırması güncellendi — {{count}} model"
+      }
+    },
+    "appearance": {
+      "tabs": {
+        "interfaceTheme": "Arayüz Teması",
+        "editorTheme": "Düzenleyici Teması"
+      },
+      "zoom": {
+        "title": "Arayüz yakınlaştırma",
+        "titleWithHints": "Arayüz yakınlaştırma ({{hints}})",
+        "zoomOut": "Uzaklaştır",
+        "zoomIn": "Yakınlaştır",
+        "resetTo100": "%100'e sıfırla"
+      },
+      "themePicker": {
+        "searchPlaceholder": "Tema ara…",
+        "active": "Etkin",
+        "noMatches": "“{{query}}” ile eşleşen tema yok.",
+        "appliedTheme": "“{{name}}” teması uygulandı",
+        "appliedEditorTheme": "“{{name}}” düzenleyici teması uygulandı"
+      }
+    },
+    "updates": {
+      "sectionTitle": "Güncellemeler",
+      "sectionSubtitle": "İmece kendini güncel tutma şekli",
+      "autoUpdate": {
+        "label": "Otomatik güncellemeler",
+        "description": "Arka planda daha yeni bir sürüm olup olmadığını kontrol et ve otomatik olarak indir. İmece güncellemeyi kurmadan önce doğrular. Hiçbir zaman kontrol etmemek veya indirmemek için kapatın."
+      },
+      "checkForUpdates": {
+        "label": "Güncellemeleri kontrol et",
+        "labelReady": "Güncelleme hazır{{version}}",
+        "description": "Otomatik güncelleme ayarından bağımsız olarak şimdi kontrol et. Daha yeni sürümler arka planda indirilir; hazır olduğunda yeniden başlatmanız istenir.",
+        "descriptionReady": "Yeni bir sürüm indirildi ve doğrulandı. Şimdi yeniden başlatın, yoksa İmece'den bir dahaki çıkışınızda otomatik olarak uygulanacak.",
+        "checkNow": "Şimdi kontrol et",
+        "checking": "Kontrol ediliyor…",
+        "restartToUpdate": "Güncellemek için yeniden başlat",
+        "preparing": "Hazırlanıyor…",
+        "downloading": "İndiriliyor %{{percent}}",
+        "upToDate": "En güncel sürümdesiniz ({{version}}).",
+        "checkFailed": "Güncelleme kontrolü başarısız: {{error}}"
+      }
+    },
+    "about": {
+      "sectionSubtitle": "İmece",
+      "version": "v0.3.2 — Çok-ajanlı AI oturum takip",
+      "description": "Atlas çatallaması — telemetrisiz, Linux destekli, kişisel kullanım için özelleştirilmiş. Tauri, React ve Rust ile geliştirildi."
     }
+  },
+  "layouts": {
+    "title": "Düzenler",
+    "description": "Panelleri ve sekmeleri hazır bir çalışma alanına yeniden düzenleyin. Düzenler arasında geçiş yapmak için herhangi bir zamanda <kbd>{{hint}}</kbd> tuşuna basın.",
+    "appliedToast": "“{{name}}” düzeni uygulandı"
   }
 }
