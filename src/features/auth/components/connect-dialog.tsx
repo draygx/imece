@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Check, Copy, Loader2, MonitorSmartphone } from "lucide-react";
+import { Trans, useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "../stores/auth-store";
@@ -21,6 +22,7 @@ import { useAuthStore } from "../stores/auth-store";
  * state underneath.
  */
 export function ConnectDialog() {
+  const { t } = useTranslation();
   const open = useAuthStore.use.dialogOpen();
   const snapshot = useAuthStore.use.snapshot();
   const error = useAuthStore.use.error();
@@ -73,10 +75,10 @@ export function ConnectDialog() {
             <MonitorSmartphone className="mt-0.5 size-4 text-text-tertiary" />
             <div>
               <Dialog.Title className="text-sm font-medium">
-                Connect your İmece account
+                {t("auth.connectDialog.title")}
               </Dialog.Title>
               <Dialog.Description className="mt-0.5 text-xs text-text-secondary">
-                Approve this device in your browser to finish.
+                {t("auth.connectDialog.description")}
               </Dialog.Description>
             </div>
           </div>
@@ -85,7 +87,7 @@ export function ConnectDialog() {
             {done ? (
               <div className="flex items-center gap-2 px-1 py-5 text-xs text-text-secondary">
                 <Check size={14} className="text-[var(--status-success)]" />
-                Connected.
+                {t("auth.connectDialog.connected")}
               </div>
             ) : error ? (
               <div className="px-1 py-4">
@@ -94,7 +96,7 @@ export function ConnectDialog() {
                   onClick={() => void beginSignIn()}
                   className="mt-3 rounded border border-border-default px-2.5 py-1 text-xs text-text-primary transition-colors hover:bg-[#ffffff08]"
                 >
-                  Try again
+                  {t("auth.connectDialog.tryAgain")}
                 </button>
               </div>
             ) : (
@@ -119,35 +121,36 @@ export function ConnectDialog() {
                         {copied ? (
                           <>
                             <Check size={12} className="text-[var(--status-success)]" />
-                            Copied
+                            {t("auth.connectDialog.copied")}
                           </>
                         ) : (
                           <>
                             <Copy size={12} />
-                            Copy code
+                            {t("auth.connectDialog.copyCode")}
                           </>
                         )}
                       </button>
                     </div>
 
-                    {/* "Approve" is the literal button label on the web page.
-                        Naming it means the instruction ends at something the
-                        user can point at rather than at a step they have to
-                        recognise — and it has to be changed here whenever it
-                        changes there. */}
+                    {/* "Approve" is the literal button label on the web page
+                        — in every language, since that page isn't part of
+                        this translation effort — so it stays untranslated in
+                        both locale files rather than being re-derived here. */}
                     <p className="mt-3 px-1 text-[11px] leading-relaxed text-text-tertiary">
-                      Paste this at{" "}
-                      <span className="font-mono text-text-secondary">
-                        {connecting.verificationUri}
-                      </span>
-                      , which just opened in your browser, then press Approve.
+                      <Trans
+                        i18nKey="auth.connectDialog.pasteInstruction"
+                        values={{ uri: connecting.verificationUri }}
+                        components={{
+                          code: <span className="font-mono text-text-secondary" />,
+                        }}
+                      />
                     </p>
                   </>
                 ) : null}
 
                 <div className="flex items-center gap-2 px-1 pt-4 text-xs text-text-secondary">
                   <Loader2 size={14} className="animate-spin" />
-                  {starting ? "Starting…" : "Waiting for you to approve in the browser…"}
+                  {starting ? t("auth.connectDialog.starting") : t("auth.connectDialog.waiting")}
                 </div>
               </>
             )}
@@ -158,7 +161,7 @@ export function ConnectDialog() {
               onClick={() => (done ? closeDialog() : void cancelSignIn())}
               className="rounded px-2.5 py-1 text-xs text-text-secondary transition-colors hover:bg-[#ffffff08] hover:text-text-primary"
             >
-              {done ? "Close" : "Cancel"}
+              {done ? t("auth.connectDialog.close") : t("auth.connectDialog.cancel")}
             </button>
           </div>
         </Dialog.Content>

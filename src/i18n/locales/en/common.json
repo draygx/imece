@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "connectDialog": {
+      "title": "Connect your İmece account",
+      "description": "Approve this device in your browser to finish.",
+      "connected": "Connected.",
+      "tryAgain": "Try again",
+      "copied": "Copied",
+      "copyCode": "Copy code",
+      "pasteInstruction": "Paste this at <code>{{uri}}</code>, which just opened in your browser, then press Approve.",
+      "starting": "Starting…",
+      "waiting": "Waiting for you to approve in the browser…",
+      "close": "Close",
+      "cancel": "Cancel"
+    }
+  },
+  "settings": {
+    "general": {
+      "languageLabel": "Language",
+      "languageDescription": "İmece's interface language. Turkish is the default; English remains available as a fallback."
+    }
+  }
+}
