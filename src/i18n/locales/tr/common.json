@@ -486,6 +486,48 @@
         "footerHint": "↑↓ · ↵ çalıştır · ⎋ kapat"
       }
     },
+    "transcript": {
+      "contextAttachedTitle": "@ ile bahsedilen bağlam eklendi",
+      "contextAttachedCount": "{{count}} ek eklendi",
+      "showMore": "Daha fazla göster",
+      "showLess": "Daha az göster",
+      "thinking": "Düşünüyor…",
+      "thoughtProcess": "Düşünce süreci",
+      "verbs": {
+        "ran": "Çalıştırdı",
+        "created": "Oluşturdu",
+        "edited": "Düzenledi",
+        "read": "Okudu",
+        "searched": "Aradı"
+      },
+      "markerOpenTitle": "{{verb}} {{detail}} — yan panelde aç",
+      "toolCalls": "Araç çağrıları",
+      "callCount": "{{count}} çağrı",
+      "modifiedCount": "{{count}} değiştirildi",
+      "hideToolCalls": "Araç çağrılarını gizle",
+      "showToolCalls": "Araç çağrılarını göster",
+      "timeGapMinutes": "{{value}}dk önce",
+      "timeGapHours": "{{value}}sa önce",
+      "timeGapDays": "{{value}}g önce",
+      "filesChangedCount": "{{count}} dosya değişti",
+      "filesReadCount": "{{count}} dosya okundu",
+      "saveLabel": "Kaydet",
+      "saveTitle": "Bu konuşmayı bilgi tabanına kaydet",
+      "showChanges": "Değişiklikleri göster",
+      "showFewer": "Daha az göster",
+      "moreCount": "+{{count}} daha",
+      "userRowActions": {
+        "couldNotCopy": "Panoya kopyalanamadı",
+        "retryMessage": "Bu mesajı yeniden dene",
+        "pinMessage": "Mesajı sabitle",
+        "resendMessage": "Bu istemi yeniden gönder",
+        "copyMessage": "Mesajı kopyala"
+      },
+      "stillStarting": "Hâlâ başlatılıyor… ilk çalıştırmada bu birkaç dakika sürebilir.",
+      "switchAgent": "Aracı değiştir",
+      "copyDiagnostics": "Tanılama bilgilerini kopyala",
+      "noMessagesYet": "Henüz mesaj yok."
+    },
     "thinking": "Düşünüyor",
     "header": {
       "newSession": "Yeni oturum",

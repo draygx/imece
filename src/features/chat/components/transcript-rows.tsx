@@ -14,6 +14,7 @@
 //     arrives as props; actions are fired imperatively via `getState()`.
 
 import { memo, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Check,
   X,
@@ -80,6 +81,7 @@ export const UserRowView = memo(function UserRowView({
   pinScopeKey: string;
   onToggleExpand: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     // Generous space BELOW the prompt: the gap is what separates one exchange
     // from the next, and a tight one made the agent's reply read as a
@@ -130,10 +132,10 @@ export const UserRowView = memo(function UserRowView({
           <button
             type="button"
             className="mt-1 flex items-center gap-1 text-[10px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] cursor-pointer transition-colors"
-            title="Context attached with @-mentions"
+            title={t("chat.transcript.contextAttachedTitle")}
           >
             <Paperclip size={10} />
-            {row.contextBlocks} attached
+            {t("chat.transcript.contextAttachedCount", { count: row.contextBlocks })}
           </button>
         )}
         <ExpandToggle row={row} onToggleExpand={onToggleExpand} />
@@ -167,6 +169,7 @@ function ExpandToggle({
   row: UserRow;
   onToggleExpand: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   if (!clampable(row)) return null;
   return (
     <button
@@ -174,7 +177,7 @@ function ExpandToggle({
       onClick={() => onToggleExpand(row.id)}
       className="mt-0.5 h-[18px] text-[10px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] cursor-pointer transition-colors"
     >
-      {row.expanded ? "Show less" : "Show more"}
+      {row.expanded ? t("chat.transcript.showLess") : t("chat.transcript.showMore")}
     </button>
   );
 }
@@ -269,6 +272,7 @@ export const ThinkingRowView = memo(function ThinkingRowView({
   row: ThinkingRow;
   onToggleExpand: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Column>
       <button
@@ -277,7 +281,9 @@ export const ThinkingRowView = memo(function ThinkingRowView({
         className="flex h-[26px] w-full items-center gap-2 text-left text-[11px] text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] cursor-pointer transition-colors"
       >
         <Brain size={11} className={cn(row.streaming && "atlas-marker-running")} />
-        <span>{row.streaming ? "Thinking…" : "Thought process"}</span>
+        <span>
+          {row.streaming ? t("chat.transcript.thinking") : t("chat.transcript.thoughtProcess")}
+        </span>
         <ChevronRight
           size={11}
           className={cn("transition-transform", row.expanded && "rotate-90")}
@@ -295,6 +301,26 @@ export const ThinkingRowView = memo(function ThinkingRowView({
 });
 
 // ── Marker ─────────────────────────────────────────────────────────────────
+
+/** `row.verb` is either one of `turn-rows.ts`'s five hardcoded English verbs
+ *  (translate it) or a raw tool name the agent advertised (data — pass it
+ *  through unchanged, same rule as every other agent-sourced identifier). */
+function translateVerb(verb: string, t: ReturnType<typeof useTranslation>["t"]): string {
+  switch (verb) {
+    case "Ran":
+      return t("chat.transcript.verbs.ran");
+    case "Created":
+      return t("chat.transcript.verbs.created");
+    case "Edited":
+      return t("chat.transcript.verbs.edited");
+    case "Read":
+      return t("chat.transcript.verbs.read");
+    case "Searched":
+      return t("chat.transcript.verbs.searched");
+    default:
+      return verb;
+  }
+}
 
 function StateGlyph({ state }: { state: MarkerState }) {
   if (state === "failed") return <X size={11} className="text-[var(--status-error)]" />;
@@ -325,6 +351,8 @@ export const MarkerRowView = memo(function MarkerRowView({
   row: MarkerRow;
   tabId: string;
 }) {
+  const { t } = useTranslation();
+  const verb = translateVerb(row.verb, t);
   const clickable = row.opens !== "none";
   const onClick = useCallback(() => {
     if (row.opens === "diff") {
@@ -345,12 +373,14 @@ export const MarkerRowView = memo(function MarkerRowView({
           clickable && "cursor-pointer hover:text-[var(--text-secondary)]",
           row.state === "running" && "atlas-marker-running",
         )}
-        title={clickable ? `${row.verb} ${row.detail} — open in side panel` : undefined}
+        title={
+          clickable ? t("chat.transcript.markerOpenTitle", { verb, detail: row.detail }) : undefined
+        }
       >
         <span className="flex w-3 shrink-0 justify-center">
           <StateGlyph state={row.state} />
         </span>
-        <span className="shrink-0">{row.verb}</span>
+        <span className="shrink-0">{verb}</span>
         {row.detail && (
           <span className="min-w-0 flex-1 truncate font-mono text-[var(--text-tertiary)]/85">
             {row.detail}
@@ -386,19 +416,22 @@ export const MarkerGroupRowView = memo(function MarkerGroupRowView({
   row: MarkerGroupRow;
   onExpandTurn: (turnId: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Column className="py-3">
       <div className="flex items-baseline gap-2 text-[11px]">
-        <span className="font-medium text-[var(--text-secondary)]">Tool calls</span>
+        <span className="font-medium text-[var(--text-secondary)]">
+          {t("chat.transcript.toolCalls")}
+        </span>
         {row.duration && (
           <span className="font-mono text-[10px] text-[var(--text-tertiary)]">{row.duration}</span>
         )}
         <span className="font-mono text-[10px] text-[var(--text-tertiary)]">
-          {row.count} {row.count === 1 ? "call" : "calls"}
+          {t("chat.transcript.callCount", { count: row.count })}
         </span>
         {row.modified > 0 && (
           <span className="font-mono text-[10px] text-[var(--text-tertiary)]">
-            {row.modified} modified
+            {t("chat.transcript.modifiedCount", { count: row.modified })}
           </span>
         )}
         {row.added > 0 && (
@@ -413,7 +446,7 @@ export const MarkerGroupRowView = memo(function MarkerGroupRowView({
           onClick={() => onExpandTurn(row.turnId)}
           className="mt-0.5 flex cursor-pointer items-center gap-1 text-[11px] text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-secondary)]"
         >
-          {row.open ? "Hide tool calls" : "Show tool calls"}
+          {row.open ? t("chat.transcript.hideToolCalls") : t("chat.transcript.showToolCalls")}
           <ChevronRight size={11} className={cn("transition-transform", row.open && "rotate-90")} />
         </button>
       )}
@@ -423,12 +456,26 @@ export const MarkerGroupRowView = memo(function MarkerGroupRowView({
 
 // ── Separator ──────────────────────────────────────────────────────────────
 
+/** `row.label` is `turn-rows.ts`'s compact "<n><unit> ago" gap marker (e.g.
+ *  "5m ago", "2h ago", "3d ago") — translate the recognised shape; anything
+ *  else (a future format change there) passes through unchanged. */
+function translateGapLabel(label: string, t: ReturnType<typeof useTranslation>["t"]): string {
+  const m = /^(\d+)(m|h|d) ago$/.exec(label);
+  if (!m) return label;
+  const [, value, unit] = m;
+  const key = unit === "m" ? "timeGapMinutes" : unit === "h" ? "timeGapHours" : "timeGapDays";
+  return t(`chat.transcript.${key}`, { value });
+}
+
 export const SeparatorRowView = memo(function SeparatorRowView({ row }: { row: SeparatorRow }) {
+  const { t } = useTranslation();
   return (
     <Column className="flex h-[34px] items-center">
       <div className="flex w-full select-none items-center gap-2">
         <span className="h-px flex-1 bg-[var(--border-subtle)]" />
-        <span className="shrink-0 text-[10px] text-[var(--text-tertiary)]">{row.label}</span>
+        <span className="shrink-0 text-[10px] text-[var(--text-tertiary)]">
+          {translateGapLabel(row.label, t)}
+        </span>
         <span className="h-px flex-1 bg-[var(--border-subtle)]" />
       </div>
     </Column>
@@ -444,6 +491,7 @@ export const TurnFooterRowView = memo(function TurnFooterRowView({
   row: TurnFooterRow;
   onSaveKb: () => void;
 }) {
+  const { t } = useTranslation();
   // `row.files` is the first three; `row.allFiles` is everything. The overflow
   // line is a disclosure, not a dead count.
   const [showAll, setShowAll] = useState(false);
@@ -453,8 +501,8 @@ export const TurnFooterRowView = memo(function TurnFooterRowView({
   const removed = edits.reduce((s, f) => s + f.removed, 0);
   const label =
     edits.length > 0
-      ? `${edits.length} file${edits.length === 1 ? "" : "s"} changed`
-      : `${row.allFiles.length} file${row.allFiles.length === 1 ? "" : "s"} read`;
+      ? t("chat.transcript.filesChangedCount", { count: edits.length })
+      : t("chat.transcript.filesReadCount", { count: row.allFiles.length });
 
   return (
     <Column className="pb-5 pt-2">
@@ -474,14 +522,14 @@ export const TurnFooterRowView = memo(function TurnFooterRowView({
           <div className="ml-auto flex items-center gap-1.5">
             <FooterPill
               icon={<Bookmark size={11} />}
-              label="Save"
-              title="Save this thread to the knowledge base"
+              label={t("chat.transcript.saveLabel")}
+              title={t("chat.transcript.saveTitle")}
               onClick={onSaveKb}
             />
             {edits.length > 0 && (
               <FooterPill
                 icon={<Code2 size={11} />}
-                label="Show changes"
+                label={t("chat.transcript.showChanges")}
                 // The whole turn: its files fill the tree and the first opens.
                 onClick={() => openTurnDiff(row.turnId)}
               />
@@ -530,7 +578,9 @@ export const TurnFooterRowView = memo(function TurnFooterRowView({
                 size={10}
                 className={cn("transition-transform", showAll && "rotate-180")}
               />
-              {showAll ? "Show fewer" : `+${row.overflow} more`}
+              {showAll
+                ? t("chat.transcript.showFewer")
+                : t("chat.transcript.moreCount", { count: row.overflow })}
             </button>
           )}
         </div>

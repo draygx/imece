@@ -34,6 +34,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import type { ChatMessage } from "@/types/agent";
 import {
   agentMeta,
@@ -180,7 +181,7 @@ function saveScroll(cacheKey: string, saved: Saved): void {
  * and departure don't jolt the thread it sits under.
  */
 function WorkingIndicator({
-  label = "Thinking",
+  label,
   onStallRestart,
   onStallSwitch,
   onStallCopyDiagnostics,
@@ -190,6 +191,7 @@ function WorkingIndicator({
   onStallSwitch?: () => void;
   onStallCopyDiagnostics?: () => void;
 }) {
+  const { t } = useTranslation();
   const stall =
     onStallRestart || onStallSwitch ? (
       <StallNotice
@@ -200,7 +202,7 @@ function WorkingIndicator({
     ) : undefined;
   return (
     <div className="mx-auto w-full max-w-[760px] px-6 pt-2 pb-3">
-      <LoadingState label={label} stalledContent={stall} />
+      <LoadingState label={label ?? t("chat.thinking")} stalledContent={stall} />
     </div>
   );
 }
@@ -222,16 +224,17 @@ function StallNotice({
   onSwitch?: () => void;
   onCopyDiagnostics?: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 pl-[17px] text-[11px] leading-[16px] text-[var(--text-tertiary)]">
-      <span className="select-text">Still starting… this can take a few minutes on first run.</span>
+      <span className="select-text">{t("chat.transcript.stillStarting")}</span>
       {onRestart && (
         <button
           type="button"
           onClick={onRestart}
           className="cursor-pointer font-medium text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text-primary)] hover:underline"
         >
-          Restart agent
+          {t("chat.restartAgent")}
         </button>
       )}
       {onSwitch && (
@@ -240,7 +243,7 @@ function StallNotice({
           onClick={onSwitch}
           className="cursor-pointer font-medium text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text-primary)] hover:underline"
         >
-          Switch agent
+          {t("chat.transcript.switchAgent")}
         </button>
       )}
       {onCopyDiagnostics && (
@@ -249,7 +252,7 @@ function StallNotice({
           onClick={onCopyDiagnostics}
           className="cursor-pointer font-medium text-[var(--text-secondary)] underline-offset-2 hover:text-[var(--text-primary)] hover:underline"
         >
-          Copy diagnostics
+          {t("chat.transcript.copyDiagnostics")}
         </button>
       )}
     </div>
@@ -273,6 +276,7 @@ export const Transcript = forwardRef<TranscriptHandle, TranscriptProps>(function
   },
   ref,
 ) {
+  const { t } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const cacheKey = `${tabId}:${acpSessionId}`;
@@ -776,7 +780,7 @@ export const Transcript = forwardRef<TranscriptHandle, TranscriptProps>(function
     const messageIndex = pendingJumpRef.current;
     if (messageIndex === null) return;
     const proj = projectionRef.current;
-    const turn = proj.turns.find((t) => t.messageIndex === messageIndex);
+    const turn = proj.turns.find((tn) => tn.messageIndex === messageIndex);
     const rowId = turn ? proj.rows[turn.rowStart]?.id : undefined;
     if (!rowId) return;
     const target = rowsRef.current.findIndex((r) => r.id === rowId);
@@ -898,7 +902,7 @@ export const Transcript = forwardRef<TranscriptHandle, TranscriptProps>(function
         >
           {rows.length === 0 && !isStreaming && (
             <div className="flex h-full items-center justify-center text-[11px] text-[var(--text-tertiary)]">
-              No messages yet.
+              {t("chat.transcript.noMessagesYet")}
             </div>
           )}
           {rowViews}
