@@ -17,7 +17,182 @@
   "settings": {
     "general": {
       "languageLabel": "Language",
-      "languageDescription": "İmece's interface language. Turkish is the default; English remains available as a fallback."
+      "languageDescription": "İmece's interface language. Turkish is the default; English remains available as a fallback.",
+      "sectionTitle": "General",
+      "sectionSubtitle": "Application preferences"
+    },
+    "nav": {
+      "sections": {
+        "general": "General",
+        "appearance": "Appearance",
+        "layouts": "Layouts",
+        "providers": "API Keys",
+        "skills": "Skills",
+        "agents": "Agents",
+        "models": "Local Models",
+        "updates": "Updates",
+        "keybindings": "Keybindings",
+        "about": "About"
+      },
+      "showSidebar": "Show sidebar",
+      "hideSidebar": "Hide sidebar",
+      "hide": "Hide"
+    },
+    "configError": {
+      "title": "İmece is using the last valid settings — config.toml has a problem",
+      "openConfig": "Open config",
+      "resetting": "Resetting…",
+      "recreateDefaults": "Recreate defaults",
+      "dismiss": "Dismiss",
+      "resetSuccess": "config.toml reset to defaults (previous file backed up alongside it)",
+      "resetFailed": "Reset failed: {{error}}"
+    },
+    "enterToSend": {
+      "label": "Enter to send",
+      "description": "Enter sends your message; Shift+Enter inserts a newline — the Slack/Discord/ChatGPT convention. Turn off to restore the old behavior, where only ⌘/Ctrl+Enter sends and Enter always inserts a newline. ⌘/Ctrl+Enter always sends either way."
+    },
+    "terminalNotifications": {
+      "sectionTitle": "Terminal notifications",
+      "sectionSubtitle": "Be told when a command finishes or wants input, wherever you are in İmece",
+      "label": "Terminal notifications",
+      "description": "A command that fails, runs longer than the threshold, or asks for input raises an item in the notification center, a toast when its terminal is off screen, and a notification when İmece is in the background. Nothing fires while you are looking at that terminal.",
+      "notifySuccessAfter": {
+        "label": "Notify on success after",
+        "description": "A command that succeeds faster than this stays quiet. Failures always notify (below).",
+        "options": {
+          "5s": "5 seconds",
+          "10s": "10 seconds",
+          "30s": "30 seconds",
+          "1m": "1 minute",
+          "5m": "5 minutes"
+        }
+      },
+      "notifyOnFailure": {
+        "label": "Notify on failure",
+        "description": "A non-zero exit code notifies regardless of how long the command ran. Ctrl-C is not a failure."
+      },
+      "notifyOnAttention": {
+        "label": "Notify when input is needed",
+        "description": "A password prompt, a terminal bell, or a program's own notification (OSC 9 / 777) while the terminal is not on screen."
+      },
+      "native": {
+        "label": "macOS notifications",
+        "description": "Also raise a system notification when the İmece window is not focused."
+      },
+      "sound": {
+        "label": "Sound",
+        "description": "Play a short chime with terminal notifications."
+      }
+    },
+    "behaviour": {
+      "sectionTitle": "Behaviour",
+      "sectionSubtitle": "Files, logs and the editor",
+      "autoGitignore": {
+        "label": "Auto-add .atlas to .gitignore",
+        "description": "When you open a git-tracked project, İmece adds `.atlas/` to the project's .gitignore (creating one if needed). İmece keeps its caches and state in `.atlas/` — keeping it out of version control is almost always what you want. No-op on non-git projects."
+      },
+      "showHiddenFiles": {
+        "label": "Show hidden files",
+        "description": "Show dotfiles and dot-directories (e.g. `.git`, `.atlas`, `.env`) in the file tree. Default ON so nothing is silently hidden. Turn off for a cleaner tree that only shows your project's visible files."
+      },
+      "gitBlameInline": {
+        "label": "Inline Git blame",
+        "description": "Show who last changed the current line, when, and the commit summary as a dim annotation at the end of the line — following your cursor. Only for files inside a git repository."
+      },
+      "enableLogs": {
+        "label": "Enable İmece Logs",
+        "description": "Record İmece-internal events (sign-in, agent start/finish, browser/file open, etc.) into the Logs tab under the `atlas` source. Default ON so when something goes wrong you can open the Logs tab, filter by `atlas`, and share a timeline. Turn off if the noise bothers you."
+      },
+      "shareTelemetry": {
+        "label": "Share usage data",
+        "description": "Telemetry is disabled in İmece — this toggle has no effect. No usage data leaves your device."
+      },
+      "linkTelemetryToAccount": {
+        "label": "Link usage data to my account",
+        "description": "While signed in, attribute usage data to your İmece account instead of an anonymous per-device id. Turn this off to stay anonymous even when signed in — already-linked history stays linked."
+      },
+      "sendFeedback": {
+        "label": "Send feedback",
+        "description": "Report a bug, request a feature, or tell us what feels clumsy — with an optional screenshot. Opens a panel in the bottom-right corner.",
+        "button": "Send feedback"
+      },
+      "adaptiveSuggestions": {
+        "label": "Next-step suggestions",
+        "description": "After each turn, the coding agent suggests 2-3 follow-up actions as clickable chips (click = send). It uses the agent's own live session context — no extra API key — and the request/suggestions are hidden from the thread."
+      },
+      "cli": {
+        "label": "İmece CLI",
+        "description": "Adds an `atlas` command to your shell — type `atlas .` in any terminal to open the current folder as a project. Refreshed automatically on every launch so an older copy never lingers. {{status}}.",
+        "install": "Install",
+        "reinstall": "Reinstall",
+        "installing": "Installing…",
+        "installedAt": "Installed at {{path}}",
+        "installedAtWithVersion": "Installed at {{path}} (version {{installedVersion}}, current {{currentVersion}})",
+        "installedAtVersionUnknown": "Installed at {{path}} (version unknown, current {{currentVersion}})",
+        "willInstallTo": "Will install to {{path}}",
+        "installSuccess": "Installed İmece tools",
+        "installFailed": "Install failed: {{error}}"
+      },
+      "modelPricing": {
+        "label": "Model pricing",
+        "description": "Per-model prices (USD / 1M tokens) from models.dev, shown in the model picker. Refreshed automatically on launch and updated only when prices change. {{status}}",
+        "pricedModels": "{{count}} models priced.",
+        "notYetFetched": "Not yet fetched.",
+        "update": "Update pricing",
+        "updating": "Updating…",
+        "updateSuccess": "Model pricing updated — {{count}} models"
+      }
+    },
+    "appearance": {
+      "tabs": {
+        "interfaceTheme": "Interface Theme",
+        "editorTheme": "Editor Theme"
+      },
+      "zoom": {
+        "title": "Interface zoom",
+        "titleWithHints": "Interface zoom ({{hints}})",
+        "zoomOut": "Zoom out",
+        "zoomIn": "Zoom in",
+        "resetTo100": "Reset to 100%"
+      },
+      "themePicker": {
+        "searchPlaceholder": "Search themes…",
+        "active": "Active",
+        "noMatches": "No themes match “{{query}}”.",
+        "appliedTheme": "Applied “{{name}}” theme",
+        "appliedEditorTheme": "Applied “{{name}}” editor theme"
+      }
+    },
+    "updates": {
+      "sectionTitle": "Updates",
+      "sectionSubtitle": "How İmece keeps itself up to date",
+      "autoUpdate": {
+        "label": "Automatic updates",
+        "description": "Check for a newer version in the background and download it automatically. İmece verifies the update before installing. Turn off to never check or download."
+      },
+      "checkForUpdates": {
+        "label": "Check for updates",
+        "labelReady": "Update ready{{version}}",
+        "description": "Check now regardless of the automatic-update setting. Newer versions download in the background; you'll be prompted to restart when ready.",
+        "descriptionReady": "A new version has been downloaded and verified. Restart now, or it'll be applied automatically the next time you quit İmece.",
+        "checkNow": "Check now",
+        "checking": "Checking…",
+        "restartToUpdate": "Restart to update",
+        "preparing": "Preparing…",
+        "downloading": "Downloading {{percent}}%",
+        "upToDate": "You're on the latest version ({{version}}).",
+        "checkFailed": "Update check failed: {{error}}"
+      }
+    },
+    "about": {
+      "sectionSubtitle": "İmece",
+      "version": "v0.3.2 — Multi-agent AI session tracking",
+      "description": "Atlas fork — telemetry-free, Linux-supported, customized for personal use. Built with Tauri, React, and Rust."
     }
+  },
+  "layouts": {
+    "title": "Layouts",
+    "description": "Rearrange panels and tabs into a ready-made workspace. Press <kbd>{{hint}}</kbd> anytime to switch layouts.",
+    "appliedToast": "Applied “{{name}}” layout"
   }
 }

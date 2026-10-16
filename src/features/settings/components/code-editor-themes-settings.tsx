@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/ui/scroll-area";
 import { useProjectStore } from "@/features/project/stores/project-store";
@@ -13,6 +14,7 @@ import { CodeEditorThemeThumbnail } from "./code-editor-theme-thumbnail";
  * immediately (live-reskins the editor + diff surfaces).
  */
 export function CodeEditorThemesSettings() {
+  const { t } = useTranslation();
   const settings = useProjectStore.use.settings();
   const { updateSettings } = useProjectStore.use.actions();
   const active = settings.codeEditorTheme;
@@ -34,7 +36,7 @@ export function CodeEditorThemesSettings() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search themes…"
+          placeholder={t("settings.appearance.themePicker.searchPlaceholder")}
           spellCheck={false}
           className="min-w-0 flex-1 bg-transparent text-[11px] text-text-primary outline-none placeholder:text-text-tertiary"
         />
@@ -51,14 +53,16 @@ export function CodeEditorThemesSettings() {
 
       <ScrollArea className="flex-1 p-2">
         <div className="grid grid-cols-2 gap-2">
-          {themes.map((t) => {
-            const selected = t.id === active;
+          {themes.map((theme) => {
+            const selected = theme.id === active;
             return (
               <button
-                key={t.id}
+                key={theme.id}
                 onClick={() => {
-                  updateSettings({ codeEditorTheme: t.id });
-                  toast.success(`Applied “${t.name}” editor theme`);
+                  updateSettings({ codeEditorTheme: theme.id });
+                  toast.success(
+                    t("settings.appearance.themePicker.appliedEditorTheme", { name: theme.name }),
+                  );
                 }}
                 className={cn(
                   "group flex flex-col overflow-hidden rounded-lg border bg-bg-secondary text-left transition-colors outline-none",
@@ -67,18 +71,21 @@ export function CodeEditorThemesSettings() {
                     : "border-border-default hover:border-[var(--border-strong)]",
                 )}
               >
-                <CodeEditorThemeThumbnail theme={t} />
+                <CodeEditorThemeThumbnail theme={theme} />
                 <div className="flex flex-1 flex-col gap-1 px-2.5 py-2">
                   <div className="flex items-center gap-1.5">
                     <span className="truncate text-[12px] font-medium text-text-primary">
-                      {t.name}
+                      {theme.name}
                     </span>
                     {selected && (
-                      <span className="h-2 w-2 shrink-0 rounded-full bg-[#3fb950]" title="Active" />
+                      <span
+                        className="h-2 w-2 shrink-0 rounded-full bg-[#3fb950]"
+                        title={t("settings.appearance.themePicker.active")}
+                      />
                     )}
                   </div>
                   <div className="text-[10.5px] leading-snug text-text-tertiary">
-                    {t.description}
+                    {theme.description}
                   </div>
                 </div>
               </button>
@@ -88,7 +95,7 @@ export function CodeEditorThemesSettings() {
 
         {themes.length === 0 && (
           <div className="py-6 text-center text-[11px] text-text-tertiary">
-            No themes match “{query}”.
+            {t("settings.appearance.themePicker.noMatches", { query })}
           </div>
         )}
       </ScrollArea>

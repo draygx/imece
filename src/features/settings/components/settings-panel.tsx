@@ -43,24 +43,24 @@ import { openConfigFile } from "../lib/atlas-config-api";
 
 const SECTIONS: Array<{
   id: SettingsSection;
-  label: string;
   icon: typeof Settings;
 }> = [
-  { id: "general", label: "General", icon: Settings },
-  { id: "appearance", label: "Appearance", icon: Palette },
-  { id: "layouts", label: "Layouts", icon: LayoutTemplate },
-  { id: "providers", label: "API Keys", icon: KeyRound },
-  { id: "skills", label: "Skills", icon: Zap },
-  { id: "agents", label: "Agents", icon: WandSparkles },
-  { id: "models", label: "Local Models", icon: Boxes },
-  { id: "updates", label: "Updates", icon: DownloadCloud },
-  { id: "keybindings", label: "Keybindings", icon: Keyboard },
-  { id: "about", label: "About", icon: Info },
+  { id: "general", icon: Settings },
+  { id: "appearance", icon: Palette },
+  { id: "layouts", icon: LayoutTemplate },
+  { id: "providers", icon: KeyRound },
+  { id: "skills", icon: Zap },
+  { id: "agents", icon: WandSparkles },
+  { id: "models", icon: Boxes },
+  { id: "updates", icon: DownloadCloud },
+  { id: "keybindings", icon: Keyboard },
+  { id: "about", icon: Info },
 ];
 
 const NAV_COLLAPSED_KEY = "atlas:settings:navCollapsed";
 
 export function SettingsPanel({ initialSection }: { initialSection?: string } = {}) {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState(initialSection ?? "general");
 
   // Honor cross-component "open Settings → <section>" requests (e.g. the
@@ -101,29 +101,32 @@ export function SettingsPanel({ initialSection }: { initialSection?: string } = 
         )}
       >
         <div className="flex-1">
-          {SECTIONS.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setActiveSection(s.id)}
-              title={navCollapsed ? s.label : undefined}
-              className={cn(
-                "w-full flex items-center h-[32px] whitespace-nowrap text-[11px] font-medium transition-colors border-l-2 cursor-pointer",
-                navCollapsed ? "justify-center px-0" : "gap-2 px-4",
-                activeSection === s.id
-                  ? "text-text-primary bg-bg-selected border-l-accent"
-                  : "text-text-secondary hover:bg-bg-hover border-l-transparent",
-              )}
-            >
-              <s.icon size={13} className="shrink-0" />
-              {!navCollapsed && s.label}
-            </button>
-          ))}
+          {SECTIONS.map((s) => {
+            const label = t(`settings.nav.sections.${s.id}`);
+            return (
+              <button
+                key={s.id}
+                onClick={() => setActiveSection(s.id)}
+                title={navCollapsed ? label : undefined}
+                className={cn(
+                  "w-full flex items-center h-[32px] whitespace-nowrap text-[11px] font-medium transition-colors border-l-2 cursor-pointer",
+                  navCollapsed ? "justify-center px-0" : "gap-2 px-4",
+                  activeSection === s.id
+                    ? "text-text-primary bg-bg-selected border-l-accent"
+                    : "text-text-secondary hover:bg-bg-hover border-l-transparent",
+                )}
+              >
+                <s.icon size={13} className="shrink-0" />
+                {!navCollapsed && label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Hide / show toggle — divided from the section list. */}
         <button
           onClick={toggleNav}
-          title={navCollapsed ? "Show sidebar" : "Hide sidebar"}
+          title={navCollapsed ? t("settings.nav.showSidebar") : t("settings.nav.hideSidebar")}
           className={cn(
             "mt-1 flex items-center h-[30px] whitespace-nowrap border-t border-border-default text-[11px] font-medium text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors cursor-pointer",
             navCollapsed ? "justify-center px-0" : "gap-2 px-4",
@@ -134,7 +137,7 @@ export function SettingsPanel({ initialSection }: { initialSection?: string } = 
           ) : (
             <>
               <ChevronLeft size={14} className="shrink-0" />
-              <span>Hide</span>
+              <span>{t("settings.nav.hide")}</span>
             </>
           )}
         </button>
@@ -191,6 +194,7 @@ interface CliStatus {
 }
 
 function GeneralSettings() {
+  const { t } = useTranslation();
   const settings = useProjectStore.use.settings();
   const configError = useProjectStore.use.configError();
   const { updateSettings, clearConfigError, resetConfig } = useProjectStore.use.actions();
@@ -206,9 +210,13 @@ function GeneralSettings() {
       // `atlas:config-changed` listener and skipped those side effects
       // whenever this path won.
       await resetConfig();
-      toast.success("config.toml reset to defaults (previous file backed up alongside it)");
+      toast.success(t("settings.configError.resetSuccess"));
     } catch (e) {
-      toast.error(`Reset failed: ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(
+        t("settings.configError.resetFailed", {
+          error: e instanceof Error ? e.message : String(e),
+        }),
+      );
     } finally {
       setResettingConfig(false);
     }
@@ -227,7 +235,7 @@ function GeneralSettings() {
     const n = Object.keys(useModelPricingStore.getState().prices).filter((k) =>
       k.includes("/"),
     ).length;
-    toast.success(`Model pricing updated — ${n} models`);
+    toast.success(t("settings.behaviour.modelPricing.updateSuccess", { count: n }));
   };
 
   useEffect(() => {
@@ -247,9 +255,13 @@ function GeneralSettings() {
     try {
       const next = await invoke<CliStatus>("cli_install_helper");
       setCli(next);
-      toast.success("Installed İmece tools");
+      toast.success(t("settings.behaviour.cli.installSuccess"));
     } catch (e) {
-      toast.error(`Install failed: ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(
+        t("settings.behaviour.cli.installFailed", {
+          error: e instanceof Error ? e.message : String(e),
+        }),
+      );
     } finally {
       setInstalling(false);
     }
@@ -257,22 +269,30 @@ function GeneralSettings() {
 
   const cliInstalledLine = cli?.installed
     ? cli.installedVersion === cli.currentVersion
-      ? `Installed at ${cli.path}`
-      : `Installed at ${cli.path}${
-          cli.installedVersion
-            ? ` (version ${cli.installedVersion}, current ${cli.currentVersion})`
-            : ` (version unknown, current ${cli.currentVersion})`
-        }`
-    : `Will install to ${cli?.path ?? "~/.local/bin/atlas"}`;
+      ? t("settings.behaviour.cli.installedAt", { path: cli.path })
+      : cli.installedVersion
+        ? t("settings.behaviour.cli.installedAtWithVersion", {
+            path: cli.path,
+            installedVersion: cli.installedVersion,
+            currentVersion: cli.currentVersion,
+          })
+        : t("settings.behaviour.cli.installedAtVersionUnknown", {
+            path: cli.path,
+            currentVersion: cli.currentVersion,
+          })
+    : t("settings.behaviour.cli.willInstallTo", { path: cli?.path ?? "~/.local/bin/atlas" });
 
   return (
     <div className="space-y-6">
-      <SectionTitle title="General" subtitle="Application preferences" />
+      <SectionTitle
+        title={t("settings.general.sectionTitle")}
+        subtitle={t("settings.general.sectionSubtitle")}
+      />
       <LanguageSetting />
       {configError && (
         <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 space-y-2">
           <p className="text-[12px] font-medium text-text-primary">
-            İmece is using the last valid settings — config.toml has a problem
+            {t("settings.configError.title")}
           </p>
           <p className="text-[11px] text-text-secondary font-mono break-all">{configError}</p>
           <div className="flex gap-2">
@@ -284,7 +304,7 @@ function GeneralSettings() {
                 "text-text-primary hover:bg-bg-hover transition-colors",
               )}
             >
-              Open config
+              {t("settings.configError.openConfig")}
             </button>
             <button
               type="button"
@@ -296,21 +316,23 @@ function GeneralSettings() {
                 "disabled:opacity-50 disabled:cursor-not-allowed",
               )}
             >
-              {resettingConfig ? "Resetting…" : "Recreate defaults"}
+              {resettingConfig
+                ? t("settings.configError.resetting")
+                : t("settings.configError.recreateDefaults")}
             </button>
             <button
               type="button"
               onClick={clearConfigError}
               className="h-7 rounded-md px-2.5 text-[11px] font-medium text-text-secondary hover:text-text-primary transition-colors"
             >
-              Dismiss
+              {t("settings.configError.dismiss")}
             </button>
           </div>
         </div>
       )}
       <SettingRow
-        label="Enter to send"
-        description="Enter sends your message; Shift+Enter inserts a newline — the Slack/Discord/ChatGPT convention. Turn off to restore the old behavior, where only ⌘/Ctrl+Enter sends and Enter always inserts a newline. ⌘/Ctrl+Enter always sends either way."
+        label={t("settings.enterToSend.label")}
+        description={t("settings.enterToSend.description")}
       >
         <Toggle
           checked={settings.enterToSend}
@@ -318,12 +340,12 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SectionTitle
-        title="Terminal notifications"
-        subtitle="Be told when a command finishes or wants input, wherever you are in İmece"
+        title={t("settings.terminalNotifications.sectionTitle")}
+        subtitle={t("settings.terminalNotifications.sectionSubtitle")}
       />
       <SettingRow
-        label="Terminal notifications"
-        description="A command that fails, runs longer than the threshold, or asks for input raises an item in the notification center, a toast when its terminal is off screen, and a notification when İmece is in the background. Nothing fires while you are looking at that terminal."
+        label={t("settings.terminalNotifications.label")}
+        description={t("settings.terminalNotifications.description")}
       >
         <Toggle
           checked={settings.terminalNotifications}
@@ -331,8 +353,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Notify on success after"
-        description="A command that succeeds faster than this stays quiet. Failures always notify (below)."
+        label={t("settings.terminalNotifications.notifySuccessAfter.label")}
+        description={t("settings.terminalNotifications.notifySuccessAfter.description")}
       >
         <select
           value={String(settings.terminalNotifyMinDurationMs)}
@@ -340,16 +362,26 @@ function GeneralSettings() {
           onChange={(e) => updateSettings({ terminalNotifyMinDurationMs: Number(e.target.value) })}
           className="h-7 rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 text-[11px] text-[var(--text-primary)] outline-none disabled:opacity-40"
         >
-          <option value="5000">5 seconds</option>
-          <option value="10000">10 seconds</option>
-          <option value="30000">30 seconds</option>
-          <option value="60000">1 minute</option>
-          <option value="300000">5 minutes</option>
+          <option value="5000">
+            {t("settings.terminalNotifications.notifySuccessAfter.options.5s")}
+          </option>
+          <option value="10000">
+            {t("settings.terminalNotifications.notifySuccessAfter.options.10s")}
+          </option>
+          <option value="30000">
+            {t("settings.terminalNotifications.notifySuccessAfter.options.30s")}
+          </option>
+          <option value="60000">
+            {t("settings.terminalNotifications.notifySuccessAfter.options.1m")}
+          </option>
+          <option value="300000">
+            {t("settings.terminalNotifications.notifySuccessAfter.options.5m")}
+          </option>
         </select>
       </SettingRow>
       <SettingRow
-        label="Notify on failure"
-        description="A non-zero exit code notifies regardless of how long the command ran. Ctrl-C is not a failure."
+        label={t("settings.terminalNotifications.notifyOnFailure.label")}
+        description={t("settings.terminalNotifications.notifyOnFailure.description")}
       >
         <Toggle
           checked={settings.terminalNotifyOnFailure}
@@ -358,8 +390,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Notify when input is needed"
-        description="A password prompt, a terminal bell, or a program's own notification (OSC 9 / 777) while the terminal is not on screen."
+        label={t("settings.terminalNotifications.notifyOnAttention.label")}
+        description={t("settings.terminalNotifications.notifyOnAttention.description")}
       >
         <Toggle
           checked={settings.terminalNotifyOnAttention}
@@ -368,8 +400,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="macOS notifications"
-        description="Also raise a system notification when the İmece window is not focused."
+        label={t("settings.terminalNotifications.native.label")}
+        description={t("settings.terminalNotifications.native.description")}
       >
         <Toggle
           checked={settings.terminalNotifyNative}
@@ -377,7 +409,10 @@ function GeneralSettings() {
           onChange={(next) => updateSettings({ terminalNotifyNative: next })}
         />
       </SettingRow>
-      <SettingRow label="Sound" description="Play a short chime with terminal notifications.">
+      <SettingRow
+        label={t("settings.terminalNotifications.sound.label")}
+        description={t("settings.terminalNotifications.sound.description")}
+      >
         <Toggle
           checked={settings.terminalNotifySound}
           disabled={!settings.terminalNotifications}
@@ -385,10 +420,13 @@ function GeneralSettings() {
         />
       </SettingRow>
 
-      <SectionTitle title="Behaviour" subtitle="Files, logs and the editor" />
+      <SectionTitle
+        title={t("settings.behaviour.sectionTitle")}
+        subtitle={t("settings.behaviour.sectionSubtitle")}
+      />
       <SettingRow
-        label="Auto-add .atlas to .gitignore"
-        description="When you open a git-tracked project, İmece adds `.atlas/` to the project's .gitignore (creating one if needed). İmece keeps its caches and state in `.atlas/` — keeping it out of version control is almost always what you want. No-op on non-git projects."
+        label={t("settings.behaviour.autoGitignore.label")}
+        description={t("settings.behaviour.autoGitignore.description")}
       >
         <Toggle
           checked={settings.autoAddAtlasGitignore}
@@ -396,8 +434,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Show hidden files"
-        description="Show dotfiles and dot-directories (e.g. `.git`, `.atlas`, `.env`) in the file tree. Default ON so nothing is silently hidden. Turn off for a cleaner tree that only shows your project's visible files."
+        label={t("settings.behaviour.showHiddenFiles.label")}
+        description={t("settings.behaviour.showHiddenFiles.description")}
       >
         <Toggle
           checked={settings.showHiddenFiles}
@@ -405,8 +443,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Inline Git blame"
-        description="Show who last changed the current line, when, and the commit summary as a dim annotation at the end of the line — following your cursor. Only for files inside a git repository."
+        label={t("settings.behaviour.gitBlameInline.label")}
+        description={t("settings.behaviour.gitBlameInline.description")}
       >
         <Toggle
           checked={settings.gitBlameInline}
@@ -414,8 +452,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Enable İmece Logs"
-        description="Record İmece-internal events (sign-in, agent start/finish, browser/file open, etc.) into the Logs tab under the `atlas` source. Default ON so when something goes wrong you can open the Logs tab, filter by `atlas`, and share a timeline. Turn off if the noise bothers you."
+        label={t("settings.behaviour.enableLogs.label")}
+        description={t("settings.behaviour.enableLogs.description")}
       >
         <Toggle
           checked={settings.enableAtlasLogs}
@@ -423,8 +461,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Share usage data"
-        description="Telemetry is disabled in İmece — this toggle has no effect. No usage data leaves your device."
+        label={t("settings.behaviour.shareTelemetry.label")}
+        description={t("settings.behaviour.shareTelemetry.description")}
       >
         <Toggle
           checked={settings.shareTelemetry}
@@ -439,8 +477,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Link usage data to my account"
-        description="While signed in, attribute usage data to your İmece account instead of an anonymous per-device id. Turn this off to stay anonymous even when signed in — already-linked history stays linked."
+        label={t("settings.behaviour.linkTelemetryToAccount.label")}
+        description={t("settings.behaviour.linkTelemetryToAccount.description")}
       >
         <Toggle
           checked={settings.linkTelemetryToAccount}
@@ -449,8 +487,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="Send feedback"
-        description="Report a bug, request a feature, or tell us what feels clumsy — with an optional screenshot. Opens a panel in the bottom-right corner."
+        label={t("settings.behaviour.sendFeedback.label")}
+        description={t("settings.behaviour.sendFeedback.description")}
       >
         <button
           type="button"
@@ -460,12 +498,12 @@ function GeneralSettings() {
             "text-text-primary hover:bg-bg-hover transition-colors",
           )}
         >
-          Send feedback
+          {t("settings.behaviour.sendFeedback.button")}
         </button>
       </SettingRow>
       <SettingRow
-        label="Next-step suggestions"
-        description="After each turn, the coding agent suggests 2-3 follow-up actions as clickable chips (click = send). It uses the agent's own live session context — no extra API key — and the request/suggestions are hidden from the thread."
+        label={t("settings.behaviour.adaptiveSuggestions.label")}
+        description={t("settings.behaviour.adaptiveSuggestions.description")}
       >
         <Toggle
           checked={settings.adaptiveSuggestions !== "off"}
@@ -473,8 +511,8 @@ function GeneralSettings() {
         />
       </SettingRow>
       <SettingRow
-        label="İmece CLI"
-        description={`Adds an \`atlas\` command to your shell — type \`atlas .\` in any terminal to open the current folder as a project. Refreshed automatically on every launch so an older copy never lingers. ${cliInstalledLine}.`}
+        label={t("settings.behaviour.cli.label")}
+        description={t("settings.behaviour.cli.description", { status: cliInstalledLine })}
       >
         <button
           type="button"
@@ -486,12 +524,21 @@ function GeneralSettings() {
             "disabled:opacity-50 disabled:cursor-not-allowed",
           )}
         >
-          {installing ? "Installing…" : cli?.installed ? "Reinstall" : "Install"}
+          {installing
+            ? t("settings.behaviour.cli.installing")
+            : cli?.installed
+              ? t("settings.behaviour.cli.reinstall")
+              : t("settings.behaviour.cli.install")}
         </button>
       </SettingRow>
       <SettingRow
-        label="Model pricing"
-        description={`Per-model prices (USD / 1M tokens) from models.dev, shown in the model picker. Refreshed automatically on launch and updated only when prices change. ${pricedModelCount > 0 ? `${pricedModelCount} models priced.` : "Not yet fetched."}`}
+        label={t("settings.behaviour.modelPricing.label")}
+        description={t("settings.behaviour.modelPricing.description", {
+          status:
+            pricedModelCount > 0
+              ? t("settings.behaviour.modelPricing.pricedModels", { count: pricedModelCount })
+              : t("settings.behaviour.modelPricing.notYetFetched"),
+        })}
       >
         <button
           type="button"
@@ -503,7 +550,9 @@ function GeneralSettings() {
             "disabled:opacity-50 disabled:cursor-not-allowed",
           )}
         >
-          {pricingLoading ? "Updating…" : "Update pricing"}
+          {pricingLoading
+            ? t("settings.behaviour.modelPricing.updating")
+            : t("settings.behaviour.modelPricing.update")}
         </button>
       </SettingRow>
     </div>
@@ -512,15 +561,16 @@ function GeneralSettings() {
 
 type AppearanceTab = "theme" | "accent";
 
-const APPEARANCE_TABS: { id: AppearanceTab; label: string }[] = [
-  { id: "accent", label: "Interface Theme" },
-  { id: "theme", label: "Editor Theme" },
-];
-
 function AppearanceSettings() {
+  const { t } = useTranslation();
   const settings = useProjectStore.use.settings();
   const { updateSettings } = useProjectStore.use.actions();
   const [tab, setTab] = useState<AppearanceTab>("accent");
+
+  const APPEARANCE_TABS: { id: AppearanceTab; label: string }[] = [
+    { id: "accent", label: t("settings.appearance.tabs.interfaceTheme") },
+    { id: "theme", label: t("settings.appearance.tabs.editorTheme") },
+  ];
 
   const scalePct = Math.round(settings.uiScale * 100);
   const setScale = (next: number) => updateSettings({ uiScale: clampScale(next) });
@@ -534,23 +584,27 @@ function AppearanceSettings() {
     <div className="flex h-full min-h-0 flex-col">
       {/* Header — Skills-style underline tabs (no title), zoom on the right. */}
       <div className="flex h-[29px] shrink-0 items-center gap-1 border-b border-border-default px-2">
-        {APPEARANCE_TABS.map((t) => (
+        {APPEARANCE_TABS.map((tabDef) => (
           <UnderlineTab
-            key={t.id}
-            active={tab === t.id}
-            onClick={() => setTab(t.id)}
-            label={t.label}
+            key={tabDef.id}
+            active={tab === tabDef.id}
+            onClick={() => setTab(tabDef.id)}
+            label={tabDef.label}
           />
         ))}
 
         {/* Interface zoom — right-aligned control (like Skills' scope control). */}
         <div
           className="ml-auto flex items-center gap-1 pr-0.5"
-          title={zoomHints.length ? `Interface zoom (${zoomHints.join(" / ")})` : "Interface zoom"}
+          title={
+            zoomHints.length
+              ? t("settings.appearance.zoom.titleWithHints", { hints: zoomHints.join(" / ") })
+              : t("settings.appearance.zoom.title")
+          }
         >
           <button
             type="button"
-            aria-label="Zoom out"
+            aria-label={t("settings.appearance.zoom.zoomOut")}
             onClick={() => setScale(settings.uiScale - SCALE_STEP)}
             disabled={settings.uiScale <= MIN_SCALE}
             className={cn(
@@ -564,14 +618,14 @@ function AppearanceSettings() {
           <button
             type="button"
             onClick={() => setScale(DEFAULT_SCALE)}
-            title="Reset to 100%"
+            title={t("settings.appearance.zoom.resetTo100")}
             className="h-6 min-w-[44px] rounded-md px-1.5 text-[11px] font-medium tabular-nums text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors cursor-pointer"
           >
             {scalePct}%
           </button>
           <button
             type="button"
-            aria-label="Zoom in"
+            aria-label={t("settings.appearance.zoom.zoomIn")}
             onClick={() => setScale(settings.uiScale + SCALE_STEP)}
             disabled={settings.uiScale >= MAX_SCALE}
             className={cn(
@@ -619,6 +673,7 @@ function UnderlineTab({
 }
 
 function UpdatesSettings() {
+  const { t } = useTranslation();
   const settings = useProjectStore.use.settings();
   const { updateSettings } = useProjectStore.use.actions();
   const phase = useUpdaterStore.use.phase();
@@ -637,10 +692,16 @@ function UpdatesSettings() {
       // When an update exists, the background download starts and the store
       // reflects it below; only surface the "up to date" case here.
       if (!status.available) {
-        toast.success(`You're on the latest version (${status.currentVersion}).`);
+        toast.success(
+          t("settings.updates.checkForUpdates.upToDate", { version: status.currentVersion }),
+        );
       }
     } catch (e) {
-      toast.error(`Update check failed: ${e instanceof Error ? e.message : String(e)}`);
+      toast.error(
+        t("settings.updates.checkForUpdates.checkFailed", {
+          error: e instanceof Error ? e.message : String(e),
+        }),
+      );
     } finally {
       setChecking(false);
     }
@@ -662,11 +723,15 @@ function UpdatesSettings() {
         "bg-[var(--text-primary)] text-[var(--bg-base)] hover:opacity-90 transition-opacity",
       )}
     >
-      Restart to update
+      {t("settings.updates.checkForUpdates.restartToUpdate")}
     </button>
   ) : downloading ? (
     <span className="text-[11px] text-text-tertiary tabular-nums">
-      {progress != null ? `Downloading ${Math.round(progress * 100)}%` : "Preparing…"}
+      {progress != null
+        ? t("settings.updates.checkForUpdates.downloading", {
+            percent: Math.round(progress * 100),
+          })
+        : t("settings.updates.checkForUpdates.preparing")}
     </span>
   ) : (
     <button
@@ -679,16 +744,21 @@ function UpdatesSettings() {
         "disabled:opacity-50 disabled:cursor-not-allowed",
       )}
     >
-      {checking ? "Checking…" : "Check now"}
+      {checking
+        ? t("settings.updates.checkForUpdates.checking")
+        : t("settings.updates.checkForUpdates.checkNow")}
     </button>
   );
 
   return (
     <div className="space-y-6">
-      <SectionTitle title="Updates" subtitle="How İmece keeps itself up to date" />
+      <SectionTitle
+        title={t("settings.updates.sectionTitle")}
+        subtitle={t("settings.updates.sectionSubtitle")}
+      />
       <SettingRow
-        label="Automatic updates"
-        description="Check for a newer version in the background and download it automatically. İmece verifies the update before installing. Turn off to never check or download."
+        label={t("settings.updates.autoUpdate.label")}
+        description={t("settings.updates.autoUpdate.description")}
       >
         <Toggle
           checked={settings.autoUpdate}
@@ -696,11 +766,17 @@ function UpdatesSettings() {
         />
       </SettingRow>
       <SettingRow
-        label={ready ? `Update ready${version ? ` (${version})` : ""}` : "Check for updates"}
+        label={
+          ready
+            ? t("settings.updates.checkForUpdates.labelReady", {
+                version: version ? ` (${version})` : "",
+              })
+            : t("settings.updates.checkForUpdates.label")
+        }
         description={
           ready
-            ? "A new version has been downloaded and verified. Restart now, or it'll be applied automatically the next time you quit İmece."
-            : "Check now regardless of the automatic-update setting. Newer versions download in the background; you'll be prompted to restart when ready."
+            ? t("settings.updates.checkForUpdates.descriptionReady")
+            : t("settings.updates.checkForUpdates.description")
         }
       >
         {control}
@@ -710,20 +786,23 @@ function UpdatesSettings() {
 }
 
 function AboutSettings() {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
-      <SectionTitle title="About" subtitle="İmece" />
+      <SectionTitle
+        title={t("settings.nav.sections.about")}
+        subtitle={t("settings.about.sectionSubtitle")}
+      />
       <div className="rounded-lg border border-border-default bg-bg-secondary p-4 space-y-2">
         <div className="flex items-center gap-2">
           <AtlasIcon size={40} className="rounded-xl" />
           <div>
             <p className="text-sm font-semibold text-text-primary">İmece</p>
-            <p className="text-[10px] text-text-tertiary">v0.3.2 — Çok-ajanlı AI oturum takip</p>
+            <p className="text-[10px] text-text-tertiary">{t("settings.about.version")}</p>
           </div>
         </div>
         <p className="text-[11px] text-text-secondary leading-relaxed pt-2">
-          Atlas fork — telemetrisiz, Linux destekli, kişisel kullanım için özelleştirilmiş. Built
-          with Tauri, React, and Rust.
+          {t("settings.about.description")}
         </p>
       </div>
     </div>
