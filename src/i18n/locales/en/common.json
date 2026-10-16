@@ -237,6 +237,74 @@
       "removeFailed": "Couldn't remove {{name}}: {{error}}"
     }
   },
+  "skills": {
+    "tabs": {
+      "discover": "Discover",
+      "mySkills": "My Skills"
+    },
+    "scopeTab": {
+      "global": "global",
+      "project": "project"
+    },
+    "scopeDisabledTitle": "Open a project to use project scope",
+    "modal": {
+      "noDescription": "No description published.",
+      "copyAsMarkdown": "Copy as markdown",
+      "viewOnGithub": "View on GitHub"
+    },
+    "discover": {
+      "searchPlaceholder": "Search the skills registry…",
+      "resultsHeader": "Results",
+      "popularHeader": "Popular",
+      "sourceHeader": "Source",
+      "installsHeader": "Installs",
+      "trendHeader": "Trend",
+      "searching": "Searching…",
+      "noMatches": "No skills match your search.",
+      "searchPrompt": "Search the registry to discover skills.",
+      "added": "Added",
+      "install": "Install",
+      "trendLabel": "Installs over the last 6 months",
+      "installFailed": "Couldn't install {{name}}: {{error}}",
+      "installed": "Installed",
+      "loadingDetails": "Loading details…",
+      "noAdditionalDetails": "No additional details published.",
+      "couldNotLoadDetails": "Couldn’t load details — you can still install.",
+      "installsCount": "{{count}} installs"
+    },
+    "installed": {
+      "openProjectPrompt": "Open a project to manage workspace skills.",
+      "nameHeader": "Name",
+      "originHeader": "Origin",
+      "toolsHeader": "Tools",
+      "empty": "Nothing installed in this scope. Browse Discover to add skills.",
+      "toolsOn": "{{count}} on",
+      "toolsOff": "off",
+      "toolCountSingular": "{{count}} tool",
+      "toolCountPlural": "{{count}} tools",
+      "originLibrary": "library",
+      "originExternal": "external",
+      "deliverTo": "Deliver to",
+      "toolNotDetected": "Tool not detected in this scope",
+      "notApplicable": "n/a",
+      "on": "On",
+      "off": "Off",
+      "packNoSkills": "This pack ships no skills (commands / agents / rules only).",
+      "uninstallPack": "Uninstall pack",
+      "librarySkill": "Library skill",
+      "externalSkill": "External skill",
+      "openInEditor": "Open in editor",
+      "promoteToGlobal": "Promote to global",
+      "uninstall": "Uninstall",
+      "update": {
+        "checking": "Checking…",
+        "updating": "Updating…",
+        "upToDate": "Up to date",
+        "updateAvailable": "Update available",
+        "checkForUpdate": "Check for update"
+      }
+    }
+  },
   "providers": {
     "sort": {
       "nameAz": "Name (A–Z)",

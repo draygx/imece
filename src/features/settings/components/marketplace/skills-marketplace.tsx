@@ -14,6 +14,8 @@ import { Boxes, Check, Copy, Download, Loader2, Search, X } from "lucide-react";
 import { GithubIcon } from "@/components/github-icon";
 import { openUrl } from "@tauri-apps/plugin-opener";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import i18next from "@/i18n";
 
 import { cn } from "@/lib/utils";
 import { packs as packsApi } from "@/features/packs/lib/packs-api";
@@ -54,7 +56,7 @@ async function runInstall(hit: PackSearchHit, scope: Scope, projectPath: string 
     // Install just THIS skill (not the whole repo) — the registry is skill-level.
     await packsApi.installSkill(scope, hit.source, hit.skillId || hit.name, projectPath);
   } catch (e) {
-    toast.error(`Couldn't install ${hit.name}: ${String(e)}`);
+    toast.error(i18next.t("skills.discover.installFailed", { name: hit.name, error: String(e) }));
   } finally {
     installingIds.delete(hit.id);
     notifyInstalling();
@@ -116,6 +118,7 @@ export function SkillsMarketplace({
   scope: Scope;
   projectPath: string | null;
 }) {
+  const { t } = useTranslation();
   const effectiveProject = scope === "project" ? projectPath : null;
 
   const [query, setQuery] = useState("");
@@ -227,7 +230,7 @@ export function SkillsMarketplace({
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search the skills registry…"
+          placeholder={t("skills.discover.searchPlaceholder")}
           spellCheck={false}
           className="min-w-0 flex-1 bg-transparent text-[11px] text-text-primary outline-none placeholder:text-text-tertiary"
         />
@@ -255,20 +258,26 @@ export function SkillsMarketplace({
           {/* sticky header */}
           <div className="sticky top-0 z-10 flex items-center h-[28px] border-b border-border-default bg-bg-base px-3 text-[10px] uppercase tracking-wider text-text-tertiary">
             <span className={cn(COL.rank, "text-right pr-2")}>#</span>
-            <span className={COL.skill}>{query.trim() ? "Results" : "Popular"}</span>
-            <span className={COL.source}>Source</span>
-            <span className={cn(COL.installs, "text-right")}>Installs</span>
-            <span className={cn(COL.trend, "text-right")}>Trend</span>
+            <span className={COL.skill}>
+              {query.trim()
+                ? t("skills.discover.resultsHeader")
+                : t("skills.discover.popularHeader")}
+            </span>
+            <span className={COL.source}>{t("skills.discover.sourceHeader")}</span>
+            <span className={cn(COL.installs, "text-right")}>
+              {t("skills.discover.installsHeader")}
+            </span>
+            <span className={cn(COL.trend, "text-right")}>{t("skills.discover.trendHeader")}</span>
             <span className={COL.action} />
           </div>
 
           {rows.length === 0 ? (
             <div className="grid h-[180px] place-items-center text-[11px] text-text-tertiary">
               {loading
-                ? "Searching…"
+                ? t("skills.discover.searching")
                 : query.trim()
-                  ? "No skills match your search."
-                  : "Search the registry to discover skills."}
+                  ? t("skills.discover.noMatches")
+                  : t("skills.discover.searchPrompt")}
             </div>
           ) : (
             rows.map((hit, i) => {
@@ -317,7 +326,7 @@ export function SkillsMarketplace({
                       points={installTrend(hit.id, hit.installs).points}
                       width={64}
                       height={20}
-                      label="Installs over the last 6 months"
+                      label={t("skills.discover.trendLabel")}
                     />
                   </span>
                   <span className={cn(COL.action, "flex justify-end")}>
@@ -358,10 +367,11 @@ function InstallButton({
   installing: boolean;
   onClick: (e: React.MouseEvent) => void;
 }) {
+  const { t } = useTranslation();
   if (installed) {
     return (
       <span className="inline-flex items-center gap-1 text-[11px] text-text-tertiary">
-        <Check size={12} /> Added
+        <Check size={12} /> {t("skills.discover.added")}
       </span>
     );
   }
@@ -373,7 +383,7 @@ function InstallButton({
       className="inline-flex items-center gap-1.5 rounded-md border border-border-default px-2.5 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:bg-bg-hover hover:text-text-primary disabled:opacity-50"
     >
       {installing ? <Loader2 size={12} className="animate-spin" /> : <Download size={12} />}
-      Install
+      {t("skills.discover.install")}
     </button>
   );
 }
@@ -393,6 +403,7 @@ function SkillDetailModal({
   onInstall: () => void;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   // Seed synchronously from cache so a re-opened modal paints instantly.
   const [preview, setPreview] = useState<Pack | null>(
     hit ? (previewCache.get(hit.source) ?? null) : null,
@@ -464,22 +475,30 @@ function SkillDetailModal({
       open={!!hit}
       onClose={onClose}
       title={hit?.name ?? ""}
-      subtitle={hit ? `${hit.source} · ${hit.installs.toLocaleString()} installs` : undefined}
+      subtitle={
+        hit
+          ? `${hit.source} · ${t("skills.discover.installsCount", { count: hit.installs.toLocaleString() })}`
+          : undefined
+      }
       actions={
         <div className="flex flex-col gap-2">
           <ModalAction
             icon={installed ? Check : Download}
-            label={installed ? "Installed" : "Install"}
+            label={installed ? t("skills.discover.installed") : t("skills.discover.install")}
             variant="primary"
             busy={installing}
             disabled={installed}
             onClick={onInstall}
           />
-          <ModalAction icon={Copy} label="Copy as markdown" onClick={copyMarkdown} />
+          <ModalAction
+            icon={Copy}
+            label={t("skills.modal.copyAsMarkdown")}
+            onClick={copyMarkdown}
+          />
           {hit && (
             <ModalAction
               icon={GithubIcon}
-              label="View on GitHub"
+              label={t("skills.modal.viewOnGithub")}
               onClick={() => void openUrl(githubUrl)}
             />
           )}
@@ -488,7 +507,7 @@ function SkillDetailModal({
     >
       {loading ? (
         <div className="flex items-center gap-2 text-[12px] text-text-tertiary">
-          <Loader2 size={13} className="animate-spin" /> Loading details…
+          <Loader2 size={13} className="animate-spin" /> {t("skills.discover.loadingDetails")}
         </div>
       ) : preview ? (
         <>
@@ -515,12 +534,14 @@ function SkillDetailModal({
           {!preview.manifest?.description &&
             modalSkills.length === 0 &&
             otherCounts.length === 0 && (
-              <div className="text-[12px] text-text-tertiary">No additional details published.</div>
+              <div className="text-[12px] text-text-tertiary">
+                {t("skills.discover.noAdditionalDetails")}
+              </div>
             )}
         </>
       ) : (
         <div className="text-[12px] text-text-tertiary">
-          Couldn’t load details — you can still install.
+          {t("skills.discover.couldNotLoadDetails")}
         </div>
       )}
     </SkillModalShell>

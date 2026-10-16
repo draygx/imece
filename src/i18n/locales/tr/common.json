@@ -237,6 +237,74 @@
       "removeFailed": "{{name}} kaldırılamadı: {{error}}"
     }
   },
+  "skills": {
+    "tabs": {
+      "discover": "Keşfet",
+      "mySkills": "Yeteneklerim"
+    },
+    "scopeTab": {
+      "global": "genel",
+      "project": "proje"
+    },
+    "scopeDisabledTitle": "Proje kapsamını kullanmak için bir proje açın",
+    "modal": {
+      "noDescription": "Açıklama yayınlanmamış.",
+      "copyAsMarkdown": "Markdown olarak kopyala",
+      "viewOnGithub": "GitHub'da görüntüle"
+    },
+    "discover": {
+      "searchPlaceholder": "Yetenek kayıt defterinde ara…",
+      "resultsHeader": "Sonuçlar",
+      "popularHeader": "Popüler",
+      "sourceHeader": "Kaynak",
+      "installsHeader": "Kurulum",
+      "trendHeader": "Eğilim",
+      "searching": "Aranıyor…",
+      "noMatches": "Aramanızla eşleşen yetenek yok.",
+      "searchPrompt": "Yetenek keşfetmek için kayıt defterinde arama yapın.",
+      "added": "Eklendi",
+      "install": "Kur",
+      "trendLabel": "Son 6 aydaki kurulumlar",
+      "installFailed": "{{name}} kurulamadı: {{error}}",
+      "installed": "Kuruldu",
+      "loadingDetails": "Ayrıntılar yükleniyor…",
+      "noAdditionalDetails": "Ek ayrıntı yayınlanmamış.",
+      "couldNotLoadDetails": "Ayrıntılar yüklenemedi — yine de kurabilirsiniz.",
+      "installsCount": "{{count}} kurulum"
+    },
+    "installed": {
+      "openProjectPrompt": "Çalışma alanı yeteneklerini yönetmek için bir proje açın.",
+      "nameHeader": "Ad",
+      "originHeader": "Köken",
+      "toolsHeader": "Araçlar",
+      "empty": "Bu kapsamda hiçbir şey kurulu değil. Yetenek eklemek için Keşfet'e göz atın.",
+      "toolsOn": "{{count}} açık",
+      "toolsOff": "kapalı",
+      "toolCountSingular": "{{count}} araç",
+      "toolCountPlural": "{{count}} araç",
+      "originLibrary": "kitaplık",
+      "originExternal": "harici",
+      "deliverTo": "Şuna teslim et",
+      "toolNotDetected": "Bu kapsamda araç algılanmadı",
+      "notApplicable": "yok",
+      "on": "Açık",
+      "off": "Kapalı",
+      "packNoSkills": "Bu paket hiçbir yetenek içermiyor (sadece komut / ajan / kural).",
+      "uninstallPack": "Paketi kaldır",
+      "librarySkill": "Kitaplık yeteneği",
+      "externalSkill": "Harici yetenek",
+      "openInEditor": "Düzenleyicide aç",
+      "promoteToGlobal": "Genele yükselt",
+      "uninstall": "Kaldır",
+      "update": {
+        "checking": "Kontrol ediliyor…",
+        "updating": "Güncelleniyor…",
+        "upToDate": "Güncel",
+        "updateAvailable": "Güncelleme mevcut",
+        "checkForUpdate": "Güncelleme kontrol et"
+      }
+    }
+  },
   "providers": {
     "sort": {
       "nameAz": "İsim (A–Z)",
