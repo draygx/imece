@@ -236,5 +236,51 @@
       "removed": "{{name}} kaldırıldı",
       "removeFailed": "{{name}} kaldırılamadı: {{error}}"
     }
+  },
+  "providers": {
+    "sort": {
+      "nameAz": "İsim (A–Z)",
+      "category": "Kategori",
+      "setFirst": "Önce ayarlananlar"
+    },
+    "searchPlaceholder": "Sağlayıcı ara…",
+    "filtersAndSort": "Filtreler ve sıralama",
+    "setOnly": "Sadece ayarlananlar",
+    "sortBy": "Sıralama ölçütü",
+    "allCategory": "Tümü",
+    "table": {
+      "provider": "Sağlayıcı",
+      "envVar": "Ortam Değişkeni",
+      "category": "Kategori",
+      "key": "Anahtar",
+      "source": "Kaynak"
+    },
+    "noMatches": "Eşleşen sağlayıcı yok.",
+    "notSet": "Ayarlanmadı",
+    "environmentBadge": "ortam",
+    "environmentBadgeTitle": "Shell profilinizin dışında ayarlanmış — İmece bunu okuyabilir ama buradan düzenleyemez.",
+    "readOnlyNotice": "<code>{{envVar}}</code> shell profilinizin dışında ayarlanmış — İmece bunu ortamda buldu ama okuduğu herhangi bir dosyada bulamadı, bu yüzden burada düzenleyemez veya kaldıramaz. Nerede dışa aktarıldıysa oradan değiştirin (bir giriş betiği, launchd veya bir sarmalayıcı).",
+    "hide": "Gizle",
+    "reveal": "Göster",
+    "copy": "Kopyala",
+    "replaceKey": "Anahtarı değiştir",
+    "apiKey": "API anahtarı",
+    "getKey": "Anahtar al",
+    "pasteApiKey": "API anahtarınızı yapıştırın",
+    "update": "Güncelle",
+    "save": "Kaydet",
+    "remove": "Kaldır",
+    "rewrites": "Üzerine yazar",
+    "appends": "Ekler",
+    "inFile": " ({{file}} içinde)",
+    "toasts": {
+      "keyWritten": "{{provider}} anahtarı {{file}} içine yazıldı",
+      "revealAction": "Göster",
+      "revealFailed": "Finder'da gösterilemedi: {{error}}",
+      "saveFailed": "Anahtar kaydedilemedi: {{error}}",
+      "removed": "{{envVar}} shell profilinizden kaldırıldı",
+      "removeFailed": "Anahtar kaldırılamadı: {{error}}",
+      "readFailed": "Bu değer okunamadı."
+    }
   }
 }

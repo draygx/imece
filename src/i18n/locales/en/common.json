@@ -236,5 +236,51 @@
       "removed": "{{name}} removed",
       "removeFailed": "Couldn't remove {{name}}: {{error}}"
     }
+  },
+  "providers": {
+    "sort": {
+      "nameAz": "Name (A–Z)",
+      "category": "Category",
+      "setFirst": "Set first"
+    },
+    "searchPlaceholder": "Search providers…",
+    "filtersAndSort": "Filters & sort",
+    "setOnly": "Set only",
+    "sortBy": "Sort by",
+    "allCategory": "All",
+    "table": {
+      "provider": "Provider",
+      "envVar": "Env Var",
+      "category": "Category",
+      "key": "Key",
+      "source": "Source"
+    },
+    "noMatches": "No providers match.",
+    "notSet": "Not set",
+    "environmentBadge": "environment",
+    "environmentBadgeTitle": "Set outside your shell profile — İmece can read it but not edit it.",
+    "readOnlyNotice": "<code>{{envVar}}</code> is set outside your shell profile — İmece found it in the environment but not in any file it reads, so it can't edit or remove it here. Change it wherever it's exported (a login script, launchd, or a wrapper).",
+    "hide": "Hide",
+    "reveal": "Reveal",
+    "copy": "Copy",
+    "replaceKey": "Replace key",
+    "apiKey": "API key",
+    "getKey": "Get key",
+    "pasteApiKey": "Paste your API key",
+    "update": "Update",
+    "save": "Save",
+    "remove": "Remove",
+    "rewrites": "Rewrites",
+    "appends": "Appends",
+    "inFile": " in {{file}}",
+    "toasts": {
+      "keyWritten": "{{provider}} key written to {{file}}",
+      "revealAction": "Reveal",
+      "revealFailed": "Couldn't reveal in Finder: {{error}}",
+      "saveFailed": "Couldn't save key: {{error}}",
+      "removed": "Removed {{envVar}} from your shell profile",
+      "removeFailed": "Couldn't remove key: {{error}}",
+      "readFailed": "Couldn't read that value."
+    }
   }
 }
