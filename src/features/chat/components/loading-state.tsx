@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 /**
@@ -90,7 +91,7 @@ function useElapsed(stallAfterMs: number) {
 }
 
 export const LoadingState = memo(function LoadingState({
-  label = "Thinking",
+  label,
   variant = "dots",
   className,
   stalledContent,
@@ -105,6 +106,8 @@ export const LoadingState = memo(function LoadingState({
   stalledContent?: ReactNode;
   stallAfterMs?: number;
 }) {
+  const { t } = useTranslation();
+  const resolvedLabel = label ?? t("chat.thinking");
   const { ref: elapsed, stalled } = useElapsed(stallAfterMs);
   const { delays, dur, round } = PATTERNS[variant] ?? PATTERNS.dots;
 
@@ -112,7 +115,7 @@ export const LoadingState = memo(function LoadingState({
     <div
       role="status"
       aria-live="polite"
-      aria-label={label}
+      aria-label={resolvedLabel}
       className={cn("flex w-fit items-center gap-1.5", className)}
     >
       <span aria-hidden className="grid grid-cols-[repeat(3,2.5px)] gap-[1px]">
@@ -136,7 +139,9 @@ export const LoadingState = memo(function LoadingState({
           />
         ))}
       </span>
-      <span className="atlas-thinking-shimmer text-[11px] leading-[16px] font-medium">{label}</span>
+      <span className="atlas-thinking-shimmer text-[11px] leading-[16px] font-medium">
+        {resolvedLabel}
+      </span>
       <span
         ref={elapsed}
         className="font-mono text-[10px] tabular-nums text-[var(--text-tertiary)]"

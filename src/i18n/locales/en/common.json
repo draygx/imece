@@ -380,5 +380,52 @@
       "removeFailed": "Couldn't remove key: {{error}}",
       "readFailed": "Couldn't read that value."
     }
+  },
+  "chat": {
+    "thinking": "Thinking",
+    "header": {
+      "newSession": "New session",
+      "switchSession": "Switch session",
+      "findInChat": "Find in chat",
+      "findInChatWithHint": "Find in chat ({{hint}})",
+      "more": "More",
+      "filterMessages": "Filter messages",
+      "roleFilter": {
+        "all": "all",
+        "user": "user",
+        "assistant": "assistant"
+      },
+      "bashCalls": "Bash calls",
+      "plans": "Plans",
+      "branchFromHere": "Branch from here"
+    },
+    "newChatFallbackTitle": "New chat",
+    "pinNoLongerInThread": "That message is no longer in this thread",
+    "couldNotGatherDiagnostics": "Could not gather diagnostics: {{error}}",
+    "diagnosticsCopied": "Diagnostics copied",
+    "couldNotCopyDiagnostics": "Could not copy diagnostics to the clipboard",
+    "agentCouldNotRestart": "The agent could not be restarted. Check its runtime (Node/npx) and try again.",
+    "agentSendError": "agent send error: {{error}}",
+    "startingAgent": "Starting {{agent}}",
+    "filesChanged": "{{count}} files changed",
+    "changesFallbackTitle": "Changes",
+    "disconnectedWithError": "The agent exited while starting ({{error}}). Your message is back in the queue — restart to try again.",
+    "disconnectedGeneric": "The agent process exited. Your conversation is safe — restart to continue where you left off.",
+    "restarting": "Restarting…",
+    "restartAgent": "Restart agent",
+    "jumpToLatest": "Jump to latest",
+    "newMessagesCount": "{{count}} new messages",
+    "scrollToBottom": "Scroll to bottom",
+    "inputPlaceholder": "Ask İmece what to do …",
+    "welcome": {
+      "title": "İmece",
+      "subtitle": "Code with Agents. Tools, plans, and edits all live.",
+      "suggestions": {
+        "analyzeCodebase": "Analyze this codebase",
+        "createFeature": "Create a new feature",
+        "reviewChanges": "Review recent changes",
+        "writeTests": "Write tests for..."
+      }
+    }
   }
 }
