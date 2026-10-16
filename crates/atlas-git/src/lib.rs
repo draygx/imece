@@ -20,5 +20,5 @@ pub mod patch;
 pub mod progress;
 pub mod status;
 
-pub use error::{GitErrorCode, GitErrorPayload};
+pub use error::{reject_flag_like, GitErrorCode, GitErrorPayload};
 pub use exec::{GitCommand, GitOutput, OpSink, Stream};

@@ -19,7 +19,11 @@ pub struct FileEntry {
 /// on tokio's blocking worker pool and leaves the main thread responsive.
 
 #[tauri::command]
-pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
+pub async fn read_directory(
+    path: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<Vec<FileEntry>, String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || read_directory_sync(&path))
         .await
         .map_err(|e| e.to_string())?
@@ -71,7 +75,11 @@ fn read_directory_sync(path: &str) -> Result<Vec<FileEntry>, String> {
 }
 
 #[tauri::command]
-pub async fn read_file_content(path: String) -> Result<String, String> {
+pub async fn read_file_content(
+    path: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<String, String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || {
         fs::read_to_string(&path).map_err(|e| format!("Failed to read {path}: {e}"))
     })
@@ -87,7 +95,19 @@ pub async fn read_file_content(path: String) -> Result<String, String> {
 /// with blob/asset URLs in WKWebView. Reading bytes through our own command
 /// works for every path. The frontend decodes via `atob` → `Uint8Array`.
 #[tauri::command]
-pub async fn read_file_base64(path: String) -> Result<String, String> {
+pub async fn read_file_base64(
+    path: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<String, String> {
+    check_fs_path_allowed(&path, &app_state)?;
+    read_file_base64_impl(path).await
+}
+
+/// The actual read-and-encode logic, split out from the `#[tauri::command]`
+/// wrapper above so it's callable from a unit test without a live
+/// `tauri::State` — the wrapper's job (path containment) is tested
+/// separately against `check_fs_path_allowed`/`asset_grant_allowed`.
+async fn read_file_base64_impl(path: String) -> Result<String, String> {
     tokio::task::spawn_blocking(move || {
         use base64::Engine;
         // Sanity ceiling, not a policy: this feeds PDFs and pasted images, so
@@ -294,6 +314,73 @@ fn asset_grant_allowed(
     })
 }
 
+/// Confine a raw frontend-supplied path to the same boundary `asset_allow_dir`
+/// already enforces for the asset protocol: a currently-open workspace
+/// (recursively, external volumes included), or a VISIBLE directory under
+/// `$HOME`. Every read/write/delete/rename/copy command below used to take
+/// `path` straight from the IPC call with no check at all — `invoke`-ing one
+/// directly on e.g. `~/.ssh/id_rsa` or `~/.bashrc` worked. This closes that:
+/// system paths, other users' homes, and hidden dotdirs under `$HOME` are
+/// refused, matching the policy the media viewer already uses.
+///
+/// `path` need not exist yet (the create/write/rename-*to* case): we
+/// canonicalize the deepest existing ancestor (resolving symlinks and `..`
+/// there) and re-append the remaining components, so the boundary check
+/// still applies to where the write will actually land.
+fn check_fs_path_allowed(
+    path: &str,
+    app_state: &crate::AppStateHandle,
+) -> Result<std::path::PathBuf, String> {
+    let workspace_roots: Vec<std::path::PathBuf> = {
+        let state = app_state.lock();
+        state
+            .workspaces
+            .iter()
+            .map(|w| std::path::PathBuf::from(&w.path))
+            .collect()
+    };
+    check_fs_path_allowed_with(path, &workspace_roots, dirs::home_dir().as_deref())
+}
+
+/// Pure core of [`check_fs_path_allowed`], taking `workspace_roots`/`home`
+/// directly instead of reading them off `AppState` — testable without a live
+/// Tauri app, mirroring the `asset_allow_dir`/`asset_grant_allowed` split
+/// above.
+fn check_fs_path_allowed_with(
+    path: &str,
+    workspace_roots: &[std::path::PathBuf],
+    home: Option<&std::path::Path>,
+) -> Result<std::path::PathBuf, String> {
+    let requested = Path::new(path);
+    if !requested.is_absolute() {
+        return Err(format!("{path} is not an absolute path"));
+    }
+
+    let mut existing = requested;
+    let mut tail: Vec<std::ffi::OsString> = Vec::new();
+    while !existing.exists() {
+        let Some(name) = existing.file_name() else {
+            break;
+        };
+        tail.push(name.to_os_string());
+        let Some(parent) = existing.parent() else {
+            break;
+        };
+        existing = parent;
+    }
+    let mut canonical = existing
+        .canonicalize()
+        .map_err(|e| format!("cannot resolve {path}: {e}"))?;
+    for component in tail.into_iter().rev() {
+        canonical.push(component);
+    }
+
+    if !asset_grant_allowed(&canonical, workspace_roots, home) {
+        return Err(format!("{path} is outside what this app may read or write"));
+    }
+    Ok(canonical)
+}
+
 /// File modification time as unix milliseconds (0 if the file is missing).
 /// Used as a cache-buster for the media viewer: the Tauri asset URL is keyed by
 /// path, so the webview would otherwise serve a stale image after a file at the
@@ -313,7 +400,12 @@ pub async fn file_mtime_ms(path: String) -> Result<i64, String> {
 }
 
 #[tauri::command]
-pub async fn write_file_content(path: String, content: String) -> Result<(), String> {
+pub async fn write_file_content(
+    path: String,
+    content: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<(), String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || {
         fs::write(&path, &content).map_err(|e| format!("Failed to write {path}: {e}"))
     })
@@ -325,7 +417,12 @@ pub async fn write_file_content(path: String, content: String) -> Result<(), Str
 /// — used to save a PDF with annotations baked in (pdf-lib produces new bytes
 /// the frontend hands back as base64).
 #[tauri::command]
-pub async fn write_file_base64(path: String, contents: String) -> Result<(), String> {
+pub async fn write_file_base64(
+    path: String,
+    contents: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<(), String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || {
         use base64::Engine;
         let bytes = base64::engine::general_purpose::STANDARD
@@ -344,7 +441,11 @@ pub async fn write_file_base64(path: String, contents: String) -> Result<(), Str
  */
 
 #[tauri::command]
-pub async fn fs_create_file(path: String) -> Result<(), String> {
+pub async fn fs_create_file(
+    path: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<(), String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || {
         let p = Path::new(&path);
         if p.exists() {
@@ -360,7 +461,11 @@ pub async fn fs_create_file(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn fs_create_dir(path: String) -> Result<(), String> {
+pub async fn fs_create_dir(
+    path: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<(), String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || {
         let p = Path::new(&path);
         if p.exists() {
@@ -373,7 +478,13 @@ pub async fn fs_create_dir(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn fs_rename(from: String, to: String) -> Result<(), String> {
+pub async fn fs_rename(
+    from: String,
+    to: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<(), String> {
+    check_fs_path_allowed(&from, &app_state)?;
+    check_fs_path_allowed(&to, &app_state)?;
     tokio::task::spawn_blocking(move || {
         let dst = Path::new(&to);
         if dst.exists() {
@@ -386,7 +497,11 @@ pub async fn fs_rename(from: String, to: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn fs_delete(path: String) -> Result<(), String> {
+pub async fn fs_delete(
+    path: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<(), String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || {
         let p = Path::new(&path);
         if !p.exists() {
@@ -404,7 +519,13 @@ pub async fn fs_delete(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn fs_copy(from: String, to: String) -> Result<(), String> {
+pub async fn fs_copy(
+    from: String,
+    to: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<(), String> {
+    check_fs_path_allowed(&from, &app_state)?;
+    check_fs_path_allowed(&to, &app_state)?;
     tokio::task::spawn_blocking(move || {
         let src = Path::new(&from);
         let dst = Path::new(&to);
@@ -446,7 +567,11 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<(), String> {
 /// first variant that doesn't already exist in the same directory.
 /// Returns the new path string.
 #[tauri::command]
-pub async fn fs_duplicate(path: String) -> Result<String, String> {
+pub async fn fs_duplicate(
+    path: String,
+    app_state: tauri::State<'_, crate::AppStateHandle>,
+) -> Result<String, String> {
+    check_fs_path_allowed(&path, &app_state)?;
     tokio::task::spawn_blocking(move || {
         let src = Path::new(&path);
         if !src.exists() {
@@ -737,7 +862,7 @@ fn atlas_pattern_present(contents: &str) -> bool {
 
 #[cfg(test)]
 mod inline_cap_tests {
-    use super::read_file_base64;
+    use super::read_file_base64_impl;
 
     #[tokio::test]
     async fn the_inline_ceiling_holds() {
@@ -746,13 +871,13 @@ mod inline_cap_tests {
 
         let small = dir.join("small.pdf");
         std::fs::write(&small, b"pdf bytes").unwrap();
-        assert!(read_file_base64(small.to_string_lossy().into()).await.is_ok());
+        assert!(read_file_base64_impl(small.to_string_lossy().into()).await.is_ok());
 
         // 51MB: a real document ceiling, not a policy about content.
         let big = dir.join("big.bin");
         let f = std::fs::File::create(&big).unwrap();
         f.set_len(51 * 1024 * 1024).unwrap();
-        let err = read_file_base64(big.to_string_lossy().into()).await.unwrap_err();
+        let err = read_file_base64_impl(big.to_string_lossy().into()).await.unwrap_err();
         assert!(err.contains("too large"), "{err}");
         let _ = std::fs::remove_dir_all(&dir);
     }
@@ -785,6 +910,59 @@ mod asset_grant_tests {
         ] {
             assert!(!asset_grant_allowed(Path::new(bad), &ws, Some(home)), "{bad}");
         }
+    }
+}
+
+#[cfg(test)]
+mod fs_path_allowed_tests {
+    use super::check_fs_path_allowed_with;
+
+    /// Confirms the fix for the unscoped-fs-IPC finding: a workspace-rooted
+    /// path (existing or not-yet-created) is allowed, and a path outside
+    /// every workspace and outside any visible `$HOME` subdir — the
+    /// `~/.ssh/id_rsa` / `~/.bashrc` / `/etc/...` shape from the audit — is
+    /// refused, even when most of it doesn't exist on disk yet.
+    #[test]
+    fn workspace_and_home_paths_are_allowed_outside_ones_are_not() {
+        let tmp = std::env::temp_dir().join(format!("atlas-fs-scope-test-{}", uuid::Uuid::new_v4()));
+        let workspace = tmp.join("project");
+        let outside_home = tmp.join("home");
+        std::fs::create_dir_all(&workspace).unwrap();
+        std::fs::create_dir_all(&outside_home).unwrap();
+        let roots = vec![workspace.clone()];
+
+        // Existing file under the workspace: allowed.
+        let existing = workspace.join("src").join("main.rs");
+        std::fs::create_dir_all(existing.parent().unwrap()).unwrap();
+        std::fs::write(&existing, "fn main() {}").unwrap();
+        assert!(check_fs_path_allowed_with(&existing.to_string_lossy(), &roots, None).is_ok());
+
+        // Not-yet-created file under the workspace (the write/create case):
+        // still allowed — the deepest existing ancestor is the workspace root.
+        let new_file = workspace.join("new").join("deep").join("file.txt");
+        assert!(check_fs_path_allowed_with(&new_file.to_string_lossy(), &roots, None).is_ok());
+
+        // Outside the workspace and outside the (fake) home: refused, even
+        // though the path itself doesn't exist yet.
+        let outside_new = outside_home.join(".ssh").join("id_rsa");
+        let err =
+            check_fs_path_allowed_with(&outside_new.to_string_lossy(), &roots, Some(&outside_home))
+                .unwrap_err();
+        assert!(err.contains("outside what this app may"), "{err}");
+
+        // A visible dir under the fake home is allowed even though it's a
+        // different tree from the workspace.
+        let home_doc = outside_home.join("Documents").join("notes.md");
+        std::fs::create_dir_all(home_doc.parent().unwrap()).unwrap();
+        assert!(
+            check_fs_path_allowed_with(&home_doc.to_string_lossy(), &roots, Some(&outside_home))
+                .is_ok()
+        );
+
+        // A relative path is refused outright regardless of roots.
+        assert!(check_fs_path_allowed_with("relative/path", &roots, None).is_err());
+
+        let _ = std::fs::remove_dir_all(&tmp);
     }
 }
 

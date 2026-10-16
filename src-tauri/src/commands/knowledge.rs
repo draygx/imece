@@ -439,7 +439,13 @@ pub async fn load_editor_state(project_path: String) -> Result<String, String> {
 /// RFC1918-private, or unique-local. Hostnames are resolved and every
 /// address is held to the same rule — a DNS name pointing at 127.0.0.1 is
 /// exactly the bypass this exists to stop.
-async fn assert_public_http_url(url: &str) -> Result<(), String> {
+///
+/// Returns the validated address(es) so the caller can pin the actual
+/// connection to them (see `fetch_readable`) — resolving here and then
+/// letting the HTTP client resolve the same hostname again on connect would
+/// leave a DNS-rebinding window: a short-TTL answer could be public for this
+/// check and private/loopback moments later for the real connection.
+async fn assert_public_http_url(url: &str) -> Result<Vec<std::net::IpAddr>, String> {
     let parsed = reqwest::Url::parse(url).map_err(|e| format!("Bad URL: {e}"))?;
     if !matches!(parsed.scheme(), "http" | "https") {
         return Err("only http(s) URLs can be fetched".into());
@@ -462,12 +468,31 @@ async fn assert_public_http_url(url: &str) -> Result<(), String> {
     if addrs.is_empty() {
         return Err("host resolved to no addresses".into());
     }
-    for ip in addrs {
-        if !ip_is_public(&ip) {
+    for ip in &addrs {
+        if !ip_is_public(ip) {
             return Err("that address is not reachable from here".into());
         }
     }
-    Ok(())
+    Ok(addrs)
+}
+
+/// Build a client whose DNS resolution for `host` is pinned to exactly the
+/// addresses already validated by `assert_public_http_url` — closing the
+/// re-resolution gap described there. One client per hop, since
+/// `resolve_to_addrs` is baked in at build time and each hop validates a
+/// (possibly different) host.
+fn pinned_client(host: &str, port: u16, addrs: &[std::net::IpAddr]) -> Result<reqwest::Client, String> {
+    let socket_addrs: Vec<std::net::SocketAddr> =
+        addrs.iter().map(|ip| std::net::SocketAddr::new(*ip, port)).collect();
+    reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(15))
+        .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
+        // No automatic redirects: each hop is re-checked, or a public host
+        // could 302 straight into 169.254.169.254.
+        .redirect(reqwest::redirect::Policy::none())
+        .resolve_to_addrs(host, &socket_addrs)
+        .build()
+        .map_err(|e| format!("could not build HTTP client: {e}"))
 }
 
 fn ip_is_public(ip: &std::net::IpAddr) -> bool {
@@ -496,19 +521,15 @@ fn ip_is_public(ip: &std::net::IpAddr) -> bool {
 
 #[tauri::command]
 pub async fn fetch_readable(url: String) -> Result<ReadableContent, String> {
-    assert_public_http_url(&url).await?;
-    let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(15))
-        .user_agent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36")
-        // No automatic redirects: each hop is re-checked, or a public host
-        // could 302 straight into 169.254.169.254.
-        .redirect(reqwest::redirect::Policy::none())
-        .build()
-        .unwrap_or_default();
-
     let mut current = url.clone();
     let mut response = None;
     for _ in 0..10 {
+        let addrs = assert_public_http_url(&current).await?;
+        let parsed = reqwest::Url::parse(&current).map_err(|e| format!("Bad URL: {e}"))?;
+        let host = parsed.host_str().ok_or("URL has no host")?.to_string();
+        let port = parsed.port_or_known_default().unwrap_or(443);
+        let client = pinned_client(&host, port, &addrs)?;
+
         let resp = client
             .get(&current)
             .send()
@@ -527,7 +548,7 @@ pub async fn fetch_readable(url: String) -> Result<ReadableContent, String> {
                 .and_then(|b| b.join(loc))
                 .map_err(|e| format!("Bad redirect: {e}"))?
                 .to_string();
-            assert_public_http_url(&next).await?;
+            // Re-validated (and re-pinned) at the top of the next iteration.
             current = next;
             continue;
         }
@@ -693,7 +714,7 @@ mod kb_rel_tests {
 
 #[cfg(test)]
 mod ssrf_tests {
-    use super::ip_is_public;
+    use super::{assert_public_http_url, ip_is_public, pinned_client};
     use std::net::IpAddr;
 
     #[test]
@@ -717,6 +738,26 @@ mod ssrf_tests {
         for a in ["93.184.216.34", "140.82.112.3", "2606:2800:220:1:248:1893:25c8:1946"] {
             assert!(ip_is_public(&a.parse::<IpAddr>().unwrap()), "{a} should pass");
         }
+    }
+
+    /// DNS-rebinding fix regression: for an IP-literal URL there is no
+    /// hostname to re-resolve, so the validated address and the connect
+    /// address are trivially the same one — this pins down that
+    /// `assert_public_http_url` hands back the exact address `pinned_client`
+    /// needs, and that building a client pinned to it succeeds.
+    #[tokio::test]
+    async fn validated_address_is_what_gets_pinned() {
+        let addrs = assert_public_http_url("https://93.184.216.34/").await.unwrap();
+        assert_eq!(addrs, vec!["93.184.216.34".parse::<IpAddr>().unwrap()]);
+        assert!(pinned_client("93.184.216.34", 443, &addrs).is_ok());
+    }
+
+    /// A hostname that resolves to a private address is still refused before
+    /// any client is ever built — the rebinding fix pins the *validated*
+    /// address, it doesn't relax this first check.
+    #[tokio::test]
+    async fn loopback_literal_is_still_refused() {
+        assert!(assert_public_http_url("http://127.0.0.1/").await.is_err());
     }
 }
 

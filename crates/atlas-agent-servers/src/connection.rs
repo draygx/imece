@@ -1092,7 +1092,7 @@ impl AgentConnection for AcpConnection {
             .find(|m| m.id() == &method)
             .is_some_and(|m| {
                 matches!(m, acp::AuthMethod::Terminal(_))
-                    || meta_terminal_auth_command(&self.id, &method, m).is_some()
+                    || meta_terminal_auth_command(&self.id, &method, m, &self.command).is_some()
             });
         async move {
             with_request_deadline(&agent_id, "authenticate", &debug_log, async {
@@ -1704,7 +1704,7 @@ fn terminal_auth_command_for(
             declared,
         ));
     }
-    meta_terminal_auth_command(agent_id, method_id, method)
+    meta_terminal_auth_command(agent_id, method_id, method, own_command)
 }
 
 /// Scopes a run to one agent+method, so two agents signing in at once cannot be
@@ -1720,6 +1720,7 @@ fn meta_terminal_auth_command(
     agent_id: &AgentId,
     method_id: &acp::AuthMethodId,
     method: &acp::AuthMethod,
+    own_command: &AgentServerCommand,
 ) -> Option<TerminalAuthCommand> {
     #[derive(serde::Deserialize)]
     struct MetaTerminalAuth {
@@ -1740,6 +1741,27 @@ fn meta_terminal_auth_command(
     let terminal_auth =
         serde_json::from_value::<MetaTerminalAuth>(meta.get("terminal-auth")?.clone()).ok()?;
 
+    // Unlike the typed `Terminal` shape above (which always re-runs
+    // `own_command.path` — the binary Atlas already launched), this legacy
+    // `_meta` shape lets the agent name ANY program, which
+    // `agents_run_auth_method` then spawns on the host, outside the
+    // native-agent sandbox, with whatever env the same `_meta` declared. A
+    // compromised/malicious agent doing this isn't gaining privilege it
+    // didn't already have as a subprocess running with the user's own
+    // rights — but it is a sandbox-bypass primitive, so only accept the
+    // agent's own binary or a sibling file next to it (a bundled
+    // `claude-login` beside `claude`), never an arbitrary path.
+    if !terminal_auth_command_is_trusted(&terminal_auth.command, &own_command.path) {
+        tracing::warn!(
+            target: "atlas::agent_servers",
+            "refusing terminal-auth command {:?} for {}: not {}'s own binary or a sibling in its directory",
+            terminal_auth.command,
+            agent_id.as_str(),
+            own_command.path.display(),
+        );
+        return None;
+    }
+
     // The `_meta` spec names its own environment and nothing is layered under
     // it, so what it declared IS what the login runs with.
     let mut env: Vec<(String, String)> = terminal_auth.env.into_iter().collect();
@@ -1752,6 +1774,24 @@ fn meta_terminal_auth_command(
         env.clone(),
         env,
     ))
+}
+
+/// Is `command` (the executable `_meta["terminal-auth"]` named) one we trust
+/// to spawn unsandboxed? Only the agent's own binary, or another file in the
+/// exact same directory — never a bare name (which `$PATH` would resolve
+/// unpredictably) and never a path elsewhere on the system.
+fn terminal_auth_command_is_trusted(command: &str, own_command_path: &std::path::Path) -> bool {
+    let declared = std::path::Path::new(command);
+    if !declared.is_absolute() {
+        return false;
+    }
+    if declared == own_command_path {
+        return true;
+    }
+    matches!(
+        (declared.parent(), own_command_path.parent()),
+        (Some(a), Some(b)) if a == b
+    )
 }
 
 #[cfg(test)]
@@ -1784,6 +1824,9 @@ mod terminal_auth_tests {
             &AgentId::new("claude-code"),
             &acp::AuthMethodId::new("claude-login"),
             &m,
+            // "/usr/local/bin/node" is a sibling of the agent's own binary
+            // below — the shape this check exists to allow.
+            &own_command(),
         )
         .expect("a runnable command");
         assert_eq!(cmd.command, "/usr/local/bin/node");
@@ -1799,12 +1842,15 @@ mod terminal_auth_tests {
     #[test]
     fn a_bare_command_needs_no_args_or_env() {
         let m = method(serde_json::json!({
-            "terminal-auth": { "label": "Log in", "command": "cursor-agent" }
+            // Must be absolute — a bare name would be resolved via `$PATH`,
+            // which `terminal_auth_command_is_trusted` refuses to vouch for.
+            "terminal-auth": { "label": "Log in", "command": "/usr/local/bin/cursor-agent" }
         }));
         let cmd = meta_terminal_auth_command(
             &AgentId::new("cursor"),
             &acp::AuthMethodId::new("claude-login"),
             &m,
+            &own_command(),
         )
         .expect("a runnable command");
         assert!(cmd.args.is_empty());
@@ -1967,10 +2013,16 @@ mod terminal_auth_tests {
                 "env": { "NO_COLOR": "1" },
             }
         }));
+        let own = AgentServerCommand {
+            path: PathBuf::from("/bin/some-agent"),
+            args: vec![],
+            env: None,
+        };
         let cmd = meta_terminal_auth_command(
             &AgentId::new("a"),
             &acp::AuthMethodId::new("claude-login"),
             &m,
+            &own,
         )
         .expect("a command");
 
@@ -1996,8 +2048,33 @@ mod terminal_auth_tests {
                 &AgentId::new("a"),
                 &acp::AuthMethodId::new("claude-login"),
                 &method(meta),
+                &own_command(),
             )
             .is_none());
+        }
+    }
+
+    /// The sandbox-bypass fix: a `_meta["terminal-auth"]` command is only
+    /// trusted when it's the agent's own binary or another file in the exact
+    /// same directory — never a bare name (`$PATH`-resolved) and never a
+    /// path elsewhere on the system, however legitimate-looking.
+    #[test]
+    fn meta_command_must_be_the_agents_own_binary_or_a_sibling() {
+        let own = PathBuf::from("/opt/agents/claude/claude");
+
+        for ok in ["/opt/agents/claude/claude", "/opt/agents/claude/claude-login"] {
+            assert!(
+                terminal_auth_command_is_trusted(ok, &own),
+                "{ok} should be trusted (own binary or sibling)"
+            );
+        }
+        for bad in [
+            "claude-login",             // bare name — resolved via $PATH
+            "/usr/bin/claude-login",    // different directory entirely
+            "/opt/agents/other/claude", // a different agent's directory
+            "/bin/sh",                  // the obvious attacker pick
+        ] {
+            assert!(!terminal_auth_command_is_trusted(bad, &own), "{bad} should be refused");
         }
     }
 }
