@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
+import { setLanguage, SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/i18n";
 import { ScrollArea } from "@/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
@@ -266,6 +268,7 @@ function GeneralSettings() {
   return (
     <div className="space-y-6">
       <SectionTitle title="General" subtitle="Application preferences" />
+      <LanguageSetting />
       {configError && (
         <div className="rounded-md border border-amber-500/40 bg-amber-500/10 p-3 space-y-2">
           <p className="text-[12px] font-medium text-text-primary">
@@ -733,6 +736,40 @@ function SectionTitle({ title, subtitle }: { title: string; subtitle: string }) 
       <h2 className="text-sm font-semibold text-text-primary">{title}</h2>
       <p className="text-[11px] text-text-tertiary mt-0.5">{subtitle}</p>
     </div>
+  );
+}
+
+// Always shown in each language's own name — "Türkçe" reads oddly in an
+// English UI and "Turkish" reads oddly in a Turkish one; a language picker's
+// own options are the one place that convention (self-naming) is standard.
+const LANGUAGE_NAMES: Record<SupportedLanguage, string> = {
+  tr: "Türkçe",
+  en: "English",
+};
+
+function LanguageSetting() {
+  const { t, i18n } = useTranslation();
+  const current = SUPPORTED_LANGUAGES.includes(i18n.language as SupportedLanguage)
+    ? (i18n.language as SupportedLanguage)
+    : "tr";
+
+  return (
+    <SettingRow
+      label={t("settings.general.languageLabel")}
+      description={t("settings.general.languageDescription")}
+    >
+      <select
+        value={current}
+        onChange={(e) => setLanguage(e.target.value as SupportedLanguage)}
+        className="h-7 rounded-md border border-[var(--border-default)] bg-[var(--bg-elevated)] px-2 text-[11px] text-[var(--text-primary)] outline-none"
+      >
+        {SUPPORTED_LANGUAGES.map((lang) => (
+          <option key={lang} value={lang}>
+            {LANGUAGE_NAMES[lang]}
+          </option>
+        ))}
+      </select>
+    </SettingRow>
   );
 }
 

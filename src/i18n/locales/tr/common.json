@@ -1,0 +1,23 @@
+{
+  "auth": {
+    "connectDialog": {
+      "title": "İmece hesabınıza bağlanın",
+      "description": "Bitirmek için bu cihazı tarayıcınızda onaylayın.",
+      "connected": "Bağlandı.",
+      "tryAgain": "Tekrar dene",
+      "copied": "Kopyalandı",
+      "copyCode": "Kodu kopyala",
+      "pasteInstruction": "Bunu, tarayıcınızda az önce açılan <code>{{uri}}</code> adresine yapıştırın, ardından Approve'a basın.",
+      "starting": "Başlatılıyor…",
+      "waiting": "Tarayıcıda onaylamanız bekleniyor…",
+      "close": "Kapat",
+      "cancel": "İptal"
+    }
+  },
+  "settings": {
+    "general": {
+      "languageLabel": "Dil",
+      "languageDescription": "İmece arayüz dili. Türkçe varsayılandır; İngilizce yedek seçenek olarak kalır."
+    }
+  }
+}
