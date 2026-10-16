@@ -384,6 +384,7 @@
   "chat": {
     "composer": {
       "placeholder": "İmece'ye mesaj yazın... (bahsetmek için @, komut için /)",
+      "ariaLabel": "Sohbet mesajı",
       "memory": {
         "title": "Aracının bellek hatırlamasını temellendiren kod tabanı dizini — yeniden dizinlemek için tıklayın",
         "indexing": "Dizine ekleniyor…",
@@ -438,7 +439,52 @@
       "queueMessage": "Mesajı kuyruğa al (geçerli iş bitince gönderilir)",
       "sendToAgent": "Aracıya gönder ({{shortcut}})",
       "editQueueItem": "Düzenle / girdiye birleştir",
-      "removeFromQueue": "Kuyruktan kaldır"
+      "removeFromQueue": "Kuyruktan kaldır",
+      "addMenu": {
+        "triggerTitle": "Dosya, medya, depo veya önceki bir oturum ekle",
+        "addFilesOrPhotos": "Dosya veya fotoğraf ekle",
+        "addFiles": "Dosya ekle",
+        "attachMedia": "Medya ekle",
+        "takeScreenshot": "Ekran görüntüsü al",
+        "selectedRegion": "Seçili alan",
+        "wholeDesktop": "Tüm masaüstü",
+        "addFromGithub": "GitHub'dan ekle",
+        "openProjectToClone": "Depo klonlamak için bir proje açın.",
+        "searchGithubRepos": "GitHub depolarında ara…  (Enter)",
+        "downloaded": "İndirildi",
+        "alreadyDownloadedTitle": "Zaten indirildi · {{path}}",
+        "searching": "Aranıyor…",
+        "typeRepoNameHint": "Bir depo adı yazıp Enter'a basın.",
+        "noRepositoriesFound": "Depo bulunamadı.",
+        "downloadedBadge": "indirildi",
+        "attachSession": "Oturum ekle",
+        "openProjectToBrowseSessions": "Oturumlarına göz atmak için bir proje açın.",
+        "searchSessions": "Oturumlarda ara…",
+        "loadingSessions": "Oturumlar yükleniyor…",
+        "noPastSessions": "Bu projede geçmiş oturum yok.",
+        "noMatches": "Eşleşme yok.",
+        "messageCount": "{{count}} mesaj",
+        "referenceWorkspace": "Çalışma alanına referans ver",
+        "searchWorkspaces": "Çalışma alanlarında ara…",
+        "loadingWorkspaces": "Çalışma alanları yükleniyor…",
+        "noOtherProjects": "Bu organizasyonda başka proje yok."
+      },
+      "optionsPill": {
+        "default": "Varsayılan",
+        "defaultDescription": "Aracı varsayılan yapılandırmayla yüklendi.",
+        "options": "Seçenekler",
+        "loadingTitle": "Aracının sunduğu seçenekler yükleniyor…",
+        "optionsTitle": "Aracı seçenekleri — bu aracının sunduğu ayarlar",
+        "defaultTitle": "Aracı varsayılan yapılandırmayla yüklendi"
+      },
+      "slashPicker": {
+        "loadingCommands": "Komutlar yükleniyor…",
+        "noCommandsMatch": "\"/{{query}}\" ile eşleşen komut yok.",
+        "argsHintTitle": "Bu komut argüman alır — komuttan sonra yazıp Enter'a basın.",
+        "loadingAgentCommands": "Aracı komutları yükleniyor…",
+        "footerDefault": "Komutlar",
+        "footerHint": "↑↓ · ↵ çalıştır · ⎋ kapat"
+      }
     },
     "thinking": "Düşünüyor",
     "header": {

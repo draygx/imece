@@ -10,6 +10,7 @@
 // advertises.
 
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createPortal } from "react-dom";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -120,6 +121,7 @@ export const SlashCommandPicker = forwardRef<SlashCommandPickerHandle, SlashComm
     { open, query, anchor, onSelect, onClose, commands, loading, footerLabel },
     ref,
   ) {
+    const { t } = useTranslation();
     const [active, setActive] = useState(0);
 
     useEffect(() => {
@@ -223,7 +225,9 @@ export const SlashCommandPicker = forwardRef<SlashCommandPickerHandle, SlashComm
         <div className="flex-1 overflow-y-auto py-1">
           {rows.length === 0 ? (
             <div className="px-3 py-6 text-center text-[11px] text-[var(--text-tertiary)] leading-snug">
-              {loading ? "Loading commands…" : `No commands match "/${query}".`}
+              {loading
+                ? t("chat.composer.slashPicker.loadingCommands")
+                : t("chat.composer.slashPicker.noCommandsMatch", { query })}
             </div>
           ) : (
             rows.map((cmd, i) => {
@@ -254,7 +258,7 @@ export const SlashCommandPicker = forwardRef<SlashCommandPickerHandle, SlashComm
                   {needsArgs && (
                     <span
                       className="shrink-0 text-[9px] uppercase tracking-wider text-[var(--text-tertiary)] border border-[var(--border-default)] rounded-full px-1.5 py-px"
-                      title="This command takes arguments — type them after the command, then press Enter."
+                      title={t("chat.composer.slashPicker.argsHintTitle")}
                     >
                       {argsHint(cmd)}
                     </span>
@@ -271,13 +275,13 @@ export const SlashCommandPicker = forwardRef<SlashCommandPickerHandle, SlashComm
           {loading && rows.length > 0 && (
             <div className="px-3 h-[24px] flex items-center gap-1.5 text-[10px] text-[var(--text-tertiary)]">
               <Loader2 size={10} className="animate-spin shrink-0" />
-              Loading agent commands…
+              {t("chat.composer.slashPicker.loadingAgentCommands")}
             </div>
           )}
         </div>
         <div className="border-t border-[var(--border-default)] px-3 h-[24px] flex items-center justify-between text-[9px] text-[var(--text-tertiary)] uppercase tracking-wider shrink-0">
-          <span>{footerLabel ?? "Commands"}</span>
-          <span>↑↓ · ↵ run · ⎋ close</span>
+          <span>{footerLabel ?? t("chat.composer.slashPicker.footerDefault")}</span>
+          <span>{t("chat.composer.slashPicker.footerHint")}</span>
         </div>
       </div>,
       document.body,

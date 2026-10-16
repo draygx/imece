@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, ChevronDown, Loader2, SlidersHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ import { loadCachedAcpConfigOptions } from "../lib/acp-config-options-cache";
 const SETTLE_AFTER_MS = 30_000;
 
 export const ComposerOptionsPill = memo(function ComposerOptionsPill({ tabId }: { tabId: string }) {
+  const { t } = useTranslation();
   const agentType = useChatStore((s) => s.sessions[tabId]?.agentType ?? "claude-code");
   // `undefined` = no live session has spoken for this tab yet. An explicit `[]`
   // is a live session saying "no knobs", and the cache must not override it.
@@ -210,9 +212,11 @@ export const ComposerOptionsPill = memo(function ComposerOptionsPill({ tabId }: 
             </div>
           ) : (
             <div className="px-3 py-2.5">
-              <div className="text-[11px] font-medium text-[var(--text-primary)]">Default</div>
+              <div className="text-[11px] font-medium text-[var(--text-primary)]">
+                {t("chat.composer.optionsPill.default")}
+              </div>
               <p className="mt-0.5 text-[10px] leading-snug text-[var(--text-tertiary)]">
-                Agent loaded with default configuration.
+                {t("chat.composer.optionsPill.defaultDescription")}
               </p>
             </div>
           )}
@@ -234,10 +238,10 @@ export const ComposerOptionsPill = memo(function ComposerOptionsPill({ tabId }: 
         )}
         title={
           loading
-            ? "Loading the options this agent offers…"
+            ? t("chat.composer.optionsPill.loadingTitle")
             : hasOptions
-              ? "Agent options — knobs this agent advertises"
-              : "Agent loaded with default configuration"
+              ? t("chat.composer.optionsPill.optionsTitle")
+              : t("chat.composer.optionsPill.defaultTitle")
         }
       >
         {/* Keyed on the state so React remounts it and the one-shot animation
@@ -256,7 +260,9 @@ export const ComposerOptionsPill = memo(function ComposerOptionsPill({ tabId }: 
               we do not have yet. Thanks to the cache this only happens once per
               agent, ever. */}
           <span className="ml-1.5 whitespace-nowrap">
-            {hasOptions || loading ? "Options" : "Default"}
+            {hasOptions || loading
+              ? t("chat.composer.optionsPill.options")
+              : t("chat.composer.optionsPill.default")}
           </span>
           {/* Kept in the layout while loading, just invisible: letting it pop in
               would change the pill's width at the same moment as the label and

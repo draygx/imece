@@ -12,6 +12,7 @@
 // into the `extraExtensions` prop. Today this is "textarea + bullets".
 
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { EditorState, Prec, type Extension } from "@codemirror/state";
 import { drawSelection, EditorView, keymap, placeholder as cmPlaceholder } from "@codemirror/view";
 import {
@@ -110,7 +111,7 @@ interface ChatInputProps {
 export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function ChatInput(
   {
     initialValue = "",
-    placeholder = "Message İmece... (@ to mention, / for commands)",
+    placeholder,
     onChange,
     onSubmit,
     enterToSend = true,
@@ -124,6 +125,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
   },
   ref,
 ) {
+  const { t } = useTranslation();
+  const resolvedPlaceholder = placeholder ?? t("chat.composer.placeholder");
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
 
@@ -314,10 +317,10 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
           submitKeymap,
           enterSubmitKeymap,
           keymap.of([...historyKeymap, ...defaultKeymap]),
-          cmPlaceholder(placeholder),
+          cmPlaceholder(resolvedPlaceholder),
           theme,
           EditorView.contentAttributes.of({
-            "aria-label": "Chat message",
+            "aria-label": t("chat.composer.ariaLabel"),
             role: "textbox",
             "aria-multiline": "true",
           }),
@@ -382,8 +385,8 @@ export const ChatInput = forwardRef<ChatInputHandle, ChatInputProps>(function Ch
             },
           }),
           ...mentionExtension,
-          mentionTriggerPlugin((t) => onMentionTriggerRef.current?.(t)),
-          slashTriggerPlugin((t) => onSlashTriggerRef.current?.(t)),
+          mentionTriggerPlugin((trig) => onMentionTriggerRef.current?.(trig)),
+          slashTriggerPlugin((trig) => onSlashTriggerRef.current?.(trig)),
           // Prec.highest puts the picker keymap above lang-markdown's
           // Enter binding (which would otherwise continue a bullet) and
           // above the default Enter (which inserts a newline). The
