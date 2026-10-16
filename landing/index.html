@@ -17,11 +17,9 @@
 <meta name="twitter:title" content="İmece — Every coding agent, one workspace, your whole team" />
 <meta name="twitter:description" content="Install any coding agent, run them across projects, capture every session, chat with your team. Native Linux." />
 <meta name="twitter:image" content="/og-image.png" />
-<meta name="twitter:site" content="@antarys_ai" />
 
 <link rel="icon" type="image/svg+xml" href="/icon-sm.svg" />
 <link rel="apple-touch-icon" href="/icon-sm.svg" />
-<link rel="canonical" href="https://www.tryatlas.cc/" />
 
 <link rel="stylesheet" href="atlas.css" />
 <script src="https://unpkg.com/lucide@latest"></script>
@@ -181,83 +179,6 @@
   .btn-ghost:hover { color: var(--text-primary); background: var(--bg-raised); }
   .btn-lg { height: 38px; padding: 0 16px; font-size: 14px; border-radius: 7px; }
   .btn svg { width: 14px; height: 14px; }
-
-  /* ============================================================
-     DOWNLOAD SPLIT BUTTON
-     ------------------------------------------------------------
-     One control, two jobs: the wide half downloads the default
-     build (Apple Silicon), the narrow half opens a picker for the
-     other architecture. Shipping two dmgs without this would mean
-     either two equal buttons — which asks every visitor a question
-     most of them do not need to answer — or a single link that is
-     silently wrong for Intel users.
-     ============================================================ */
-  .dl { position: relative; display: inline-flex; }
-  .dl-main,
-  .dl-toggle {
-    display: inline-flex; align-items: center; gap: 6px;
-    height: 30px;
-    background: #ededed; color: #000;
-    font-size: 13px; font-weight: 500;
-    font-family: inherit;
-    border: none;
-    cursor: pointer;
-    transition: background 120ms ease;
-  }
-  .dl-main { padding: 0 12px; border-radius: 6px 0 0 6px; }
-  .dl-toggle { padding: 0 8px; border-radius: 0 6px 6px 0; }
-  .dl-main:hover, .dl-toggle:hover { background: #fff; }
-  /* Hairline seam between the halves — rgba so it reads as a divider on both
-     the resting and hover fills without being a third colour. */
-  .dl-toggle { box-shadow: inset 1px 0 0 rgba(0,0,0,0.16); }
-  .dl-main svg { width: 14px; height: 14px; }
-  .dl-toggle svg { width: 12px; height: 12px; transition: transform 140ms ease; }
-  .dl.open .dl-toggle svg { transform: rotate(180deg); }
-
-  /* Nav variant: pill ends on the outside, square on the seam. */
-  .dl-sm .dl-main,
-  .dl-sm .dl-toggle { height: 30px; font-size: 13px; }
-  .dl-sm .dl-main { border-radius: 999px 0 0 999px; padding-left: 14px; }
-  .dl-sm .dl-toggle { border-radius: 0 999px 999px 0; padding-right: 12px; }
-
-  /* Hero / CTA variant, matching .btn-lg. */
-  .dl-lg .dl-main,
-  .dl-lg .dl-toggle { height: 38px; font-size: 14px; }
-  .dl-lg .dl-main { padding: 0 16px; border-radius: 7px 0 0 7px; }
-  .dl-lg .dl-toggle { padding: 0 11px; border-radius: 0 7px 7px 0; }
-
-  .dl-menu {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    min-width: 168px;
-    padding: 4px;
-    background: #0d0d0d;
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-    z-index: 200;
-    opacity: 0;
-    transform: translateY(-4px);
-    pointer-events: none;
-    transition: opacity 120ms ease, transform 120ms ease;
-  }
-  .dl.open .dl-menu { opacity: 1; transform: none; pointer-events: auto; }
-  .dl-item {
-    display: block;
-    padding: 7px 10px;
-    border-radius: 5px;
-    color: var(--text-primary);
-    font-size: 13px; font-weight: 500;
-    text-align: left;
-    white-space: nowrap;
-    transition: background 120ms ease;
-  }
-  .dl-item:hover { background: var(--bg-raised); }
-
-  @media (max-width: 560px) {
-    .dl-menu { right: auto; left: 0; }
-  }
 
   /* ============================================================
      HERO
@@ -2513,37 +2434,24 @@
   <div class="nav-pill">
     <a href="/" class="nav-brand">
       <img src="icon-sm.svg" alt="" aria-hidden="true" />
-      Atlas
+      İmece
     </a>
     <a href="#product" class="nav-link">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg>
       Product
     </a>
-    <a href="https://docs.tryatlas.cc/" class="nav-link" target="_blank" rel="noopener">
+    <a href="https://github.com/draygx/imece#readme" class="nav-link" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
       Docs
     </a>
-    <a href="https://github.com/pacifio/atlas" class="nav-link" target="_blank" rel="noopener">
+    <a href="https://github.com/draygx/imece" class="nav-link" target="_blank" rel="noopener">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
       Star
     </a>
-    <a href="https://discord.gg/GmnFggaPfP" class="nav-link" target="_blank" rel="noopener">
-      <svg viewBox="0 0 127.14 96.36" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.79,32.65-1.71,56.6.54,80.21h0A105.73,105.73,0,0,0,32.71,96.36,77.7,77.7,0,0,0,39.6,85.25a68.42,68.42,0,0,1-10.85-5.18c.91-.66,1.8-1.34,2.66-2a75.57,75.57,0,0,0,64.32,0c.87.71,1.76,1.39,2.66,2a68.68,68.68,0,0,1-10.87,5.19,77,77,0,0,0,6.89,11.1A105.25,105.25,0,0,0,126.6,80.22h0C129.24,52.84,122.09,29.11,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5-12.74,11.43-12.74S54,46,53.89,53,48.84,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5-12.74,11.44-12.74S96.23,46,96.12,53,91.08,65.69,84.69,65.69Z"/></svg>
-      Discord
+    <a href="https://github.com/draygx/imece#build-from-source" class="nav-link" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      Build from source
     </a>
-    <div class="dl dl-sm" data-dl>
-      <a class="dl-main" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_aarch64.dmg">
-        <svg viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
-        Download
-      </a>
-      <button class="dl-toggle" type="button" data-dl-toggle aria-haspopup="true" aria-expanded="false" aria-label="Choose a Mac build">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-      </button>
-      <div class="dl-menu" data-dl-menu role="menu">
-        <a class="dl-item" role="menuitem" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_aarch64.dmg">For Apple ARM</a>
-        <a class="dl-item" role="menuitem" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_x86_64.dmg">For Intel Macs</a>
-      </div>
-    </div>
   </div>
 </nav>
 
@@ -2559,62 +2467,20 @@
       <span class="eyebrow-tag">Alpha</span>
       <a href="#agents">Claude Code · Codex · OpenCode · Cursor · any ACP agent <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg></a>
     </div>
-    <h1 class="hero-title">Atlas is source control for agents.</h1>
+    <h1 class="hero-title">İmece is source control for agents.</h1>
     <p class="hero-sub">Source control for agents. Use multiple coding agents, track their changes and query them in one place.</p>
     <div class="hero-cta">
-      <div class="dl dl-lg" data-dl>
-        <a class="dl-main" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_aarch64.dmg">
-          <svg viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
-          Download for Mac
-        </a>
-        <button class="dl-toggle" type="button" data-dl-toggle aria-haspopup="true" aria-expanded="false" aria-label="Choose a Mac build">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="dl-menu" data-dl-menu role="menu">
-          <a class="dl-item" role="menuitem" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_aarch64.dmg">For Apple ARM</a>
-          <a class="dl-item" role="menuitem" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_x86_64.dmg">For Intel Macs</a>
-        </div>
-      </div>
-      <a href="https://github.com/pacifio/atlas" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
+      <a class="btn btn-primary btn-lg" href="https://github.com/draygx/imece#build-from-source" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        Build from source
+      </a>
+      <a href="https://github.com/draygx/imece" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.5 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.73.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56C20.21 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
         Star on GitHub
       </a>
     </div>
   </div>
 </header>
-
-<!-- ====================== LOGO CLOUD ====================== -->
-<section class="logos" aria-label="Trusted by engineers">
-  <div class="wrap">
-    <div class="logos-label">Trusted by engineers at</div>
-    <div class="logos-rail">
-      <div class="logos-track">
-        <span class="logo-mark lm-netflix"><img src="logos/netflix-icon.svg" alt="Netflix" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-google"><img src="logos/google.svg" alt="Google" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-kilocode"><img src="logos/kilocode-dark.svg" alt="Kilo Code" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-cloudflare"><img src="logos/cloudflare.svg" alt="Cloudflare" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-shopify"><img src="logos/shopify.svg" alt="Shopify" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-cisco"><img src="logos/cisco_dark.svg" alt="Cisco" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-stripe"><img src="logos/stripe.svg" alt="Stripe" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-aws"><img src="logos/aws_dark.svg" alt="Amazon Web Services" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-openai"><img src="logos/openai_dark.svg" alt="OpenAI" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-netflix" aria-hidden="true"><img src="logos/netflix-icon.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-google" aria-hidden="true"><img src="logos/google.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-kilocode" aria-hidden="true"><img src="logos/kilocode-dark.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-cloudflare" aria-hidden="true"><img src="logos/cloudflare.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-shopify" aria-hidden="true"><img src="logos/shopify.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-cisco" aria-hidden="true"><img src="logos/cisco_dark.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-stripe" aria-hidden="true"><img src="logos/stripe.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-aws" aria-hidden="true"><img src="logos/aws_dark.svg" alt="" loading="lazy" decoding="async" /></span>
-        <span class="logo-mark lm-openai" aria-hidden="true"><img src="logos/openai_dark.svg" alt="" loading="lazy" decoding="async" /></span>
-      </div>
-      <!-- Progressive blur: three stacked bands per edge, each blurrier and
-           narrower than the last, so the marks dissolve rather than clip. -->
-      <div class="logos-fade logos-fade-l"><i></i><i></i><i></i></div>
-      <div class="logos-fade logos-fade-r"><i></i><i></i><i></i></div>
-    </div>
-  </div>
-</section>
 
 <!-- ====================== PRODUCT MOCK ====================== -->
 <section class="product-section" id="product">
@@ -2632,8 +2498,8 @@
       <div>
         <span class="sec-eyebrow">01 · Agents</span>
         <h2 class="sec-title" style="max-width:18ch">Install any coding agent.<br/>Run them everywhere.</h2>
-        <p class="sec-sub" style="margin-bottom:32px">Run any agent. Claude Code, Codex, OpenCode, Atlas's own agent, or anything from the registry &mdash; side by side, against the same codebase. Agents keep their own authentication and model choices. Switch mid-task without starting over. Try the picker.</p>
-        <a href="https://docs.tryatlas.cc/" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
+        <p class="sec-sub" style="margin-bottom:32px">Run any agent. Claude Code, Codex, OpenCode, İmece's own agent, or anything from the registry &mdash; side by side, against the same codebase. Agents keep their own authentication and model choices. Switch mid-task without starting over. Try the picker.</p>
+        <a href="https://github.com/draygx/imece#readme" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
           Read the docs
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
         </a>
@@ -2867,7 +2733,7 @@
       <div class="showcase-copy">
         <span class="sec-eyebrow">02 · Session capture</span>
         <h2>Source control<br/>for coding agents.</h2>
-        <p>The record of what an agent did disappears the moment the terminal scrolls. Atlas keeps it. Every session lands on the timeline. Every commit an agent makes becomes a checkpoint, linked back to the session that produced it. Open a session to read the prompt, the tool calls and the response, or ask it questions. Click a row.</p>
+        <p>The record of what an agent did disappears the moment the terminal scrolls. İmece keeps it. Every session lands on the timeline. Every commit an agent makes becomes a checkpoint, linked back to the session that produced it. Open a session to read the prompt, the tool calls and the response, or ask it questions. Click a row.</p>
         <ul class="showcase-points">
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
@@ -3105,7 +2971,7 @@
     <div class="sec-head">
       <span class="sec-eyebrow">04 · The workspace</span>
       <h2 class="sec-title">Everything in one window.<br/>No more tab-switching.</h2>
-      <p class="sec-sub">Chat with agents, run terminals, read code, browse docs, and capture plans &mdash; without leaving the room. Atlas keeps the loop tight.</p>
+      <p class="sec-sub">Chat with agents, run terminals, read code, browse docs, and capture plans &mdash; without leaving the room. İmece keeps the loop tight.</p>
     </div>
 
     <div class="pillars-grid">
@@ -3191,7 +3057,7 @@
         <div class="pillar-mock">
           <div class="pm-canvas">
             <div class="pm-note pm-note-1">
-              <div class="pm-note-title">Atlas Proxy</div>
+              <div class="pm-note-title">İmece Proxy</div>
               <div class="pm-note-meta">2m ago</div>
               <div class="pm-note-body">Wrap LLM calls with <code style="font-family:var(--font-mono);font-size:9px;color:var(--text-primary)">atlas_wrap()</code> for memory + traces.</div>
             </div>
@@ -3224,7 +3090,7 @@
     <div class="sec-head">
       <span class="sec-eyebrow">Terminal · browser · diffs · logs</span>
       <h2 class="sec-title">Engineered for the long session.</h2>
-      <p class="sec-sub">Atlas is a desktop application. Compact, AMOLED, fast. Every detail is tuned for ten-hour days at the keyboard.</p>
+      <p class="sec-sub">İmece is a desktop application. Compact, AMOLED, fast. Every detail is tuned for ten-hour days at the keyboard.</p>
     </div>
 
     <div class="features">
@@ -3241,7 +3107,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>
         </div>
         <h3 class="feature-title">Built-in browser</h3>
-        <p class="feature-desc">Read docs, copy snippets, save to Knowledge &mdash; without losing your place. Atlas indexes what you save.</p>
+        <p class="feature-desc">Read docs, copy snippets, save to Knowledge &mdash; without losing your place. İmece indexes what you save.</p>
         <div class="feature-tag">WebKit · indexed</div>
       </div>
       <div class="feature">
@@ -3318,7 +3184,7 @@
               <span class="gt-node is-filled" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg"><span class="gt-ref is-head">main</span><span class="gt-ref">HEAD</span>Wire ACP driver into chat panel</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">f94a9d2</span>
           </div>
           <div class="gt-row">
@@ -3327,7 +3193,7 @@
               <span class="gt-node is-filled" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg">feat(acp): register codex + opencode adapters</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">6a191b4</span>
           </div>
           <div class="gt-row">
@@ -3337,7 +3203,7 @@
               <span class="gt-node is-filled" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg">Merge #410 from knowledge/sync-stream</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">1050e00</span>
           </div>
           <div class="gt-row">
@@ -3347,7 +3213,7 @@
               <span class="gt-node is-filled" style="left:22px; --node-color:#d97e35"></span>
             </div>
             <span class="gt-msg"><span class="gt-ref">knowledge/sync-stream</span>fix(knowledge): JSONL append race</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">4a50313</span>
           </div>
           <div class="gt-row">
@@ -3357,7 +3223,7 @@
               <span class="gt-node" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg">refactor(chat): lift session sidebar state</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">c0baaf0</span>
           </div>
           <div class="gt-row">
@@ -3368,7 +3234,7 @@
               <span class="gt-node is-filled" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg">Merge #406 from canvas/note-inspector</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">1a3098a</span>
           </div>
           <div class="gt-row">
@@ -3400,7 +3266,7 @@
               <span class="gt-node" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg">style: prettier on all features/</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">d54c5b6</span>
           </div>
           <div class="gt-row">
@@ -3419,7 +3285,7 @@
               <span class="gt-node is-filled" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg">chore: bump tauri to 2.4</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">09b8510</span>
           </div>
           <div class="gt-row">
@@ -3428,7 +3294,7 @@
               <span class="gt-node" style="left:8px; --node-color:#5b8def"></span>
             </div>
             <span class="gt-msg">feat: branch-popover with checkout/create/delete</span>
-            <span class="gt-author">pacifio</span>
+            <span class="gt-author">you</span>
             <span class="gt-hash">a7e1f93</span>
           </div>
         </div>
@@ -3504,7 +3370,7 @@
       <div class="showcase-copy">
         <span class="sec-eyebrow">Knowledge</span>
         <h2>Markdown for humans. System prompt for agents.</h2>
-        <p>Atlas treats your project's knowledge base as a first-class surface. Notes live as plain markdown in <code style="font-family:var(--font-mono);font-size:13px;color:var(--text-primary);background:var(--bg-raised);padding:1px 5px;border-radius:4px">.atlas/knowledge/</code> next to your code &mdash; one source of truth, read by you and by every agent thread in the project.</p>
+        <p>İmece treats your project's knowledge base as a first-class surface. Notes live as plain markdown in <code style="font-family:var(--font-mono);font-size:13px;color:var(--text-primary);background:var(--bg-raised);padding:1px 5px;border-radius:4px">.atlas/knowledge/</code> next to your code &mdash; one source of truth, read by you and by every agent thread in the project.</p>
         <ul class="showcase-points">
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
@@ -3516,7 +3382,7 @@
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
-            <span><strong>Plays nicely with <code style="font-family:var(--font-mono);font-size:12px;color:var(--text-primary);background:var(--bg-raised);padding:1px 5px;border-radius:4px">CLAUDE.md</code> &amp; <code style="font-family:var(--font-mono);font-size:12px;color:var(--text-primary);background:var(--bg-raised);padding:1px 5px;border-radius:4px">AGENTS.md</code></strong> &mdash; no migration. Atlas reads what's already there.</span>
+            <span><strong>Plays nicely with <code style="font-family:var(--font-mono);font-size:12px;color:var(--text-primary);background:var(--bg-raised);padding:1px 5px;border-radius:4px">CLAUDE.md</code> &amp; <code style="font-family:var(--font-mono);font-size:12px;color:var(--text-primary);background:var(--bg-raised);padding:1px 5px;border-radius:4px">AGENTS.md</code></strong> &mdash; no migration. İmece reads what's already there.</span>
           </li>
         </ul>
       </div>
@@ -3531,7 +3397,7 @@
       <div class="showcase-copy">
         <span class="sec-eyebrow">Reference system</span>
         <h2>@ anything in your project.</h2>
-        <p>Pull files, folders, branches, knowledge notes, commits, and entire threads into your prompts. Atlas resolves the references locally and hands the agent exactly the context it asked for &mdash; nothing more.</p>
+        <p>Pull files, folders, branches, knowledge notes, commits, and entire threads into your prompts. İmece resolves the references locally and hands the agent exactly the context it asked for &mdash; nothing more.</p>
         <ul class="showcase-points">
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
@@ -3673,7 +3539,7 @@
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
-            <span><strong>No fork.</strong> Files on disk are the source of truth &mdash; you can close Atlas and pick up in vim.</span>
+            <span><strong>No fork.</strong> Files on disk are the source of truth &mdash; you can close İmece and pick up in vim.</span>
           </li>
         </ul>
       </div>
@@ -3700,7 +3566,7 @@
           </li>
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
-            <span><strong>One canvas per project.</strong> Open Atlas, your map of the codebase is right where you left it.</span>
+            <span><strong>One canvas per project.</strong> Open İmece, your map of the codebase is right where you left it.</span>
           </li>
         </ul>
       </div>
@@ -4039,7 +3905,7 @@
       <div class="showcase-copy">
         <span class="sec-eyebrow">Memory inspector</span>
         <h2>See what your agents remember.</h2>
-        <p>Atlas surfaces the memory your agents accumulate &mdash; Claude Code's per-project markdown and Codex threads &mdash; as a browsable, read-only inspector. Every fact, with its frontmatter, in one place.</p>
+        <p>İmece surfaces the memory your agents accumulate &mdash; Claude Code's per-project markdown and Codex threads &mdash; as a browsable, read-only inspector. Every fact, with its frontmatter, in one place.</p>
         <ul class="showcase-points">
           <li>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m5 12 5 5L20 7"/></svg>
@@ -4153,7 +4019,7 @@
           <div class="roadmap-num">01</div>
           <div class="roadmap-body">
             <h3 class="roadmap-title">Shared knowledge bases</h3>
-            <p class="roadmap-desc">The same markdown files, mirrored across the team. Humans read them in Atlas; agents consume them as system prompt. One source of truth, both audiences.</p>
+            <p class="roadmap-desc">The same markdown files, mirrored across the team. Humans read them in İmece; agents consume them as system prompt. One source of truth, both audiences.</p>
           </div>
           <span class="roadmap-badge is-planning">Planning</span>
         </div>
@@ -4211,26 +4077,17 @@
 <section class="cta-section" id="download">
   <div class="wrap-tight">
     <h2 class="cta-title">Make agents part of the team.</h2>
-    <p class="cta-sub">Free during the alpha. Bring your own keys. Native binary for Apple Silicon and Intel, no Electron. The Atlas account is optional — nothing is gated behind it.</p>
+    <p class="cta-sub">Free during the alpha. Bring your own keys. Native Linux binary, no Electron. The İmece account is optional — nothing is gated behind it.</p>
     <div class="cta-row">
-      <div class="dl dl-lg" data-dl>
-        <a class="dl-main" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_aarch64.dmg">
-          <svg viewBox="0 0 384 512" fill="currentColor" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
-          Download for Mac
-        </a>
-        <button class="dl-toggle" type="button" data-dl-toggle aria-haspopup="true" aria-expanded="false" aria-label="Choose a Mac build">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="dl-menu" data-dl-menu role="menu">
-          <a class="dl-item" role="menuitem" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_aarch64.dmg">For Apple ARM</a>
-          <a class="dl-item" role="menuitem" href="https://github.com/pacifio/atlas/releases/download/alpha-0.3.1/Atlas_0.3.1_x86_64.dmg">For Intel Macs</a>
-        </div>
-      </div>
-      <a href="https://github.com/pacifio/atlas" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
+      <a class="btn btn-primary btn-lg" href="https://github.com/draygx/imece#build-from-source" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+        Build from source
+      </a>
+      <a href="https://github.com/draygx/imece" target="_blank" rel="noopener" class="btn btn-secondary btn-lg">
         Read the source
       </a>
     </div>
-    <div class="cta-tiny">v0.3.1 · macOS 13+ · Apple Silicon &amp; Intel · alpha</div>
+    <div class="cta-tiny">v0.3.2 · Linux · build from source · alpha</div>
   </div>
 </section>
 
@@ -4242,49 +4099,15 @@
         <div class="footer-brand-line">
           <img src="icon-sm.svg" alt="İmece" class="footer-logo" />
           <span class="footer-sep">|</span>
-          <span class="footer-co">Atlas</span>
+          <span class="footer-co">İmece</span>
         </div>
-        <div class="footer-address">1111B S Governors Ave #39146 Dover, DE 19904</div>
       </div>
       <div class="footer-links">
-        <a href="https://github.com/pacifio/atlas" target="_blank" rel="noopener">Github</a>
-        <span class="footer-sep">|</span>
-        <a href="https://x.com/antarys_ai" target="_blank" rel="noopener" aria-label="X (Twitter)">X</a>
-        <span class="footer-sep">|</span>
-        <a href="https://www.linkedin.com/company/107506241/" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+        <a href="https://github.com/draygx/imece" target="_blank" rel="noopener">Github</a>
       </div>
     </div>
   </div>
 </footer>
-
-<script>
-  // Download split button: the chevron opens an architecture picker.
-  // Delegated from the document so all three controls (nav, hero, footer CTA)
-  // share one handler and one "only ever one open" rule.
-  document.addEventListener('click', (e) => {
-    const toggle = e.target.closest('[data-dl-toggle]');
-    const openDl = toggle ? toggle.closest('[data-dl]') : null;
-
-    document.querySelectorAll('[data-dl].open').forEach((dl) => {
-      if (dl === openDl) return;
-      dl.classList.remove('open');
-      dl.querySelector('[data-dl-toggle]').setAttribute('aria-expanded', 'false');
-    });
-
-    if (!toggle) return;                  // a click anywhere else just closes
-    e.preventDefault();
-    const nowOpen = openDl.classList.toggle('open');
-    toggle.setAttribute('aria-expanded', String(nowOpen));
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    document.querySelectorAll('[data-dl].open').forEach((dl) => {
-      dl.classList.remove('open');
-      dl.querySelector('[data-dl-toggle]').setAttribute('aria-expanded', 'false');
-    });
-  });
-</script>
 
 <script>
   // Sticky nav border on scroll
