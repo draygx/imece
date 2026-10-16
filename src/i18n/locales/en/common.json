@@ -195,6 +195,36 @@
     "description": "Rearrange panels and tabs into a ready-made workspace. Press <kbd>{{hint}}</kbd> anytime to switch layouts.",
     "appliedToast": "Applied “{{name}}” layout"
   },
+  "models": {
+    "searchPlaceholder": "Filter models…",
+    "loading": "Loading models…",
+    "table": {
+      "model": "Model",
+      "size": "Size",
+      "dim": "Dim",
+      "status": "Status",
+      "use": "Use"
+    },
+    "inUseBadge": "In use",
+    "downloaded": "Downloaded",
+    "download": "Download",
+    "useForEmbeddings": "Use {{name}} for embeddings",
+    "downloadFirst": "Download this model first",
+    "use": "Use",
+    "removeDownload": "Remove download",
+    "confirmSwitch": {
+      "title": "Switch embedding model?",
+      "description": "Using <name>{{name}}</name> re-embeds your memory in a new vector space. İmece will wipe this project's memory index and rebuild it in the background. Your notes and files are untouched.",
+      "cancel": "Cancel",
+      "confirm": "Switch & rebuild"
+    },
+    "toasts": {
+      "downloadFailed": "Download failed: {{error}}",
+      "removed": "Removed {{name}}",
+      "using": "Using {{name}}",
+      "rebuildingIndex": "Rebuilding the memory index with the new model…"
+    }
+  },
   "agents": {
     "searchPlaceholder": "Search registry",
     "filters": {
