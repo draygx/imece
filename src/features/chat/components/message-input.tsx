@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useActionShortcut } from "@/features/keybindings/lib/use-action-shortcut";
 import { cn } from "@/lib/utils";
 import {
@@ -228,6 +229,7 @@ interface CodebaseIndexStatus {
  *  `search_memory`. Shows file count (or "Index memory" when unbuilt), flips to
  *  "Indexing…" while the auto-indexer runs, and re-indexes on click. */
 function CerseiMemoryPill() {
+  const { t } = useTranslation();
   const projectPath = useProjectStore((s) => s.currentProject?.path ?? null);
   const [status, setStatus] = useState<CodebaseIndexStatus | null>(null);
   const [indexing, setIndexing] = useState(false);
@@ -270,16 +272,16 @@ function CerseiMemoryPill() {
   };
 
   const label = indexing
-    ? "Indexing…"
+    ? t("chat.composer.memory.indexing")
     : status?.indexed
-      ? `${status.fileCount} indexed`
-      : "Index memory";
+      ? t("chat.composer.memory.indexedCount", { count: status.fileCount })
+      : t("chat.composer.memory.indexMemory");
 
   return (
     <button
       onClick={reindex}
       disabled={indexing}
-      title="Codebase index that grounds the agent's memory recall — click to re-index"
+      title={t("chat.composer.memory.title")}
       className="flex items-center gap-1.5 px-2 h-6.5 rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[10px] leading-none font-medium text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors cursor-pointer tabular-nums disabled:cursor-default"
     >
       {indexing ? (
@@ -303,6 +305,7 @@ const EFFORT_CYCLE = ["", "low", "medium", "high", "max"] as const;
  *  thinking budget). Cycles off → low → medium → high → max. Hidden for
  *  providers that don't support a thinking budget. */
 function EffortPill({ tabId }: { tabId: string }) {
+  const { t } = useTranslation();
   const provider = useChatStore((s) => s.sessions[tabId]?.cerseiProvider ?? "");
   const effort = useChatStore((s) => s.sessions[tabId]?.cerseiEffort ?? "");
   const { setCerseiEffort } = useChatStore.use.actions();
@@ -316,13 +319,13 @@ function EffortPill({ tabId }: { tabId: string }) {
     <button
       onClick={cycle}
       className="flex items-center gap-1.5 px-2 h-6.5 rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[10px] leading-none font-medium text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-      title="Reasoning effort (thinking budget) — Anthropic models"
+      title={t("chat.composer.effort.title")}
     >
       <Brain
         size={11}
         className={active ? "text-[var(--accent-primary)]" : "text-[var(--text-tertiary)]"}
       />
-      {active ? `Think: ${effort}` : "Think"}
+      {active ? t("chat.composer.effort.thinkLevel", { effort }) : t("chat.composer.effort.think")}
     </button>
   );
 }
@@ -332,16 +335,17 @@ function EffortPill({ tabId }: { tabId: string }) {
  *  `usage_updated` delta lands. Narrow selectors so it only re-renders on its
  *  own session's usage/compaction changes. */
 function CerseiUsagePill({ tabId }: { tabId: string }) {
+  const { t } = useTranslation();
   const usage = useChatStore((s) => s.sessions[tabId]?.usage);
   const compacting = useChatStore((s) => s.sessions[tabId]?.compacting ?? false);
   if (compacting) {
     return (
       <span
         className="flex items-center gap-1.5 px-2 h-6.5 rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[10px] leading-none font-medium text-[var(--accent-primary)] select-none"
-        title="Compacting the context window to stay within the model's limit"
+        title={t("chat.composer.usage.compactingTitle")}
       >
         <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-primary)] animate-pulse" />
-        Compacting…
+        {t("chat.composer.usage.compacting")}
       </span>
     );
   }
@@ -351,12 +355,20 @@ function CerseiUsagePill({ tabId }: { tabId: string }) {
   const tokens = total >= 1000 ? `${(total / 1000).toFixed(1)}K` : `${total}`;
   const cost =
     usage.cost && usage.cost > 0 ? ` · $${usage.cost.toFixed(usage.cost < 1 ? 3 : 2)}` : "";
+  const titleCost = cost
+    ? t("chat.composer.usage.tokensTitleCostSuffix", { cost: usage.cost?.toFixed(4) })
+    : "";
   return (
     <span
       className="flex items-center gap-1.5 px-2 h-6.5 rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[10px] leading-none font-medium text-[var(--text-tertiary)] select-none tabular-nums"
-      title={`${total.toLocaleString()} tokens (${usage.input_tokens?.toLocaleString()} in / ${usage.output_tokens?.toLocaleString()} out)${cost ? ` · est. $${usage.cost?.toFixed(4)}` : ""}`}
+      title={t("chat.composer.usage.tokensTitle", {
+        total: total.toLocaleString(),
+        input: usage.input_tokens?.toLocaleString(),
+        output: usage.output_tokens?.toLocaleString(),
+        cost: titleCost,
+      })}
     >
-      {tokens} tok{cost}
+      {t("chat.composer.usage.tokensRow", { tokens, cost })}
     </span>
   );
 }
@@ -417,6 +429,7 @@ function ComposerGroupsMenu({
   currentAgent: SwitchableAgent;
   onSwitchAgent: (agent: SwitchableAgent) => void;
 }) {
+  const { t } = useTranslation();
   const cycleAgentHint = useActionShortcut("chat.cycleAgent")?.label;
   const agentType = useChatStore((s) => s.sessions[tabId]?.agentType ?? "claude-code");
   const permissionMode = useChatStore((s) => s.sessions[tabId]?.claudePermissionMode ?? "default");
@@ -605,7 +618,7 @@ function ComposerGroupsMenu({
                   className="flex w-full items-center gap-1.5 px-3 py-2 text-[11px] text-[var(--text-secondary)] transition-colors cursor-pointer hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
                 >
                   <Plus size={11} className="shrink-0" />
-                  Add more agents
+                  {t("chat.composer.groups.addMoreAgents")}
                 </button>
               </div>
             )}
@@ -643,7 +656,8 @@ function ComposerGroupsMenu({
               <div className="p-1">
                 {!hasAcpModes ? (
                   <div className="flex items-center gap-1.5 px-2 py-2 text-[11px] text-[var(--text-tertiary)]">
-                    <Loader2 size={11} className="animate-spin" /> Loading modes…
+                    <Loader2 size={11} className="animate-spin" />{" "}
+                    {t("chat.composer.groups.loadingModes")}
                   </div>
                 ) : (
                   availableModes!.map((m) => {
@@ -690,7 +704,7 @@ function ComposerGroupsMenu({
                     autoFocus
                     value={q}
                     onChange={(e) => setQ(e.target.value)}
-                    placeholder="Search models…"
+                    placeholder={t("chat.composer.groups.searchModels")}
                     spellCheck={false}
                     className="min-w-0 flex-1 bg-transparent text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
                   />
@@ -700,8 +714,8 @@ function ComposerGroupsMenu({
                     // Refresh — no new pattern.
                     <button
                       type="button"
-                      title="Refresh models"
-                      aria-label="Refresh models"
+                      title={t("chat.composer.groups.refreshModels")}
+                      aria-label={t("chat.composer.groups.refreshModels")}
                       disabled={refreshingModels}
                       onClick={() => void refreshNativeModels()}
                       className={cn(
@@ -718,11 +732,10 @@ function ComposerGroupsMenu({
                 <div className="max-h-[280px] overflow-y-auto hide-scrollbar p-1">
                   {filteredModels.length === 0 ? (
                     <div className="px-2.5 py-2 text-[11px] text-[var(--text-tertiary)]">
-                      No models
+                      {t("chat.composer.groups.noModels")}
                       {isNative && models.length === 0 && (
                         <span className="mt-0.5 block text-[9px] leading-snug">
-                          Couldn't load the model list. Check your connection or sign in, then
-                          refresh.
+                          {t("chat.composer.groups.modelListError")}
                         </span>
                       )}
                     </div>
@@ -774,7 +787,9 @@ function ComposerGroupsMenu({
         onClick={() => toggle("agent")}
         className={pillCls(openGroup === "agent")}
         title={
-          cycleAgentHint ? `Coding agent — pick here, ${cycleAgentHint} cycles` : "Coding agent"
+          cycleAgentHint
+            ? t("chat.composer.groups.codingAgentWithHint", { hint: cycleAgentHint })
+            : t("chat.composer.groups.codingAgent")
         }
       >
         <AgentMark agentType={agentType} className="!h-4 !w-4 !text-[9px] !rounded" />
@@ -785,7 +800,7 @@ function ComposerGroupsMenu({
         <button
           onClick={() => toggle("mode")}
           className={pillCls(openGroup === "mode")}
-          title="Permission mode — pick here, ⇧⇥ cycles"
+          title={t("chat.composer.groups.permissionMode")}
         >
           {isClaude ? (
             <span
@@ -806,8 +821,8 @@ function ComposerGroupsMenu({
               : currentAcpMode
                 ? displayModeName(currentAcpMode.name)
                 : modesPending
-                  ? "Loading…"
-                  : "Mode"}
+                  ? t("chat.composer.groups.loading")
+                  : t("chat.composer.groups.mode")}
           </span>
         </button>
       )}
@@ -816,11 +831,13 @@ function ComposerGroupsMenu({
         <button
           onClick={() => toggle("model")}
           className={pillCls(openGroup === "model")}
-          title="Model"
+          title={t("chat.composer.groups.model")}
         >
           <Cpu size={11} className="shrink-0 text-[var(--text-tertiary)]" />
           <span className={cn(labelCls(openGroup === "model"), "max-w-[120px] truncate")}>
-            {currentModelInfo ? modelLabel(currentModelInfo) : (currentModel ?? "Model")}
+            {currentModelInfo
+              ? modelLabel(currentModelInfo)
+              : (currentModel ?? t("chat.composer.groups.model"))}
           </span>
           <ChevronDown size={10} className="ml-0.5 shrink-0 text-[var(--text-tertiary)]" />
         </button>
@@ -836,8 +853,9 @@ export function MessageInput({
   running = false,
   stopping = false,
   disabled: disabledProp = false,
-  placeholder = "Message İmece... (@ to mention, / for commands)",
+  placeholder,
 }: MessageInputProps) {
+  const { t } = useTranslation();
   const { enqueueMessage, removeQueueItem, setAcpModes, setAcpModesPending, setCerseiEffort } =
     useChatStore.use.actions();
   // Show the picker as soon as the agent is non-Claude — even before its modes
@@ -894,8 +912,8 @@ export function MessageInput({
   // the backstop fires, the self-heal above still seeds the real modes.
   useEffect(() => {
     if (!acpModesPending) return;
-    const t = setTimeout(() => setAcpModesPending(tabId, false), 120000);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setAcpModesPending(tabId, false), 120000);
+    return () => clearTimeout(timer);
   }, [tabId, acpModesPending, setAcpModesPending]);
   // Narrow per-tab selectors — primitives only, no message-array refs. This
   // component otherwise would re-render on every streaming chunk because it
@@ -1009,7 +1027,9 @@ export function MessageInput({
       ? {
           name: "login",
           signature: "/login",
-          description: `Sign in to ${agentMeta(agentType).label}.`,
+          description: t("chat.composer.slashCommands.signIn", {
+            agent: agentMeta(agentType).label,
+          }),
           handler: "agent-login" as const,
         }
       : null;
@@ -1023,18 +1043,18 @@ export function MessageInput({
       local.push({
         name: "fork",
         signature: "/fork",
-        description: "Branch this conversation into a new tab",
+        description: t("chat.composer.slashCommands.fork"),
         handler: "fork" as const,
       });
     }
     local.push({
       name: "queue",
       signature: "/queue <message>",
-      description: "Queue a message to run when the agent is free",
+      description: t("chat.composer.slashCommands.queue"),
       handler: "queue" as const,
     });
     return [...(login ? [login] : []), ...fromAgent, ...local];
-  }, [agentType, availableCommands]);
+  }, [agentType, availableCommands, t]);
   const queue = useChatStore((s) => s.queues[tabId] ?? EMPTY_QUEUE);
 
   // CodeMirror owns the document; React only needs the empty↔non-empty EDGE
@@ -1171,9 +1191,9 @@ export function MessageInput({
   }, [tabId]);
 
   const handleMentionSelect = useCallback((mention: MentionData) => {
-    const t = triggerRef.current;
-    if (!t) return;
-    inputRef.current?.insertMention(mention, t.from, t.to);
+    const trig = triggerRef.current;
+    if (!trig) return;
+    inputRef.current?.insertMention(mention, trig.from, trig.to);
     // Trigger naturally closes when the doc no longer has an `@…` before
     // the caret; the plugin will fire the null transition for us.
   }, []);
@@ -1260,9 +1280,7 @@ export function MessageInput({
   useEffect(() => {
     if (stagedOverAggregateBudget && !warnedAggregateRef.current) {
       warnedAggregateRef.current = true;
-      toast.warning(
-        "These attachments together are near the 2 MB request limit — the send may be refused. Consider removing one.",
-      );
+      toast.warning(t("chat.composer.attachmentSizeWarning"));
     }
     if (!stagedOverAggregateBudget) warnedAggregateRef.current = false;
   }, [stagedOverAggregateBudget]);
@@ -1277,7 +1295,7 @@ export function MessageInput({
       const { open } = await import("@tauri-apps/plugin-dialog");
       const picked = await open({
         multiple: true,
-        title: "Attach files or photos",
+        title: t("chat.composer.attachFilesTitle"),
       });
       if (!picked) return;
       const paths = (Array.isArray(picked) ? picked : [picked]) as string[];
@@ -1318,10 +1336,10 @@ export function MessageInput({
       const { open } = await import("@tauri-apps/plugin-dialog");
       const picked = await open({
         multiple: true,
-        title: "Attach media",
+        title: t("chat.composer.attachMediaTitle"),
         filters: [
           {
-            name: "Media",
+            name: t("chat.composer.mediaFilterName"),
             extensions: [
               "png",
               "jpg",
@@ -1396,10 +1414,14 @@ export function MessageInput({
         }
         requestAnimationFrame(() => inputRef.current?.focus());
       } catch (err) {
-        toast.error(`Screenshot failed: ${err instanceof Error ? err.message : String(err)}`);
+        toast.error(
+          t("chat.composer.screenshotFailed", {
+            error: err instanceof Error ? err.message : String(err),
+          }),
+        );
       }
     },
-    [imageSupported, handleDropFiles],
+    [imageSupported, handleDropFiles, t],
   );
 
   // "+" menu → "Add from GitHub". Shorthand for the GitHub panel's search+clone:
@@ -1407,40 +1429,46 @@ export function MessageInput({
   // syncs, then drop a `@repo:` chip carrying the local path so the agent
   // explores it (compose_prompt turns that chip into an "explore this repo"
   // block pointing at the absolute path).
-  const handleCloneRepo = useCallback(async (repo: GithubRepo) => {
-    const proj = useProjectStore.getState().currentProject?.path;
-    if (!proj) {
-      toast.error("Open a project before cloning a repo.");
-      return;
-    }
-    setGithubSyncing(repo.full_name);
-    try {
-      const dest = await invoke<string>("clone_github_repo", {
-        projectPath: proj,
-        cloneUrl: repo.clone_url,
-        repoName: repo.full_name.replace(/\//g, "-"),
-      });
-      const folderName = dest.split("/").pop() || repo.full_name.replace(/\//g, "-");
-      const mention: MentionRepo = {
-        kind: "repo",
-        id: dest,
-        displayName: folderName,
-        absPath: dest,
-        hasReadme: false,
-      };
-      inputRef.current?.insertMention(mention);
-      // Keep the knowledge sidebar's cloned-repos list in sync (same signal the
-      // GitHub panel emits).
-      window.dispatchEvent(new Event("atlas:repo-cloned"));
-      requestAnimationFrame(() => inputRef.current?.focus());
-    } catch (err) {
-      toast.error(
-        `Couldn't clone ${repo.full_name}: ${err instanceof Error ? err.message : String(err)}`,
-      );
-    } finally {
-      setGithubSyncing(null);
-    }
-  }, []);
+  const handleCloneRepo = useCallback(
+    async (repo: GithubRepo) => {
+      const proj = useProjectStore.getState().currentProject?.path;
+      if (!proj) {
+        toast.error(t("chat.composer.openProjectBeforeClone"));
+        return;
+      }
+      setGithubSyncing(repo.full_name);
+      try {
+        const dest = await invoke<string>("clone_github_repo", {
+          projectPath: proj,
+          cloneUrl: repo.clone_url,
+          repoName: repo.full_name.replace(/\//g, "-"),
+        });
+        const folderName = dest.split("/").pop() || repo.full_name.replace(/\//g, "-");
+        const mention: MentionRepo = {
+          kind: "repo",
+          id: dest,
+          displayName: folderName,
+          absPath: dest,
+          hasReadme: false,
+        };
+        inputRef.current?.insertMention(mention);
+        // Keep the knowledge sidebar's cloned-repos list in sync (same signal the
+        // GitHub panel emits).
+        window.dispatchEvent(new Event("atlas:repo-cloned"));
+        requestAnimationFrame(() => inputRef.current?.focus());
+      } catch (err) {
+        toast.error(
+          t("chat.composer.cloneRepoFailed", {
+            repo: repo.full_name,
+            error: err instanceof Error ? err.message : String(err),
+          }),
+        );
+      } finally {
+        setGithubSyncing(null);
+      }
+    },
+    [t],
+  );
 
   // "+" menu → "Attach a session". Reference a past session's transcript; the
   // (potentially large) body is read + formatted at send time by composePrompt.
@@ -1488,15 +1516,15 @@ export function MessageInput({
 
   const handleSlashSelect = useCallback(
     (cmd: SlashCommand) => {
-      const t = slashTriggerRef.current;
+      const trig = slashTriggerRef.current;
       const view = inputRef.current?.view();
-      if (!t || !view) return;
+      if (!trig || !view) return;
 
       if (cmd.handler === "agent-login") {
         // An Atlas-handled command (S1): every agent opens the same
         // `AgentOAuthModal`. `reason` is passed so the modal can tell an
         // "agent wants a provider key" failure from a plain "not signed in".
-        clearSlashRange(view, t.from, t.to);
+        clearSlashRange(view, trig.from, trig.to);
         setSlashTrigger(null);
         promptSignIn(agentType, { reason: lastAuthReasonRef.current ?? undefined });
         inputRef.current?.focus();
@@ -1504,7 +1532,7 @@ export function MessageInput({
       }
       if (cmd.handler === "fork") {
         // Same flow as the header's "branch from here" menu item.
-        clearSlashRange(view, t.from, t.to);
+        clearSlashRange(view, trig.from, trig.to);
         setSlashTrigger(null);
         forkSessionToNewTab(tabId);
         inputRef.current?.focus();
@@ -1526,7 +1554,7 @@ export function MessageInput({
       // agent would just surface an error. `/login` bypasses this gate
       // above because it's the path that fixes "not authed".
       if (disabled) {
-        clearSlashRange(view, t.from, t.to);
+        clearSlashRange(view, trig.from, trig.to);
         setSlashTrigger(null);
         return;
       }
@@ -1536,8 +1564,8 @@ export function MessageInput({
         // until they press Enter.
         const insertText = `/${cmd.name} `;
         view.dispatch({
-          changes: { from: t.from, to: t.to, insert: insertText },
-          selection: { anchor: t.from + insertText.length },
+          changes: { from: trig.from, to: trig.to, insert: insertText },
+          selection: { anchor: trig.from + insertText.length },
         });
         setSlashTrigger(null);
         inputRef.current?.focus();
@@ -1550,11 +1578,11 @@ export function MessageInput({
       // any surrounding text instead of wiping the whole composer.
       const insertText = `/${cmd.name}`;
       view.dispatch({
-        changes: { from: t.from, to: t.to, insert: insertText },
-        selection: { anchor: t.from + insertText.length },
+        changes: { from: trig.from, to: trig.to, insert: insertText },
+        selection: { anchor: trig.from + insertText.length },
       });
       setSlashTrigger(null);
-      if (!t.atStart) {
+      if (!trig.atStart) {
         // Mid-message: complete the text and stop. Only a command at byte 0
         // resolves — auto-sending from here would ship `/foo` to the agent as
         // prose and silently do nothing. Leaving it in the composer matches
@@ -1627,8 +1655,8 @@ export function MessageInput({
       }
 
       const p = pickerRef.current;
-      const t = triggerRef.current;
-      if (!t || !p) return false;
+      const trig = triggerRef.current;
+      if (!trig || !p) return false;
       switch (key) {
         case "Up":
           p.moveUp();
@@ -1648,7 +1676,7 @@ export function MessageInput({
           // empty — otherwise let CM delete a character in the query (or
           // the `@` itself, which closes the picker via the trigger
           // detector).
-          if (t.query === "" && p.goBack()) return true;
+          if (trig.query === "" && p.goBack()) return true;
           return false;
         case "Tab":
           // Not handled for the mention picker — fall through to CM's
@@ -1818,7 +1846,7 @@ export function MessageInput({
   // both restated what the surface above the input already says (the queued
   // chip, the grant bar), and the swapping read as the composer changing its
   // mind. The setup pill and grant bar own that messaging.
-  const effectivePlaceholder = placeholder;
+  const effectivePlaceholder = placeholder ?? t("chat.composer.placeholder");
 
   return (
     <div className="px-4 pb-4 pt-2 bg-transparent">
@@ -1827,7 +1855,7 @@ export function MessageInput({
         {queue.length > 0 && (
           <div className="mb-2 flex flex-col gap-1">
             <div className="text-[10px] uppercase tracking-wider text-[var(--text-tertiary)] px-1">
-              Queued · {queue.length}
+              {t("chat.composer.queuedCount", { count: queue.length })}
             </div>
             <div className="flex flex-wrap gap-1.5">
               {queue.map((q, i) => (
@@ -1902,14 +1930,14 @@ export function MessageInput({
             <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-[var(--bg-base)]/40 backdrop-blur-[1px]">
               <span className="flex items-center gap-2 rounded-full bg-[var(--bg-elevated)] px-3 py-1 text-[11px] font-medium text-[var(--text-secondary)] shadow">
                 <Loader2 size={12} className="animate-spin" />
-                Syncing {githubSyncing}…
+                {t("chat.composer.syncingRepo", { repo: githubSyncing })}
               </span>
             </div>
           )}
           {isDropTarget && (
             <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-[var(--accent-primary)]/8 backdrop-blur-[1px]">
               <span className="rounded-full bg-[var(--bg-elevated)] px-3 py-1 text-[11px] font-medium text-[var(--text-secondary)] shadow">
-                Drop files to attach
+                {t("chat.composer.dropFiles")}
               </span>
             </div>
           )}
@@ -1952,7 +1980,7 @@ export function MessageInput({
                       <button
                         onClick={() => setStagedImages((prev) => prev.filter((_, j) => j !== i))}
                         className="absolute -top-1.5 -right-1.5 hidden group-hover:flex items-center justify-center w-4 h-4 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-default)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
-                        title="Remove image"
+                        title={t("chat.composer.removeImage")}
                       >
                         <X size={9} />
                       </button>
@@ -2021,11 +2049,11 @@ export function MessageInput({
               title={
                 mode === "stop"
                   ? stopping
-                    ? "Stopping… (waiting for the agent to wind down)"
-                    : "Stop generation"
+                    ? t("chat.composer.stopping")
+                    : t("chat.composer.stopGeneration")
                   : mode === "queue"
-                    ? "Queue message (sends after current finishes)"
-                    : `Send to agent (${enterToSend ? "↵" : "⌘↵"})`
+                    ? t("chat.composer.queueMessage")
+                    : t("chat.composer.sendToAgent", { shortcut: enterToSend ? "↵" : "⌘↵" })
               }
             >
               {/* Keyed span so the arrow↔stop swap plays the scale-pop morph
@@ -2124,7 +2152,7 @@ export function MessageInput({
           loading={slashCommandsLoading}
           // One resolver instead of an if-ladder that missed the native agent
           // (it fell through to the picker's "Claude Code commands" default).
-          footerLabel={`${agentMeta(agentType).label} commands`}
+          footerLabel={t("chat.composer.slashFooterLabel", { agent: agentMeta(agentType).label })}
         />
       )}
     </div>
@@ -2140,12 +2168,13 @@ function QueueChip({
   onEdit: () => void;
   onRemove: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="group flex items-center gap-1 max-w-[260px] h-6 pl-2 pr-1 rounded-full border border-[var(--border-default)] bg-[var(--bg-elevated)] text-[11px] text-[var(--text-secondary)]">
       <button
         onClick={onEdit}
         className="flex items-center gap-1 min-w-0 cursor-pointer hover:text-[var(--text-primary)]"
-        title="Edit / merge into input"
+        title={t("chat.composer.editQueueItem")}
       >
         <Pencil size={9} className="text-[var(--text-tertiary)] shrink-0" />
         <span className="truncate">{text.replace(/\s+/g, " ")}</span>
@@ -2153,7 +2182,7 @@ function QueueChip({
       <button
         onClick={onRemove}
         className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--status-error)] cursor-pointer shrink-0"
-        title="Remove from queue"
+        title={t("chat.composer.removeFromQueue")}
       >
         <X size={10} />
       </button>
