@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Archive, Download, Search, Trash2, X } from "lucide-react";
@@ -30,6 +31,7 @@ export function ThreadHistoryView({
   /** Resume a row. Unarchiving is the backend's job, on open. */
   onOpenThread: (thread: ThreadRow) => void;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [archivedOnly, setArchivedOnly] = useState(false);
@@ -63,19 +65,26 @@ export function ThreadHistoryView({
     const q = search.trim().toLowerCase();
     const matching = q
       ? threads.filter(
-          (t) => t.title.toLowerCase().includes(q) || t.projectName.toLowerCase().includes(q),
+          (th) => th.title.toLowerCase().includes(q) || th.projectName.toLowerCase().includes(q),
         )
       : threads;
-    return bucketByAge(matching);
-  }, [threads, search]);
+    return bucketByAge(matching, t);
+  }, [threads, search, t]);
 
-  const remove = useCallback(async (thread: ThreadRow) => {
-    try {
-      await deleteThread(thread.threadId);
-    } catch (err) {
-      toast.error(`Couldn't delete: ${err instanceof Error ? err.message : String(err)}`);
-    }
-  }, []);
+  const remove = useCallback(
+    async (thread: ThreadRow) => {
+      try {
+        await deleteThread(thread.threadId);
+      } catch (err) {
+        toast.error(
+          t("chat.threadHistory.couldNotDelete", {
+            error: err instanceof Error ? err.message : String(err),
+          }),
+        );
+      }
+    },
+    [t],
+  );
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -91,10 +100,10 @@ export function ThreadHistoryView({
         >
           <div className="flex items-center gap-3 border-b border-border-default px-4 py-2.5">
             <Dialog.Title className="text-[13px] font-semibold text-text-primary">
-              History
+              {t("chat.threadHistory.title")}
             </Dialog.Title>
             <span className="text-[11px] font-mono text-text-tertiary">
-              {threads.length} {threads.length === 1 ? "thread" : "threads"}
+              {t("chat.threadHistory.threadCount", { count: threads.length })}
             </span>
             <button
               type="button"
@@ -107,7 +116,7 @@ export function ThreadHistoryView({
               )}
             >
               <Archive size={10} />
-              Archived only
+              {t("chat.threadHistory.archivedOnly")}
             </button>
             <button
               type="button"
@@ -115,11 +124,11 @@ export function ThreadHistoryView({
               className="flex items-center gap-1 rounded px-2 py-1 text-[10px] text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors cursor-pointer"
             >
               <Download size={10} />
-              Import
+              {t("chat.threadHistory.import")}
             </button>
             <Dialog.Close
               className="flex h-6 w-6 items-center justify-center rounded text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors"
-              aria-label="Close"
+              aria-label={t("chat.threadHistory.closeAriaLabel")}
             >
               <X size={13} />
             </Dialog.Close>
@@ -130,8 +139,8 @@ export function ThreadHistoryView({
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              aria-label="Search history"
-              placeholder="Search…"
+              aria-label={t("chat.threadHistory.searchAriaLabel")}
+              placeholder={t("chat.threadHistory.searchPlaceholder")}
               className="min-w-0 flex-1 bg-transparent text-[11px] text-text-primary outline-none placeholder:text-text-tertiary"
             />
           </div>
@@ -139,7 +148,9 @@ export function ThreadHistoryView({
           <div className="flex-1 overflow-auto hide-scrollbar">
             {buckets.length === 0 ? (
               <div className="px-3 py-6 text-center text-[11px] text-text-tertiary">
-                {search.trim() ? "Nothing matches your search." : "No threads yet."}
+                {search.trim()
+                  ? t("chat.threadHistory.nothingMatches")
+                  : t("chat.threadHistory.noThreadsYet")}
               </div>
             ) : (
               buckets.map(([label, rows]) => (
@@ -174,8 +185,8 @@ export function ThreadHistoryView({
                           e.stopPropagation();
                           void remove(thread);
                         }}
-                        aria-label="Delete thread"
-                        title="Delete thread"
+                        aria-label={t("chat.threadHistory.deleteThread")}
+                        title={t("chat.threadHistory.deleteThread")}
                         className="flex h-4 w-4 shrink-0 items-center justify-center rounded text-text-tertiary opacity-0 transition-opacity hover:bg-bg-elevated hover:text-[var(--status-error)] group-hover:opacity-100 cursor-pointer"
                       >
                         <Trash2 size={10} />
@@ -206,12 +217,17 @@ export function ThreadHistoryView({
  * night is "Yesterday", not "Today", because that is how people remember when
  * they did things.
  */
-function bucketByAge(threads: ThreadRow[]): Array<[string, ThreadRow[]]> {
+function bucketByAge(
+  threads: ThreadRow[],
+  t: ReturnType<typeof useTranslation>["t"],
+): Array<[string, ThreadRow[]]> {
   const today = startOfDay(new Date());
   const buckets = new Map<string, ThreadRow[]>();
   for (const thread of threads) {
     const started = new Date(thread.createdAt ?? thread.updatedAt);
-    const label = Number.isNaN(started.getTime()) ? "Older" : bucketLabel(today, started);
+    const label = Number.isNaN(started.getTime())
+      ? t("chat.threadHistory.buckets.older")
+      : bucketLabel(today, started, t);
     const bucket = buckets.get(label);
     if (bucket) bucket.push(thread);
     else buckets.set(label, [thread]);
@@ -225,14 +241,15 @@ function startOfDay(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 }
 
-function bucketLabel(today: Date, at: Date): string {
+function bucketLabel(today: Date, at: Date, t: ReturnType<typeof useTranslation>["t"]): string {
   const day = startOfDay(at);
   const daysApart = Math.round((today.getTime() - day.getTime()) / DAY_MS);
-  if (daysApart <= 0) return "Today";
-  if (daysApart === 1) return "Yesterday";
-  if (isoWeek(day) === isoWeek(today)) return "This Week";
-  if (isoWeek(day) === isoWeek(new Date(today.getTime() - 7 * DAY_MS))) return "Past Week";
-  return "Older";
+  if (daysApart <= 0) return t("chat.threadHistory.buckets.today");
+  if (daysApart === 1) return t("chat.threadHistory.buckets.yesterday");
+  if (isoWeek(day) === isoWeek(today)) return t("chat.threadHistory.buckets.thisWeek");
+  if (isoWeek(day) === isoWeek(new Date(today.getTime() - 7 * DAY_MS)))
+    return t("chat.threadHistory.buckets.pastWeek");
+  return t("chat.threadHistory.buckets.older");
 }
 
 /** `YYYY-Www`, so two dates in the same ISO week compare equal. */

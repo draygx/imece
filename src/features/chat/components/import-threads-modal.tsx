@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AlertTriangle, Check, X } from "lucide-react";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ export function ImportThreadsModal({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const [candidates, setCandidates] = useState<ImportCandidate[] | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [importing, setImporting] = useState(false);
@@ -54,12 +56,12 @@ export function ImportThreadsModal({
       .catch((err: unknown) => {
         if (cancelled) return;
         setCandidates([]);
-        toast.error(`Couldn't check for importable sessions: ${String(err)}`);
+        toast.error(t("chat.importThreads.couldNotCheck", { error: String(err) }));
       });
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, t]);
 
   const toggle = useCallback((pluginId: string) => {
     setSelected((current) => {
@@ -75,16 +77,16 @@ export function ImportThreadsModal({
       const count = await importThreads([...selected]);
       toast.success(
         count === 0
-          ? "Nothing new to import"
-          : `Imported ${count} ${count === 1 ? "session" : "sessions"} into your history`,
+          ? t("chat.importThreads.nothingNewToImport")
+          : t("chat.importThreads.importedCount", { count }),
       );
       onOpenChange(false);
     } catch (err) {
-      toast.error(`Import failed: ${String(err)}`);
+      toast.error(t("chat.importThreads.importFailed", { error: String(err) }));
     } finally {
       setImporting(false);
     }
-  }, [selected, onOpenChange]);
+  }, [selected, onOpenChange, t]);
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -100,29 +102,28 @@ export function ImportThreadsModal({
         >
           <div className="flex items-center gap-3 border-b border-border-default px-4 py-2.5">
             <Dialog.Title className="text-[13px] font-semibold text-text-primary">
-              Import sessions
+              {t("chat.importThreads.title")}
             </Dialog.Title>
             <Dialog.Close
               className="ml-auto flex h-6 w-6 items-center justify-center rounded text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors"
-              aria-label="Close"
+              aria-label={t("chat.importThreads.closeAriaLabel")}
             >
               <X size={13} />
             </Dialog.Close>
           </div>
 
           <p className="px-4 pt-3 text-[11px] leading-relaxed text-text-tertiary">
-            Bring in sessions your agents kept for themselves — started in a terminal, or in another
-            client. Imported sessions land in your history rather than the active list.
+            {t("chat.importThreads.description")}
           </p>
 
           <div className="flex-1 overflow-auto hide-scrollbar px-2 py-2">
             {candidates === null ? (
               <div className="px-2 py-6 text-center text-[11px] text-text-tertiary">
-                Asking your agents…
+                {t("chat.importThreads.askingAgents")}
               </div>
             ) : candidates.length === 0 ? (
               <div className="px-2 py-6 text-center text-[11px] text-text-tertiary">
-                No agents installed. Install one from the Marketplace first.
+                {t("chat.importThreads.noAgentsInstalled")}
               </div>
             ) : (
               candidates.map((candidate) => (
@@ -138,7 +139,7 @@ export function ImportThreadsModal({
 
           <div className="flex items-center justify-end gap-2 border-t border-border-default px-4 py-2.5">
             <Dialog.Close className="rounded px-2.5 py-1 text-[11px] text-text-secondary hover:bg-bg-hover transition-colors cursor-pointer">
-              Cancel
+              {t("chat.importThreads.cancel")}
             </Dialog.Close>
             <button
               type="button"
@@ -150,7 +151,9 @@ export function ImportThreadsModal({
                 "disabled:opacity-40 disabled:cursor-not-allowed",
               )}
             >
-              {importing ? "Importing…" : "Import"}
+              {importing
+                ? t("chat.importThreads.importingLabel")
+                : t("chat.importThreads.importLabel")}
             </button>
           </div>
         </Dialog.Content>
@@ -191,19 +194,21 @@ function CandidateRow({
 }
 
 function CandidateStatus({ status }: { status: ImportCandidate["status"] }) {
+  const { t } = useTranslation();
   if (status.kind === "ready") {
     return (
       <span className="shrink-0 text-[10px] font-mono tabular-nums text-text-tertiary">
         {status.importable === 0
-          ? "nothing new"
-          : `${status.importable} ${status.importable === 1 ? "session" : "sessions"}`}
+          ? t("chat.importThreads.nothingNewStatus")
+          : t("chat.importThreads.sessionCountStatus", { count: status.importable })}
       </span>
     );
   }
   // Named and *visible*: a `title` on a disabled control shows no tooltip, so
   // the one thing the user needs — which capability their agent is missing —
   // would never appear.
-  const reason = status.kind === "unsupported" ? "no session/list support" : status.message;
+  const reason =
+    status.kind === "unsupported" ? t("chat.importThreads.noSessionListSupport") : status.message;
   return (
     <span className="flex min-w-0 shrink items-center gap-1 text-[10px] text-text-tertiary">
       <AlertTriangle size={10} className="shrink-0" />
