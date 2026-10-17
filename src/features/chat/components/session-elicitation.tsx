@@ -20,6 +20,7 @@
 // way gets the card for free.
 
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { agents } from "../lib/agents-api";
 import {
@@ -37,6 +38,7 @@ export function SessionElicitation({
   pending: PendingElicitation;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const form = useMemo(() => {
     if (pending.mode !== "form") return null;
     return elicitationQuestionForm(
@@ -55,7 +57,7 @@ export function SessionElicitation({
     agents
       .respondElicitation(pending.agentId, pending.requestId, action, content)
       .then(onClose)
-      .catch((e) => toast.error(`Could not send your answer: ${e}`));
+      .catch((e) => toast.error(t("chat.elicitation.couldNotSendAnswer", { error: e })));
   };
 
   return (

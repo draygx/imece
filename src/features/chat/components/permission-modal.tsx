@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { CheckCircle2, XCircle, AlertTriangle, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
@@ -60,6 +61,7 @@ interface PermissionModalProps {
 export const PermissionModal = memo(PermissionModalImpl);
 
 function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
+  const { t } = useTranslation();
   // Narrow subscription: only this tab's acpSessionId and the head of its
   // permission queue, so the card stays idle until a request actually arrives.
   const acpSessionId = useChatStore((s) => s.sessions[tabId]?.acpSessionId);
@@ -97,7 +99,7 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
             applyExitPlanSelection(tabId, decision.option_id);
           }
         })
-        .catch((e) => toast.error(`Permission send failed: ${e}`))
+        .catch((e) => toast.error(t("chat.permissionModal.permissionSendFailed", { error: e })))
         .finally(() => popPermission(current.acpSessionId, current.requestId));
     };
     const onKey = (e: KeyboardEvent) => {
@@ -127,7 +129,7 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
     };
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
-  }, [current, primaryId, popPermission, applyExitPlanSelection, tabId]);
+  }, [current, primaryId, popPermission, applyExitPlanSelection, tabId, t]);
 
   if (!current) return null;
 
@@ -144,7 +146,7 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
       .then(() => {
         if (isPlan) applyExitPlanSelection(tabId, optId, override);
       })
-      .catch((e) => toast.error(`Permission send failed: ${e}`))
+      .catch((e) => toast.error(t("chat.permissionModal.permissionSendFailed", { error: e })))
       .finally(() => popPermission(current.acpSessionId, current.requestId));
   };
 
@@ -153,7 +155,7 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
       .respondPermission(current.agentId, current.acpSessionId, current.requestId, {
         kind: "cancelled",
       })
-      .catch((e) => toast.error(`Permission cancel failed: ${e}`))
+      .catch((e) => toast.error(t("chat.permissionModal.permissionCancelFailed", { error: e })))
       .finally(() => popPermission(current.acpSessionId, current.requestId));
   };
 
@@ -190,10 +192,12 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
     onSendMessage?.(text);
   };
 
-  const title = current.toolCall.title ?? current.toolCall.kind ?? "Tool call";
+  const title =
+    current.toolCall.title ?? current.toolCall.kind ?? t("chat.permissionModal.fallbackToolCall");
   const planMarkdown = extractPlanMarkdown(current.toolCall);
   const questions = extractQuestions(current.toolCall);
-  const queueNote = queueLength > 1 ? `${queueLength - 1} more pending after this` : null;
+  const queueNote =
+    queueLength > 1 ? t("chat.permissionModal.queueNote", { count: queueLength - 1 }) : null;
 
   // Numbered option list — shared by both layouts.
   const optionList = (
@@ -246,9 +250,11 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
             <div className="flex items-start gap-3 border-b border-border-default px-4 py-3">
               <ClipboardList className="mt-0.5 size-4 text-accent" />
               <div className="flex-1">
-                <Dialog.Title className="text-sm font-medium">Review plan</Dialog.Title>
+                <Dialog.Title className="text-sm font-medium">
+                  {t("chat.permissionModal.reviewPlanTitle")}
+                </Dialog.Title>
                 <Dialog.Description className="mt-0.5 text-xs text-text-secondary">
-                  The agent proposed a plan before continuing. Review it, then approve or reject.
+                  {t("chat.permissionModal.reviewPlanDescription")}
                 </Dialog.Description>
               </div>
               {queueNote && (
@@ -277,9 +283,9 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
                     >
                       <AlertTriangle className="size-3.5 shrink-0 text-[var(--status-error)]" />
                       <span className="flex-1">
-                        Yes, and bypass permissions
+                        {t("chat.permissionModal.bypassPermissionsLabel")}
                         <span className="block text-[11px] text-text-secondary">
-                          Approve the plan and stop asking for the rest of this session.
+                          {t("chat.permissionModal.bypassPermissionsDescription")}
                         </span>
                       </span>
                     </button>
@@ -291,7 +297,7 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
                     onClick={cancel}
                     className="inline-flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs text-text-secondary hover:bg-bg-base hover:text-text-primary transition-colors"
                   >
-                    Cancel <Kbd>esc</Kbd>
+                    {t("chat.permissionModal.cancel")} <Kbd>esc</Kbd>
                   </button>
                 </div>
               </aside>
@@ -328,7 +334,11 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
         <div className="flex items-start gap-2 px-3 pt-3">
           <div className="flex-1 min-w-0">
             <div className="text-[13px] font-medium leading-snug text-text-primary">
-              The agent wants to run <span className="font-mono text-text-primary">{title}</span>?
+              <Trans
+                i18nKey="chat.permissionModal.wantsToRun"
+                values={{ title }}
+                components={{ code: <span className="font-mono text-text-primary" /> }}
+              />
             </div>
             {queueNote && <div className="mt-0.5 text-[11px] text-text-secondary">{queueNote}</div>}
           </div>
@@ -350,7 +360,7 @@ function PermissionModalImpl({ tabId, onSendMessage }: PermissionModalProps) {
               }
             }}
             rows={1}
-            placeholder="Tell the agent what to do instead…"
+            placeholder={t("chat.permissionModal.tellAgentInstead")}
             className="w-full resize-none rounded-md border border-border-default bg-bg-base px-2.5 py-1.5 text-[12px] text-text-primary outline-none placeholder:text-text-tertiary focus:border-[var(--border-focus)]"
           />
         </div>
@@ -416,9 +426,13 @@ function PermissionOption({
 }
 
 function ToolCallPreview({ tc }: { tc: PendingPermission["toolCall"] }) {
+  const { t } = useTranslation();
   const inputValue =
     (tc as Record<string, unknown>).rawInput ?? (tc as Record<string, unknown>).input;
-  const formatted = inputValue !== undefined ? safeStringify(inputValue, 2) : null;
+  const formatted =
+    inputValue !== undefined
+      ? safeStringify(inputValue, 2, t("chat.permissionModal.truncated"))
+      : null;
   if (!formatted) return null;
   return (
     <div className="mx-3 mt-2 rounded-md border border-border-default bg-bg-base px-3 py-2">
@@ -429,10 +443,10 @@ function ToolCallPreview({ tc }: { tc: PendingPermission["toolCall"] }) {
   );
 }
 
-function safeStringify(v: unknown, indent: number): string {
+function safeStringify(v: unknown, indent: number, truncatedSuffix: string): string {
   try {
     const s = JSON.stringify(v, null, indent);
-    return s.length > 4000 ? s.slice(0, 4000) + "\n…(truncated)" : s;
+    return s.length > 4000 ? s.slice(0, 4000) + "\n" + truncatedSuffix : s;
   } catch {
     return String(v);
   }
