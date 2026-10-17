@@ -1,4 +1,5 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight, File as FileIcon, Folder, FolderOpen, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { INDENT_PER_LEVEL, ROW_HEIGHT } from "../lib/tree-constants";
@@ -84,6 +85,7 @@ export function TreeRow({
   isDragging,
   gitColor,
 }: TreeRowProps) {
+  const { t } = useTranslation();
   const isEditing = !!editingMode;
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -257,7 +259,9 @@ export function TreeRow({
       {!isEditing && gitColor ? (
         <span
           className="ml-auto grid h-3 w-3 shrink-0 place-items-center"
-          aria-label={isDir ? "Contains changed files" : "Git status changed"}
+          aria-label={
+            isDir ? t("explorer.treeRow.folderHasChanges") : t("explorer.treeRow.fileStatusChanged")
+          }
         >
           <span className="h-1.5 w-1.5 rounded-full" style={{ background: gitColor }} />
         </span>

@@ -753,5 +753,55 @@
       "noOutput": "No output.",
       "close": "Close (Esc)"
     }
+  },
+  "explorer": {
+    "treeRow": {
+      "folderHasChanges": "Contains changed files",
+      "fileStatusChanged": "Git status changed"
+    },
+    "confirmDelete": {
+      "deleteItemsTitle": "Delete {{count}} items?",
+      "deleteFolderTitle": "Delete folder?",
+      "deleteFileTitle": "Delete file?",
+      "multiBody": "<bold>{{name}}</bold> and {{count}} more will be permanently deleted. This can't be undone.",
+      "deleteFolderBody": "<bold>{{name}}</bold> will be permanently removed along with everything inside it. This can't be undone.",
+      "deleteFileBody": "<bold>{{name}}</bold> will be permanently deleted. This can't be undone.",
+      "cancel": "Cancel",
+      "deleteLabel": "Delete"
+    },
+    "fileTree": {
+      "openFolderTitle": "Open folder",
+      "filesFallback": "Files",
+      "emptyFolder": "Empty folder",
+      "collapseAllTitle": "Collapse all",
+      "expandAllTitle": "Expand all",
+      "cantMoveFolderIntoItself": "Can't move a folder into itself",
+      "couldNotImport": "Couldn't import {{name}}: {{error}}",
+      "addedToGitignore": "Added to .gitignore: {{path}}"
+    },
+    "contextMenu": {
+      "newFile": "New File",
+      "newFolder": "New Folder",
+      "open": "Open",
+      "revealInFinder": "Reveal in Finder",
+      "openInDefaultApp": "Open in Default App",
+      "openInTerminal": "Open in Terminal",
+      "cut": "Cut",
+      "cutWithCount": "Cut ({{count}})",
+      "copy": "Copy",
+      "copyWithCount": "Copy ({{count}})",
+      "duplicate": "Duplicate",
+      "paste": "Paste",
+      "copyPath": "Copy Path",
+      "copyPathWithCount": "Copy Path ({{count}})",
+      "copyRelativePath": "Copy Relative Path",
+      "copyRelativePathWithCount": "Copy Relative Path ({{count}})",
+      "addToGitignore": "Add to .gitignore",
+      "rename": "Rename",
+      "delete": "Delete",
+      "deleteWithCount": "Delete ({{count}})",
+      "revealProjectInFinder": "Reveal Project in Finder",
+      "collapseAll": "Collapse All"
+    }
   }
 }

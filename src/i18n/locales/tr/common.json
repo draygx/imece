@@ -753,5 +753,55 @@
       "noOutput": "Çıktı yok.",
       "close": "Kapat (Esc)"
     }
+  },
+  "explorer": {
+    "treeRow": {
+      "folderHasChanges": "Değişmiş dosyalar içeriyor",
+      "fileStatusChanged": "Git durumu değişti"
+    },
+    "confirmDelete": {
+      "deleteItemsTitle": "{{count}} öğe silinsin mi?",
+      "deleteFolderTitle": "Klasör silinsin mi?",
+      "deleteFileTitle": "Dosya silinsin mi?",
+      "multiBody": "<bold>{{name}}</bold> ve {{count}} öğe daha kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+      "deleteFolderBody": "<bold>{{name}}</bold>, içindeki her şeyle birlikte kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+      "deleteFileBody": "<bold>{{name}}</bold> kalıcı olarak silinecek. Bu işlem geri alınamaz.",
+      "cancel": "Vazgeç",
+      "deleteLabel": "Sil"
+    },
+    "fileTree": {
+      "openFolderTitle": "Klasör aç",
+      "filesFallback": "Dosyalar",
+      "emptyFolder": "Boş klasör",
+      "collapseAllTitle": "Tümünü kapat",
+      "expandAllTitle": "Tümünü aç",
+      "cantMoveFolderIntoItself": "Bir klasör kendi içine taşınamaz",
+      "couldNotImport": "{{name}} içe aktarılamadı: {{error}}",
+      "addedToGitignore": ".gitignore'a eklendi: {{path}}"
+    },
+    "contextMenu": {
+      "newFile": "Yeni Dosya",
+      "newFolder": "Yeni Klasör",
+      "open": "Aç",
+      "revealInFinder": "Finder'da Göster",
+      "openInDefaultApp": "Varsayılan Uygulamada Aç",
+      "openInTerminal": "Terminalde Aç",
+      "cut": "Kes",
+      "cutWithCount": "Kes ({{count}})",
+      "copy": "Kopyala",
+      "copyWithCount": "Kopyala ({{count}})",
+      "duplicate": "Çoğalt",
+      "paste": "Yapıştır",
+      "copyPath": "Yolu Kopyala",
+      "copyPathWithCount": "Yolu Kopyala ({{count}})",
+      "copyRelativePath": "Bağıl Yolu Kopyala",
+      "copyRelativePathWithCount": "Bağıl Yolu Kopyala ({{count}})",
+      "addToGitignore": ".gitignore'a Ekle",
+      "rename": "Yeniden Adlandır",
+      "delete": "Sil",
+      "deleteWithCount": "Sil ({{count}})",
+      "revealProjectInFinder": "Projeyi Finder'da Göster",
+      "collapseAll": "Tümünü Kapat"
+    }
   }
 }
