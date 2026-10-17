@@ -18,6 +18,7 @@
 // button with a zero next to it is a control that asks to be ignored.
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import { Pin, PinOff, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,7 @@ export function ChatPinnedMenu({
   /** The header's shared control treatment — one height, one border. */
   className?: string;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const pins = useChatPinsStore((s) => pinsFor(s, pinScopeKey));
@@ -57,8 +59,8 @@ export function ChatPinnedMenu({
       <Popover.Trigger asChild>
         <button
           type="button"
-          title={`${pins.length} pinned`}
-          aria-label={`${pins.length} pinned messages`}
+          title={t("chat.pinnedMenu.pinnedCountTitle", { count: pins.length })}
+          aria-label={t("chat.pinnedMenu.pinnedCountAriaLabel", { count: pins.length })}
           className={className}
         >
           <Pin size={12} />
@@ -81,8 +83,8 @@ export function ChatPinnedMenu({
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search pins…"
-                aria-label="Search pinned messages"
+                placeholder={t("chat.pinnedMenu.searchPlaceholder")}
+                aria-label={t("chat.pinnedMenu.searchAriaLabel")}
                 className="min-w-0 flex-1 bg-transparent text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
               />
             </div>
@@ -90,7 +92,7 @@ export function ChatPinnedMenu({
             <div className="hide-scrollbar min-h-0 flex-1 overflow-y-auto">
               {filtered.length === 0 && (
                 <div className="py-6 text-center text-[11px] text-[var(--text-ghost)]">
-                  No pins match.
+                  {t("chat.pinnedMenu.noPinsMatch")}
                 </div>
               )}
               {filtered.map((pin, i) => (
@@ -113,13 +115,13 @@ export function ChatPinnedMenu({
                       {pin.text || "…"}
                     </span>
                     <span className="text-[9px] text-[var(--text-tertiary)]">
-                      Pinned {timeAgo(pin.at, { suffix: true })}
+                      {t("chat.pinnedMenu.pinnedAt", { time: timeAgo(pin.at, { suffix: true }) })}
                     </span>
                   </button>
                   <button
                     type="button"
-                    title="Unpin"
-                    aria-label="Unpin message"
+                    title={t("chat.pinnedMenu.unpinTitle")}
+                    aria-label={t("chat.pinnedMenu.unpinAriaLabel")}
                     onClick={() =>
                       useChatPinsStore.getState().actions.unpin(pinScopeKey, pin.messageId)
                     }

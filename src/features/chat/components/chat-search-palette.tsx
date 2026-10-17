@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Search, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,7 @@ export function ChatSearchPalette({
   messages,
   onJump,
 }: ChatSearchPaletteProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -79,7 +81,7 @@ export function ChatSearchPalette({
             inputRef.current?.focus();
           }}
         >
-          <Dialog.Title className="sr-only">Find user message</Dialog.Title>
+          <Dialog.Title className="sr-only">{t("chat.searchPalette.title")}</Dialog.Title>
           <div className="flex items-center gap-2 px-4 h-[44px] border-b border-[var(--border-default)] shrink-0">
             <Search size={14} className="text-[var(--text-tertiary)] shrink-0" />
             <input
@@ -87,7 +89,7 @@ export function ChatSearchPalette({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Find a question you asked…"
+              placeholder={t("chat.searchPalette.placeholder")}
               className="flex-1 bg-transparent outline-none text-[13px] text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
             />
             <span className="text-[10px] text-[var(--text-tertiary)] font-mono">
@@ -97,7 +99,9 @@ export function ChatSearchPalette({
           <div className="flex-1 overflow-y-auto hide-scrollbar py-1">
             {filtered.length === 0 ? (
               <div className="px-4 py-6 text-center text-[11px] text-[var(--text-tertiary)]">
-                {userMessages.length === 0 ? "No user messages yet." : "No matches."}
+                {userMessages.length === 0
+                  ? t("chat.searchPalette.noUserMessagesYet")
+                  : t("chat.searchPalette.noMatches")}
               </div>
             ) : (
               filtered.slice(0, 200).map(({ m, i }, idx) => {
@@ -130,7 +134,7 @@ export function ChatSearchPalette({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="text-[11px] font-semibold text-[var(--text-secondary)] uppercase tracking-wide">
-                          You
+                          {t("chat.searchPalette.youLabel")}
                         </span>
                         <span className="text-[10px] font-mono text-[var(--text-tertiary)]">
                           {ts}
@@ -149,15 +153,15 @@ export function ChatSearchPalette({
             <KbdGroup>
               <Kbd>↑</Kbd>
               <Kbd>↓</Kbd>
-              <span>navigate</span>
+              <span>{t("chat.searchPalette.navigateHint")}</span>
             </KbdGroup>
             <KbdGroup>
               <Kbd>↵</Kbd>
-              <span>jump</span>
+              <span>{t("chat.searchPalette.jumpHint")}</span>
             </KbdGroup>
             <KbdGroup className="ml-auto">
               <Kbd>esc</Kbd>
-              <span>close</span>
+              <span>{t("chat.searchPalette.closeHint")}</span>
             </KbdGroup>
           </div>
         </Dialog.Content>

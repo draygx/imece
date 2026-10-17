@@ -1,4 +1,5 @@
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useActionShortcut } from "@/features/keybindings/lib/use-action-shortcut";
 import { memo, useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { X, MessageSquare, Search, PanelLeft, Plus, History, Archive } from "lucide-react";
@@ -165,6 +166,7 @@ export const SessionSidebar = memo(function SessionSidebar({
   variant = "sidebar",
   onOpened,
 }: SessionSidebarProps) {
+  const { t } = useTranslation();
   const sidebarHint = useActionShortcut("panels.agentSidebar")?.label;
   const asDropdown = variant === "dropdown";
   const queryClient = useQueryClient();
@@ -444,7 +446,7 @@ export const SessionSidebar = memo(function SessionSidebar({
     // Live-focus: if an open tab already holds this conversation, focus it.
     // Only a tab that still EXISTS — a closed chat leaves its session behind,
     // and focusing that dead tab id makes `setActiveTab` bounce to tab[0].
-    const openTabIds = new Set(useLayoutStore.getState().tabs.map((t) => t.id));
+    const openTabIds = new Set(useLayoutStore.getState().tabs.map((tab) => tab.id));
     for (const [tid, s] of Object.entries(storeSnapshot)) {
       if (s.acpSessionId && s.acpSessionId === item.id && openTabIds.has(tid)) {
         setActiveTab(tid);
@@ -472,7 +474,7 @@ export const SessionSidebar = memo(function SessionSidebar({
       addTab({
         id: targetTabId,
         type: "chat",
-        title: item.title.slice(0, 40) || "Chat",
+        title: item.title.slice(0, 40) || t("chat.sessionSidebar.fallbackChatTitle"),
         closable: true,
         dirty: false,
         data: {},
@@ -522,7 +524,7 @@ export const SessionSidebar = memo(function SessionSidebar({
         const msg = err instanceof Error ? err.message : String(err);
         if (stage === "snapshot") {
           // The session IS open — only reading it back failed. Leave the bind.
-          toast.error(`Couldn't load session: ${msg}`);
+          toast.error(t("chat.sessionSidebar.couldNotLoadSession", { error: msg }));
         } else {
           // Roll the optimistic binding back: leaving `acpSessionId` pointing
           // at a session the backend never opened strands the tab, because the
@@ -532,7 +534,7 @@ export const SessionSidebar = memo(function SessionSidebar({
           // untouched: only the user deletes rows.
           console.warn("resume failed:", err);
           clearSession(targetTabId);
-          toast.error(`Couldn't resume this session: ${msg.slice(0, 120)}`);
+          toast.error(t("chat.sessionSidebar.couldNotResumeSession", { error: msg.slice(0, 120) }));
         }
         return;
       }
@@ -545,7 +547,7 @@ export const SessionSidebar = memo(function SessionSidebar({
         // Honest rather than mysterious. Any messages on screen came from
         // Atlas's own transcript, so the user can still read the conversation —
         // but the AGENT was handed none of it and won't refer back to it.
-        toast.info("This agent can't replay past messages — it won't remember what's above.");
+        toast.info(t("chat.sessionSidebar.cantReplayPastMessages"));
       }
       hydrateSessionSnapshot(targetTabId, snapshot.status, snapshot.plan);
       setAcpModes(
@@ -578,7 +580,11 @@ export const SessionSidebar = memo(function SessionSidebar({
       // the moment it is opened (ADR-0001: archive is a shelf, not a grave).
       await archiveThread(item.threadId);
     } catch (err) {
-      toast.error(`Couldn't archive: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error(
+        t("chat.sessionSidebar.couldNotArchive", {
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
     }
   };
 
@@ -596,7 +602,11 @@ export const SessionSidebar = memo(function SessionSidebar({
       useRecentChatsStore.getState().actions.removeBySession(item.id);
     } catch (err) {
       console.error("Failed to delete session:", err);
-      toast.error(`Couldn't delete session: ${err instanceof Error ? err.message : String(err)}`);
+      toast.error(
+        t("chat.sessionSidebar.couldNotDeleteSession", {
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
     }
   };
 
@@ -672,8 +682,8 @@ export const SessionSidebar = memo(function SessionSidebar({
         <input
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          aria-label="Search sessions"
-          placeholder="Search…"
+          aria-label={t("chat.sessionSidebar.searchAriaLabel")}
+          placeholder={t("chat.sessionSidebar.searchPlaceholder")}
           className="flex-1 bg-transparent outline-none text-[11px] text-text-primary placeholder:text-text-tertiary min-w-0"
         />
         {/* Everything ever, archived included — and where import lives. */}
@@ -681,8 +691,8 @@ export const SessionSidebar = memo(function SessionSidebar({
           <button
             type="button"
             onClick={() => setHistoryOpen(true)}
-            aria-label="All history"
-            title="All history — archived threads, and import"
+            aria-label={t("chat.sessionSidebar.allHistoryAriaLabel")}
+            title={t("chat.sessionSidebar.allHistoryTitle")}
             className="shrink-0 flex h-5 w-5 items-center justify-center rounded text-text-tertiary hover:bg-bg-hover hover:text-text-primary transition-colors cursor-pointer"
           >
             <History size={11} />
@@ -702,14 +712,18 @@ export const SessionSidebar = memo(function SessionSidebar({
       {/* List */}
       <div className="flex-1 overflow-y-auto hide-scrollbar">
         {isLoading && (
-          <div className="text-[11px] text-[var(--text-tertiary)] px-3 py-2">Loading…</div>
+          <div className="text-[11px] text-[var(--text-tertiary)] px-3 py-2">
+            {t("chat.sessionSidebar.loading")}
+          </div>
         )}
         {showEmpty && (
           <div className="text-[11px] text-[var(--text-tertiary)] px-3 py-3 leading-relaxed">
             {/* Names the scope: the list is this project's, so an empty one
                 means "nothing here yet", not "no chats anywhere". Other
                 projects' chats are behind the History button in the header. */}
-            {search.trim() ? "No sessions match your search." : "No chats in this project yet."}
+            {search.trim()
+              ? t("chat.sessionSidebar.noSessionsMatch")
+              : t("chat.sessionSidebar.noChatsYet")}
           </div>
         )}
         {filtered.map((item, idx) => {
@@ -753,7 +767,7 @@ export const SessionSidebar = memo(function SessionSidebar({
                     className="shrink-0 inline-flex h-[15px] items-center justify-center text-[var(--text-secondary)]"
                     title={
                       item.kind !== "agent"
-                        ? "AI Chat"
+                        ? t("chat.sessionSidebar.aiChatTitle")
                         : agentMeta(AGENT_TYPE_BY_SIDEBAR[item.agent] ?? item.agent).label
                     }
                   >
@@ -802,17 +816,17 @@ export const SessionSidebar = memo(function SessionSidebar({
                 <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                   <button
                     onClick={(e) => handleArchiveAgent(e, item)}
-                    aria-label="Archive session"
+                    aria-label={t("chat.sessionSidebar.archiveSessionAriaLabel")}
                     className="flex items-center justify-center w-4 h-4 rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]"
-                    title="Archive — keeps it in History"
+                    title={t("chat.sessionSidebar.archiveSessionTitle")}
                   >
                     <Archive size={10} />
                   </button>
                   <button
                     onClick={(e) => handleDeleteAgent(e, item)}
-                    aria-label="Delete session"
+                    aria-label={t("chat.sessionSidebar.deleteSessionAriaLabel")}
                     className="flex items-center justify-center w-4 h-4 rounded text-[var(--text-tertiary)] hover:text-[var(--status-error)] hover:bg-[var(--bg-elevated)]"
-                    title="Delete session"
+                    title={t("chat.sessionSidebar.deleteSessionTitle")}
                   >
                     <X size={10} />
                   </button>
@@ -839,14 +853,18 @@ export const SessionSidebar = memo(function SessionSidebar({
         <button
           onClick={toggleChatSidebar}
           className="flex items-center justify-center w-6 h-6 rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
-          title={sidebarHint ? `Hide sidebar (${sidebarHint})` : "Hide sidebar"}
+          title={
+            sidebarHint
+              ? t("chat.sessionSidebar.hideSidebarWithHint", { hint: sidebarHint })
+              : t("chat.sessionSidebar.hideSidebar")
+          }
         >
           <PanelLeft size={12} />
         </button>
         <button
           onClick={handleNewChat}
           className="flex items-center justify-center w-6 h-6 rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
-          title="New chat"
+          title={t("chat.sessionSidebar.newChat")}
         >
           <Plus size={12} />
         </button>
@@ -858,7 +876,7 @@ export const SessionSidebar = memo(function SessionSidebar({
         <div
           onMouseDown={onResizeStart}
           className="absolute top-0 -right-px w-px h-full bg-border-default hover:bg-accent transition-colors cursor-col-resize"
-          title="Drag to resize"
+          title={t("chat.sessionSidebar.dragToResize")}
         />
       )}
     </div>

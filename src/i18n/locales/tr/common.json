@@ -572,6 +572,87 @@
         "reviewChanges": "Son değişiklikleri incele",
         "writeTests": "Testler yaz..."
       }
+    },
+    "pinnedMenu": {
+      "pinnedCountTitle": "{{count}} sabitlendi",
+      "pinnedCountAriaLabel": "{{count}} sabitlenmiş mesaj",
+      "searchPlaceholder": "Sabitlenenlerde ara…",
+      "searchAriaLabel": "Sabitlenmiş mesajlarda ara",
+      "noPinsMatch": "Eşleşen sabitleme yok.",
+      "pinnedAt": "{{time}} sabitlendi",
+      "unpinTitle": "Sabitlemeyi kaldır",
+      "unpinAriaLabel": "Mesajın sabitlemesini kaldır"
+    },
+    "searchPalette": {
+      "title": "Kullanıcı mesajı bul",
+      "placeholder": "Sorduğunuz bir soruyu bulun…",
+      "noUserMessagesYet": "Henüz kullanıcı mesajı yok.",
+      "noMatches": "Eşleşme yok.",
+      "youLabel": "Siz",
+      "navigateHint": "gezin",
+      "jumpHint": "git",
+      "closeHint": "kapat"
+    },
+    "importThreads": {
+      "couldNotCheck": "İçe aktarılabilir oturumlar kontrol edilemedi: {{error}}",
+      "nothingNewToImport": "İçe aktarılacak yeni bir şey yok",
+      "importedCount": "{{count}} oturum geçmişinize aktarıldı",
+      "importFailed": "İçe aktarma başarısız oldu: {{error}}",
+      "title": "Oturumları içe aktar",
+      "closeAriaLabel": "Kapat",
+      "description": "Aracılarınızın kendilerinde sakladığı oturumları — bir terminalde veya başka bir istemcide başlatılmış — buraya aktarın. İçe aktarılan oturumlar etkin listeye değil, geçmişinize eklenir.",
+      "askingAgents": "Aracılarınıza soruluyor…",
+      "noAgentsInstalled": "Hiçbir aracı kurulu değil. Önce Pazar Yeri'nden birini kurun.",
+      "cancel": "Vazgeç",
+      "importingLabel": "İçe aktarılıyor…",
+      "importLabel": "İçe aktar",
+      "nothingNewStatus": "yeni bir şey yok",
+      "sessionCountStatus": "{{count}} oturum",
+      "noSessionListSupport": "oturum listesi desteği yok"
+    },
+    "threadHistory": {
+      "couldNotDelete": "Silinemedi: {{error}}",
+      "title": "Geçmiş",
+      "threadCount": "{{count}} konuşma",
+      "archivedOnly": "Yalnızca arşivlenenler",
+      "import": "İçe aktar",
+      "closeAriaLabel": "Kapat",
+      "searchAriaLabel": "Geçmişte ara",
+      "searchPlaceholder": "Ara…",
+      "nothingMatches": "Aramanızla eşleşen bir şey yok.",
+      "noThreadsYet": "Henüz konuşma yok.",
+      "deleteThread": "Konuşmayı sil",
+      "buckets": {
+        "today": "Bugün",
+        "yesterday": "Dün",
+        "thisWeek": "Bu Hafta",
+        "pastWeek": "Geçen Hafta",
+        "older": "Daha Eski"
+      }
+    },
+    "sessionSidebar": {
+      "fallbackChatTitle": "Sohbet",
+      "couldNotLoadSession": "Oturum yüklenemedi: {{error}}",
+      "couldNotResumeSession": "Bu oturum sürdürülemedi: {{error}}",
+      "cantReplayPastMessages": "Bu aracı geçmiş mesajları tekrar oynatamıyor — yukarıdakileri hatırlamayacak.",
+      "couldNotArchive": "Arşivlenemedi: {{error}}",
+      "couldNotDeleteSession": "Oturum silinemedi: {{error}}",
+      "searchAriaLabel": "Oturumlarda ara",
+      "searchPlaceholder": "Ara…",
+      "allHistoryAriaLabel": "Tüm geçmiş",
+      "allHistoryTitle": "Tüm geçmiş — arşivlenmiş konuşmalar ve içe aktarma",
+      "loading": "Yükleniyor…",
+      "noSessionsMatch": "Aramanızla eşleşen oturum yok.",
+      "noChatsYet": "Bu projede henüz sohbet yok.",
+      "aiChatTitle": "Yapay Zeka Sohbeti",
+      "archiveSessionAriaLabel": "Oturumu arşivle",
+      "archiveSessionTitle": "Arşivle — Geçmiş'te tutar",
+      "deleteSessionAriaLabel": "Oturumu sil",
+      "deleteSessionTitle": "Oturumu sil",
+      "hideSidebar": "Kenar çubuğunu gizle",
+      "hideSidebarWithHint": "Kenar çubuğunu gizle ({{hint}})",
+      "newChat": "Yeni sohbet",
+      "dragToResize": "Boyutlandırmak için sürükleyin"
     }
   }
 }

@@ -572,6 +572,87 @@
         "reviewChanges": "Review recent changes",
         "writeTests": "Write tests for..."
       }
+    },
+    "pinnedMenu": {
+      "pinnedCountTitle": "{{count}} pinned",
+      "pinnedCountAriaLabel": "{{count}} pinned messages",
+      "searchPlaceholder": "Search pins…",
+      "searchAriaLabel": "Search pinned messages",
+      "noPinsMatch": "No pins match.",
+      "pinnedAt": "Pinned {{time}}",
+      "unpinTitle": "Unpin",
+      "unpinAriaLabel": "Unpin message"
+    },
+    "searchPalette": {
+      "title": "Find user message",
+      "placeholder": "Find a question you asked…",
+      "noUserMessagesYet": "No user messages yet.",
+      "noMatches": "No matches.",
+      "youLabel": "You",
+      "navigateHint": "navigate",
+      "jumpHint": "jump",
+      "closeHint": "close"
+    },
+    "importThreads": {
+      "couldNotCheck": "Couldn't check for importable sessions: {{error}}",
+      "nothingNewToImport": "Nothing new to import",
+      "importedCount": "Imported {{count}} sessions into your history",
+      "importFailed": "Import failed: {{error}}",
+      "title": "Import sessions",
+      "closeAriaLabel": "Close",
+      "description": "Bring in sessions your agents kept for themselves — started in a terminal, or in another client. Imported sessions land in your history rather than the active list.",
+      "askingAgents": "Asking your agents…",
+      "noAgentsInstalled": "No agents installed. Install one from the Marketplace first.",
+      "cancel": "Cancel",
+      "importingLabel": "Importing…",
+      "importLabel": "Import",
+      "nothingNewStatus": "nothing new",
+      "sessionCountStatus": "{{count}} sessions",
+      "noSessionListSupport": "no session/list support"
+    },
+    "threadHistory": {
+      "couldNotDelete": "Couldn't delete: {{error}}",
+      "title": "History",
+      "threadCount": "{{count}} threads",
+      "archivedOnly": "Archived only",
+      "import": "Import",
+      "closeAriaLabel": "Close",
+      "searchAriaLabel": "Search history",
+      "searchPlaceholder": "Search…",
+      "nothingMatches": "Nothing matches your search.",
+      "noThreadsYet": "No threads yet.",
+      "deleteThread": "Delete thread",
+      "buckets": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "thisWeek": "This Week",
+        "pastWeek": "Past Week",
+        "older": "Older"
+      }
+    },
+    "sessionSidebar": {
+      "fallbackChatTitle": "Chat",
+      "couldNotLoadSession": "Couldn't load session: {{error}}",
+      "couldNotResumeSession": "Couldn't resume this session: {{error}}",
+      "cantReplayPastMessages": "This agent can't replay past messages — it won't remember what's above.",
+      "couldNotArchive": "Couldn't archive: {{error}}",
+      "couldNotDeleteSession": "Couldn't delete session: {{error}}",
+      "searchAriaLabel": "Search sessions",
+      "searchPlaceholder": "Search…",
+      "allHistoryAriaLabel": "All history",
+      "allHistoryTitle": "All history — archived threads, and import",
+      "loading": "Loading…",
+      "noSessionsMatch": "No sessions match your search.",
+      "noChatsYet": "No chats in this project yet.",
+      "aiChatTitle": "AI Chat",
+      "archiveSessionAriaLabel": "Archive session",
+      "archiveSessionTitle": "Archive — keeps it in History",
+      "deleteSessionAriaLabel": "Delete session",
+      "deleteSessionTitle": "Delete session",
+      "hideSidebar": "Hide sidebar",
+      "hideSidebarWithHint": "Hide sidebar ({{hint}})",
+      "newChat": "New chat",
+      "dragToResize": "Drag to resize"
     }
   }
 }
