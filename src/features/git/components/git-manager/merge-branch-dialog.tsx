@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { toast } from "sonner";
 import { Check, Search, Loader2, GitMerge, AlertTriangle, Ban } from "lucide-react";
@@ -19,6 +20,7 @@ export function MergeBranchDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const branch = useGitStore.use.branch();
   const branchesFull = useGitStore.use.branchesFull();
   const actions = useGitStore.use.actions();
@@ -130,7 +132,7 @@ export function MergeBranchDialog({
     setMerging(true);
     try {
       await actions.rebase(selected);
-      toast.success(`Rebased ${branch} onto ${selected}`);
+      toast.success(t("git.mergeBranchDialog.rebasedToast", { branch, selected }));
       onOpenChange(false);
     } catch (e) {
       // Conflicts pause the rebase — the in-progress banner + conflicts
@@ -150,14 +152,14 @@ export function MergeBranchDialog({
     const wasConflicts = preview?.kind === "conflicts";
     try {
       await actions.mergeBranch(selected);
-      toast.success(`Merged ${selected} into ${branch}`);
+      toast.success(t("git.mergeBranchDialog.mergedToast", { selected, branch }));
       onOpenChange(false);
     } catch (e) {
       // `git merge` exits non-zero on conflicts (the merge is still started —
       // MERGE_HEAD is set), so an error here usually means "conflicts to
       // resolve" rather than an outright failure.
       if (wasConflicts) {
-        toast.warning(`Merged ${selected} with conflicts — resolve them to finish`);
+        toast.warning(t("git.mergeBranchDialog.mergedWithConflictsToast", { selected }));
       } else {
         handleGitError(e);
       }
@@ -186,12 +188,19 @@ export function MergeBranchDialog({
             <Dialog.Title className="text-[13px] font-semibold text-text-primary flex items-center gap-1.5">
               <GitMerge size={13} className="text-text-secondary shrink-0" />
               <span>
-                Merge into <span className="font-mono text-accent">{branch || "—"}</span>
+                <Trans
+                  i18nKey="git.mergeBranchDialog.mergeIntoTitle"
+                  values={{ branch: branch || "—" }}
+                  components={{ code: <span className="font-mono text-accent" /> }}
+                />
               </span>
             </Dialog.Title>
             <Dialog.Description className="text-[11px] text-text-tertiary mt-1">
-              Choose a branch to merge into{" "}
-              <span className="font-mono">{branch || "the current branch"}</span>.
+              <Trans
+                i18nKey="git.mergeBranchDialog.chooseBranchDescription"
+                values={{ branch: branch || t("git.manager.currentBranchFallback") }}
+                components={{ code: <span className="font-mono" /> }}
+              />
             </Dialog.Description>
           </div>
 
@@ -201,7 +210,7 @@ export function MergeBranchDialog({
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Filter branches…"
+              placeholder={t("git.branchSwitcher.filterPlaceholder")}
               autoFocus
               className="flex-1 bg-transparent outline-none text-[11px] text-text-primary placeholder:text-text-tertiary min-w-0"
             />
@@ -231,7 +240,7 @@ export function MergeBranchDialog({
                   <span className="truncate flex-1 font-mono">{b.name}</span>
                   {b.isRemote && (
                     <span className="shrink-0 text-[8px] font-mono uppercase tracking-wide text-text-tertiary border border-border-default rounded px-1">
-                      remote
+                      {t("git.branchSwitcher.remoteBadge")}
                     </span>
                   )}
                 </div>
@@ -239,7 +248,7 @@ export function MergeBranchDialog({
             })}
             {filtered.length === 0 && (
               <div className="px-3 py-3 text-[10px] text-text-tertiary text-center">
-                No other branches
+                {t("git.mergeBranchDialog.noOtherBranches")}
               </div>
             )}
           </div>
@@ -249,24 +258,31 @@ export function MergeBranchDialog({
             {fetching && (
               <p className="text-[10px] text-text-tertiary flex items-center gap-1.5">
                 <Loader2 size={10} className="animate-spin shrink-0" />
-                Checking origin for new commits…
+                {t("git.mergeBranchDialog.checkingOrigin")}
               </p>
             )}
             {staleUpstream && (
               <p className="text-[11px] text-[var(--status-warning)] flex items-start gap-1.5">
                 <AlertTriangle size={11} className="shrink-0 mt-0.5" />
                 <span>
-                  <span className="font-mono">{selected}</span> is behind{" "}
-                  <span className="font-mono">{staleUpstream.upstream}</span> by{" "}
-                  {staleUpstream.behind} commit
-                  {staleUpstream.behind === 1 ? "" : "s"}.{" "}
-                  <button
-                    onClick={() => setSelected(staleUpstream.upstream)}
-                    className="underline underline-offset-2 hover:text-text-primary cursor-pointer"
-                  >
-                    Merge {staleUpstream.upstream} instead
-                  </button>{" "}
-                  to bring in the latest changes.
+                  <Trans
+                    i18nKey="git.mergeBranchDialog.staleUpstreamWarning"
+                    values={{
+                      selected,
+                      upstream: staleUpstream.upstream,
+                      count: staleUpstream.behind,
+                    }}
+                    components={{
+                      branch: <span className="font-mono" />,
+                      upstreamBranch: <span className="font-mono" />,
+                      mergeInsteadBtn: (
+                        <button
+                          onClick={() => setSelected(staleUpstream.upstream)}
+                          className="underline underline-offset-2 hover:text-text-primary cursor-pointer"
+                        />
+                      ),
+                    }}
+                  />
                 </span>
               </p>
             )}
@@ -281,12 +297,16 @@ export function MergeBranchDialog({
                 onClick={() => onOpenChange(false)}
                 className="px-3 h-7 rounded text-[11px] text-text-secondary hover:bg-bg-hover transition-colors"
               >
-                Cancel
+                {t("git.mergeBranchDialog.cancel")}
               </button>
               <button
                 onClick={() => void doRebase()}
                 disabled={!canMerge}
-                title={selected ? `Rebase ${branch} onto ${selected}` : "Rebase"}
+                title={
+                  selected
+                    ? t("git.mergeBranchDialog.rebaseTitleWithBranches", { branch, selected })
+                    : t("git.mergeBranchDialog.rebaseButton")
+                }
                 className={cn(
                   "px-3 h-7 rounded text-[11px] font-medium transition-colors",
                   canMerge
@@ -294,7 +314,7 @@ export function MergeBranchDialog({
                     : "text-text-tertiary bg-bg-hover cursor-not-allowed",
                 )}
               >
-                Rebase
+                {t("git.mergeBranchDialog.rebaseButton")}
               </button>
               <button
                 onClick={() => void doMerge()}
@@ -309,7 +329,9 @@ export function MergeBranchDialog({
                 )}
               >
                 {merging ? <Loader2 size={11} className="animate-spin" /> : <GitMerge size={11} />}
-                {selected ? `Merge ${selected}` : "Merge"}
+                {selected
+                  ? t("git.mergeBranchDialog.mergeButtonWithBranch", { branch: selected })
+                  : t("git.mergeBranchDialog.mergeButton")}
               </button>
             </div>
           </div>
@@ -330,10 +352,11 @@ function MergePreviewLine({
   previewing: boolean;
   preview: MergePreview | null;
 }) {
+  const { t } = useTranslation();
   if (!selected) {
     return (
       <p className="text-[11px] text-text-tertiary">
-        Select a branch to see what merging it would do.
+        {t("git.mergeBranchDialog.selectBranchHint")}
       </p>
     );
   }
@@ -341,28 +364,30 @@ function MergePreviewLine({
     return (
       <p className="text-[11px] text-text-tertiary flex items-center gap-1.5">
         <Loader2 size={11} className="animate-spin shrink-0" />
-        Checking for ability to merge automatically…
+        {t("git.mergeBranchDialog.checkingAbility")}
       </p>
     );
   }
 
-  const src = <span className="font-mono">{selected}</span>;
-  const dst = <span className="font-mono">{current}</span>;
+  const branchSpan = { className: "font-mono" };
   const n = preview.commitCount;
-  const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? "" : "s"}`;
 
   switch (preview.kind) {
     case "uptodate":
       return (
         <p className="text-[11px] text-text-tertiary">
-          {dst} is already up to date with {src}.
+          <Trans
+            i18nKey="git.mergeBranchDialog.uptodateMsg"
+            values={{ dst: current, src: selected }}
+            components={{ dst: <span {...branchSpan} />, src: <span {...branchSpan} /> }}
+          />
         </p>
       );
     case "invalid":
       return (
         <p className="text-[11px] text-[var(--status-error)] flex items-center gap-1.5">
           <Ban size={11} className="shrink-0" />
-          Unable to merge unrelated histories.
+          {t("git.mergeBranchDialog.invalidMsg")}
         </p>
       );
     case "conflicts":
@@ -370,22 +395,24 @@ function MergePreviewLine({
         <p className="text-[11px] text-[var(--status-warning)] flex items-center gap-1.5">
           <AlertTriangle size={11} className="shrink-0" />
           <span>
-            {plural(preview.conflictedFiles, "file")} will conflict when merging {src} into {dst}.
-            You can still merge and resolve them.
+            <Trans
+              i18nKey="git.mergeBranchDialog.conflictsMsg"
+              values={{ count: preview.conflictedFiles, src: selected, dst: current }}
+              components={{ dst: <span {...branchSpan} />, src: <span {...branchSpan} /> }}
+            />
           </span>
         </p>
       );
     case "unsupported":
-      return (
-        <p className="text-[11px] text-text-secondary">
-          This will merge {plural(n, "commit")} from {src} into {dst}.
-        </p>
-      );
     case "clean":
     default:
       return (
         <p className="text-[11px] text-text-secondary">
-          This will merge {plural(n, "commit")} from {src} into {dst}.
+          <Trans
+            i18nKey="git.mergeBranchDialog.cleanMsg"
+            values={{ count: n, src: selected, dst: current }}
+            components={{ dst: <span {...branchSpan} />, src: <span {...branchSpan} /> }}
+          />
         </p>
       );
   }

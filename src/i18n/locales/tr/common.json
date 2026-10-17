@@ -853,6 +853,47 @@
       "localChangesOverwritten": "Yerel değişiklikler engelliyor",
       "gpgFailedToSign": "Commit imzalama başarısız oldu",
       "genericTitle": "Git hatası"
+    },
+    "stashesView": {
+      "stashAllChanges": "Tüm değişiklikleri stashle",
+      "noStashes": "Stash yok",
+      "apply": "Uygula",
+      "pop": "Çıkar",
+      "drop": "Kaldır"
+    },
+    "conflictsView": {
+      "conflictsHeading": "Çakışmalar ({{count}})",
+      "resolveHint": "her dosyayı çözün, sonra devam edin",
+      "markerCount": "{{count}} işaretleyici",
+      "noMarkers": "işaretleyici yok",
+      "ours": "Bizimki",
+      "theirs": "Onlarınki",
+      "keepYourVersionTitle": "Kendi sürümünü koru",
+      "takeTheirVersionTitle": "Onların sürümünü al",
+      "openInEditorTitle": "Düzenleyicide aç",
+      "markResolvedTitle": "Çözüldü olarak işaretle",
+      "markResolvedWithMarkersTitle": "Çözüldü olarak işaretle (çakışma işaretleri hâlâ mevcut!)"
+    },
+    "mergeBranchDialog": {
+      "mergeIntoTitle": "<code>{{branch}}</code> içine birleştir",
+      "chooseBranchDescription": "<code>{{branch}}</code> içine birleştirilecek bir dal seçin.",
+      "noOtherBranches": "Başka dal yok",
+      "checkingOrigin": "Origin'de yeni commit kontrol ediliyor…",
+      "staleUpstreamWarning": "<branch>{{selected}}</branch>, <upstreamBranch>{{upstream}}</upstreamBranch>'in {{count}} commit gerisinde. En güncel değişiklikleri almak için <mergeInsteadBtn>bunun yerine {{upstream}}'i birleştir</mergeInsteadBtn>.",
+      "cancel": "Vazgeç",
+      "rebaseButton": "Rebase",
+      "rebaseTitleWithBranches": "{{branch}}'i {{selected}} üzerine rebase et",
+      "mergeButton": "Birleştir",
+      "mergeButtonWithBranch": "{{branch}}'i birleştir",
+      "selectBranchHint": "Birleştirmenin ne yapacağını görmek için bir dal seçin.",
+      "checkingAbility": "Otomatik birleştirme olasılığı kontrol ediliyor…",
+      "uptodateMsg": "<dst>{{dst}}</dst>, <src>{{src}}</src> ile zaten güncel.",
+      "invalidMsg": "İlişkisiz geçmişler birleştirilemiyor.",
+      "conflictsMsg": "<src>{{src}}</src>'i <dst>{{dst}}</dst>'e birleştirirken {{count}} dosya çakışacak. Yine de birleştirip çakışmaları çözebilirsiniz.",
+      "cleanMsg": "Bu, <src>{{src}}</src>'den <dst>{{dst}}</dst>'e {{count}} commit birleştirecek.",
+      "rebasedToast": "{{branch}}, {{selected}} üzerine rebase edildi",
+      "mergedToast": "{{selected}}, {{branch}} içine birleştirildi",
+      "mergedWithConflictsToast": "{{selected}} çakışmalarla birleştirildi — bitirmek için çözün"
     }
   }
 }
