@@ -935,6 +935,35 @@
       "revertAllChangesTitle": "Revert all changes?",
       "revertAllLabel": "Revert all",
       "revertAllBody": "All <bold>{{count}} unstaged changes</bold> will be discarded and any newly added files deleted. This can't be undone."
+    },
+    "historyView": {
+      "backToHistory": "Back to history",
+      "copySha": "Copy SHA",
+      "cherryPickTitle": "Cherry-pick onto current branch",
+      "revertThisCommitTitle": "Revert this commit",
+      "tagThisCommitTitle": "Tag this commit",
+      "tagNamePlaceholder": "tag name → Enter",
+      "noFileChanges": "No file changes",
+      "noHistory": "No history",
+      "undoCommitTitle": "Undo this commit — changes return to the staged area (blocked once pushed)",
+      "undoButton": "Undo",
+      "resetToThisCommitTitle": "Reset current branch to this commit",
+      "resetToHereHeading": "Reset to here",
+      "resetSoftLabel": "Soft",
+      "resetSoftDesc": "keep changes staged",
+      "resetMixedLabel": "Mixed",
+      "resetMixedDesc": "keep changes unstaged",
+      "resetHardLabel": "Hard",
+      "resetHardDesc": "discard all changes",
+      "producedBySessions": "Produced by {{count}} sessions",
+      "untitledSession": "Untitled session",
+      "openSessionInTimelineTitle": "Open this Session in the Timeline",
+      "sessionSummary": "{{messages}} messages · {{toolCalls}} tool calls"
+    },
+    "commitNode": {
+      "refKindTitle": "{{kind}}: {{name}}",
+      "branchKind": "branch",
+      "tagKind": "tag"
     }
   }
 }
