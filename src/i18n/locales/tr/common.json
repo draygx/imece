@@ -983,6 +983,46 @@
       "inspectCommitTitle": "Bir commit'in değişikliklerini incele",
       "searchCommitsPlaceholder": "Commit'lerde ara…",
       "noCommits": "Commit yok"
+    },
+    "diffView": {
+      "filesCount": "{{count}} dosya",
+      "collapseAll": "Tümünü daralt",
+      "expandAll": "Tümünü genişlet",
+      "refreshDiffTitle": "Farkı yenile",
+      "filterFilesPlaceholder": "Dosyaları filtrele…",
+      "sortByMostChangesTitle": "En çok değişikliğe göre sırala",
+      "stageHunk": "Hunk'ı hazırla",
+      "stageLines": "{{count}} satırı hazırla",
+      "unstageHunk": "Hunk'ı geri çek",
+      "unstageLines": "{{count}} satırı geri çek",
+      "discardHunk": "Hunk'ı at",
+      "discardLines": "{{count}} satırı at",
+      "clickToSelectTitle": "Kısmi hazırlamak için tıklayarak seç",
+      "filterByLanguageTitle": "Dile göre filtrele",
+      "allLanguages": "Tüm diller",
+      "allChangedFilesTitle": "Tüm değişen dosyalar",
+      "searchFilesPlaceholder": "Dosyalarda ara…",
+      "noFilesFound": "Dosya bulunamadı",
+      "noChangesDefault": "Değişiklik yok"
+    },
+    "diffPanel": {
+      "showChangedFilesTitle": "Değişen dosyaları göster",
+      "hideChangedFilesTitle": "Değişen dosyaları gizle",
+      "defaultTitle": "Git Farkı",
+      "stagedBadge": "hazırlanmış",
+      "diffsCount": "{{count}} fark",
+      "previousChangeTitle": "Önceki değişiklik",
+      "nextChangeTitle": "Sonraki değişiklik",
+      "pickFileHint": "Farkını görmek için soldan bir dosya seçin — veya göz atmak için bir commit seçin.",
+      "loadingDiff": "Fark yükleniyor…",
+      "binaryFileHint": "İkili dosya — gösterilecek metin farkı yok.",
+      "noChanges": "Değişiklik yok."
+    },
+    "diffMinimap": {
+      "title": "Kod haritası — kaydırmak için tıklayın veya sürükleyin"
+    },
+    "diffModal": {
+      "closeAriaLabel": "Kapat"
     }
   }
 }

@@ -12,6 +12,7 @@
 // two "expand this into the whole window" surfaces behave identically.
 
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 // Imported DIRECTLY, not lazily. This module is itself lazy-loaded by the chat,
@@ -44,6 +45,7 @@ export function GitDiffModal({
   textSources?: Record<string, { old: string; new: string }>;
   title?: string;
 }) {
+  const { t } = useTranslation();
   const first = initialFile || files[0] || "";
   // The modal owns which file is shown. The tree cannot use its default click
   // behaviour here — that opens the standalone Git Diff module tab, which both
@@ -66,14 +68,14 @@ export function GitDiffModal({
           className="fixed top-8.5 left-4 right-4 bottom-6 flex flex-col overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--bg-sidebar)] shadow-[var(--shadow-overlay)] focus:outline-none data-[state=open]:animate-scale-in"
           style={{ zIndex: "var(--z-modal)" as unknown as number }}
         >
-          <Dialog.Title className="sr-only">{title ?? "Changes"}</Dialog.Title>
+          <Dialog.Title className="sr-only">{title ?? t("git.manager.changes")}</Dialog.Title>
           <div className="flex h-[32px] shrink-0 items-center gap-2 border-b border-[var(--border-default)] px-3">
             <span className="truncate text-[11px] font-medium text-[var(--text-secondary)]">
-              {title ?? "Changes"}
+              {title ?? t("git.manager.changes")}
             </span>
             <Dialog.Close
               className="ml-auto flex h-6 w-6 items-center justify-center rounded text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
-              aria-label="Close"
+              aria-label={t("git.diffModal.closeAriaLabel")}
             >
               <X size={13} />
             </Dialog.Close>
