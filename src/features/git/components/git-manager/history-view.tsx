@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import { invoke } from "@tauri-apps/api/core";
 import { ArrowLeft, Copy, Undo2, GitGraph, RotateCcw, Sparkles, Tag, Check } from "lucide-react";
@@ -10,6 +11,7 @@ import { useLayoutStore } from "@/features/layout/stores/layout-store";
 import { DiffView } from "../diff-view";
 
 export function HistoryView() {
+  const { t } = useTranslation();
   const repoPath = useGitStore.use.repoPath();
   const log = useGitStore.use.log();
   const selected = useGitStore.use.selectedCommit();
@@ -39,7 +41,7 @@ export function HistoryView() {
             <button
               onClick={() => actions.clearSelectedCommit()}
               className="p-1 rounded text-text-tertiary hover:text-text-primary hover:bg-bg-hover"
-              title="Back to history"
+              title={t("git.historyView.backToHistory")}
             >
               <ArrowLeft size={13} />
             </button>
@@ -52,21 +54,21 @@ export function HistoryView() {
                   setTimeout(() => setCopied(false), 1200);
                 }}
                 className="p-1 rounded text-text-tertiary hover:text-text-primary hover:bg-bg-hover"
-                title="Copy SHA"
+                title={t("git.historyView.copySha")}
               >
                 {copied ? <Check size={12} className="text-success" /> : <Copy size={12} />}
               </button>
               <button
                 onClick={() => run(() => actions.cherryPick(selected.hash))}
                 className="p-1 rounded text-text-tertiary hover:text-text-primary hover:bg-bg-hover"
-                title="Cherry-pick onto current branch"
+                title={t("git.historyView.cherryPickTitle")}
               >
                 <GitGraph size={12} />
               </button>
               <button
                 onClick={() => run(() => actions.revert(selected.hash))}
                 className="p-1 rounded text-text-tertiary hover:text-text-primary hover:bg-bg-hover"
-                title="Revert this commit"
+                title={t("git.historyView.revertThisCommitTitle")}
               >
                 <Undo2 size={12} />
               </button>
@@ -74,7 +76,7 @@ export function HistoryView() {
               <button
                 onClick={() => setTagging((v) => !v)}
                 className="p-1 rounded text-text-tertiary hover:text-text-primary hover:bg-bg-hover"
-                title="Tag this commit"
+                title={t("git.historyView.tagThisCommitTitle")}
               >
                 <Tag size={12} />
               </button>
@@ -86,7 +88,7 @@ export function HistoryView() {
                 value={tagName}
                 onChange={(e) => setTagName(e.target.value)}
                 autoFocus
-                placeholder="tag name → Enter"
+                placeholder={t("git.historyView.tagNamePlaceholder")}
                 className="w-full h-7 rounded border border-border-default bg-bg-input px-2 text-[11px] font-mono text-text-primary outline-none focus:border-border-focus"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && tagName.trim()) {
@@ -114,7 +116,11 @@ export function HistoryView() {
             <CommitSessions sha={selected.hash} />
           </div>
         </div>
-        <DiffView diff={selected.diff} className="flex-1 min-h-0" emptyLabel="No file changes" />
+        <DiffView
+          diff={selected.diff}
+          className="flex-1 min-h-0"
+          emptyLabel={t("git.historyView.noFileChanges")}
+        />
       </div>
     );
   }
@@ -123,7 +129,9 @@ export function HistoryView() {
   return (
     <div className="h-full overflow-y-auto hide-scrollbar">
       {log.length === 0 ? (
-        <div className="px-3 py-8 text-center text-[11px] text-text-tertiary">No history</div>
+        <div className="px-3 py-8 text-center text-[11px] text-text-tertiary">
+          {t("git.historyView.noHistory")}
+        </div>
       ) : (
         log.map((c, i) => (
           <div key={c.hash} className="relative group">
@@ -145,9 +153,9 @@ export function HistoryView() {
                   void run(() => actions.undoCommit());
                 }}
                 className="absolute right-2 top-1.5 opacity-0 group-hover:opacity-100 px-1.5 h-[16px] rounded border border-border-default text-[9px] text-text-secondary hover:text-text-primary hover:bg-bg-hover"
-                title="Undo this commit — changes return to the staged area (blocked once pushed)"
+                title={t("git.historyView.undoCommitTitle")}
               >
-                Undo
+                {t("git.historyView.undoButton")}
               </button>
             )}
           </div>
@@ -158,6 +166,7 @@ export function HistoryView() {
 }
 
 function ResetMenu({ onReset }: { onReset: (mode: "soft" | "mixed" | "hard") => void }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const item = (mode: "soft" | "mixed" | "hard", label: string, desc: string) => (
     <button
@@ -179,7 +188,7 @@ function ResetMenu({ onReset }: { onReset: (mode: "soft" | "mixed" | "hard") => 
             "p-1 rounded hover:bg-bg-hover",
             open ? "text-text-primary" : "text-text-tertiary hover:text-text-primary",
           )}
-          title="Reset current branch to this commit"
+          title={t("git.historyView.resetToThisCommitTitle")}
         >
           <RotateCcw size={12} />
         </button>
@@ -193,11 +202,11 @@ function ResetMenu({ onReset }: { onReset: (mode: "soft" | "mixed" | "hard") => 
           style={{ zIndex: 99999 }}
         >
           <div className="px-3 py-1 text-[9px] uppercase tracking-wider text-text-tertiary">
-            Reset to here
+            {t("git.historyView.resetToHereHeading")}
           </div>
-          {item("soft", "Soft", "keep changes staged")}
-          {item("mixed", "Mixed", "keep changes unstaged")}
-          {item("hard", "Hard", "discard all changes")}
+          {item("soft", t("git.historyView.resetSoftLabel"), t("git.historyView.resetSoftDesc"))}
+          {item("mixed", t("git.historyView.resetMixedLabel"), t("git.historyView.resetMixedDesc"))}
+          {item("hard", t("git.historyView.resetHardLabel"), t("git.historyView.resetHardDesc"))}
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
@@ -222,6 +231,7 @@ interface CommitSession {
  * human work the link rule deliberately did not attribute to an agent.
  */
 function CommitSessions({ sha }: { sha: string }) {
+  const { t } = useTranslation();
   const repoPath = useGitStore.use.repoPath();
   const addTab = useLayoutStore.use.actions().addTab;
   const [sessions, setSessions] = useState<CommitSession[]>([]);
@@ -266,24 +276,26 @@ function CommitSessions({ sha }: { sha: string }) {
   return (
     <div className="mt-2 border-t border-border-subtle pt-2">
       <div className="text-[9px] uppercase tracking-wider text-text-tertiary">
-        Produced by {sessions.length} session{sessions.length === 1 ? "" : "s"}
+        {t("git.historyView.producedBySessions", { count: sessions.length })}
       </div>
       {sessions.map((s) => (
         <button
           key={s.sessionId}
           onClick={() => open(s.sessionId)}
           className="mt-1 w-full rounded border border-border-default bg-bg-raised px-2 py-1.5 text-left hover:bg-bg-hover group"
-          title="Open this Session in the Timeline"
+          title={t("git.historyView.openSessionInTimelineTitle")}
         >
           <div className="flex items-start gap-1.5">
             <Sparkles size={11} className="mt-0.5 shrink-0 text-text-tertiary" />
             <span className="text-[11px] text-text-secondary group-hover:text-text-primary line-clamp-2">
-              {s.title ?? "Untitled session"}
+              {s.title ?? t("git.historyView.untitledSession")}
             </span>
           </div>
           <div className="mt-0.5 pl-[18px] text-[9px] text-text-tertiary truncate">
-            {s.messageCount} message{s.messageCount === 1 ? "" : "s"} · {s.toolCallCount} tool call
-            {s.toolCallCount === 1 ? "" : "s"}
+            {t("git.historyView.sessionSummary", {
+              messages: s.messageCount,
+              toolCalls: s.toolCallCount,
+            })}
             {s.files.length > 0 && ` · ${s.files.join(", ")}`}
           </div>
         </button>

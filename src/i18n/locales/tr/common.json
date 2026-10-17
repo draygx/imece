@@ -935,6 +935,35 @@
       "revertAllChangesTitle": "Tüm değişiklikler geri alınsın mı?",
       "revertAllLabel": "Tümünü geri al",
       "revertAllBody": "<bold>{{count}} hazırlanmamış değişikliğin</bold> tümü atılacak ve yeni eklenen dosyalar silinecek. Bu işlem geri alınamaz."
+    },
+    "historyView": {
+      "backToHistory": "Geçmişe dön",
+      "copySha": "SHA'yı kopyala",
+      "cherryPickTitle": "Geçerli dala cherry-pick uygula",
+      "revertThisCommitTitle": "Bu commit'i geri al",
+      "tagThisCommitTitle": "Bu commit'i etiketle",
+      "tagNamePlaceholder": "etiket adı → Enter",
+      "noFileChanges": "Dosya değişikliği yok",
+      "noHistory": "Geçmiş yok",
+      "undoCommitTitle": "Bu commit'i geri al — değişiklikler hazırlanmış alana döner (push edildikten sonra engellenir)",
+      "undoButton": "Geri Al",
+      "resetToThisCommitTitle": "Geçerli dalı bu commit'e sıfırla",
+      "resetToHereHeading": "Buraya sıfırla",
+      "resetSoftLabel": "Soft",
+      "resetSoftDesc": "değişiklikleri hazırlanmış tut",
+      "resetMixedLabel": "Mixed",
+      "resetMixedDesc": "değişiklikleri hazırlanmamış tut",
+      "resetHardLabel": "Hard",
+      "resetHardDesc": "tüm değişiklikleri at",
+      "producedBySessions": "{{count}} oturum tarafından oluşturuldu",
+      "untitledSession": "Adsız oturum",
+      "openSessionInTimelineTitle": "Bu oturumu Timeline'da aç",
+      "sessionSummary": "{{messages}} mesaj · {{toolCalls}} araç çağrısı"
+    },
+    "commitNode": {
+      "refKindTitle": "{{kind}}: {{name}}",
+      "branchKind": "dal",
+      "tagKind": "etiket"
     }
   }
 }

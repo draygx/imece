@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import {
   type CommitRow,
@@ -33,6 +34,16 @@ function segmentPath(seg: LaneSegment): string {
   return `M${x1},${y1} C${x1},${cy} ${x2},${cy} ${x2},${y2}`;
 }
 
+/** `kind` is a fixed small set ("branch"/"remote"/"tag") known in advance,
+ *  translated by value; anything else (forward-compat) passes through
+ *  unchanged, same pass-through pattern as the chat transcript's verbs. */
+function translateRefKind(kind: RefBadge["kind"], t: (key: string) => string): string {
+  if (kind === "branch") return t("git.commitNode.branchKind");
+  if (kind === "remote") return t("git.branchSwitcher.remoteBadge");
+  if (kind === "tag") return t("git.commitNode.tagKind");
+  return kind;
+}
+
 function badgeClass(kind: RefBadge["kind"], isCurrent: boolean) {
   if (kind === "tag") {
     return "bg-[var(--accent-secondary)]/15 text-[var(--accent-secondary)] border-[var(--accent-secondary)]/30";
@@ -52,6 +63,7 @@ export const CommitRowView = memo(function CommitRowView({
   compact,
   onSelect,
 }: CommitRowViewProps) {
+  const { t } = useTranslation();
   // Per-row gutter width — just wide enough for THIS row's drawing extents.
   // Labels sit immediately after, so a commit on lane 0 hugs the left edge
   // while a commit deeper in the tree pushes its label further right.
@@ -108,7 +120,10 @@ export const CommitRowView = memo(function CommitRowView({
                 "px-1 h-[14px] rounded-sm border text-[9px] font-mono leading-none flex items-center shrink-0",
                 badgeClass(r.kind, r.isCurrent),
               )}
-              title={`${r.kind}: ${r.name}`}
+              title={t("git.commitNode.refKindTitle", {
+                kind: translateRefKind(r.kind, t),
+                name: r.name,
+              })}
             >
               {r.name}
             </span>
