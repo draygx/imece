@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight, ChevronDown, GitCommit, GitBranch, Search } from "lucide-react";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +29,7 @@ function CommitPicker({
   log: CommitLite[];
   onPick: (sha: string) => void;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const selected = commit ? (log.find((c) => c.hash === commit) ?? null) : null;
@@ -35,7 +37,7 @@ function CommitPicker({
     ? selected
       ? `${selected.short_hash} · ${selected.message}`
       : commit.slice(0, 7)
-    : "Working tree";
+    : t("git.changedFilesTree.workingTree");
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -59,7 +61,7 @@ function CommitPicker({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        title="Inspect a commit's changes"
+        title={t("git.changedFilesTree.inspectCommitTitle")}
         className="flex h-6 w-full min-w-0 items-center gap-1 rounded border border-[var(--border-default)] bg-[var(--bg-elevated)] px-1.5 text-[10px] text-[var(--text-primary)] outline-none hover:bg-[var(--bg-hover)]"
       >
         {branch && (
@@ -81,7 +83,7 @@ function CommitPicker({
                 autoFocus
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                placeholder="Search commits…"
+                placeholder={t("git.changedFilesTree.searchCommitsPlaceholder")}
                 spellCheck={false}
                 className="min-w-0 flex-1 bg-transparent text-[10px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
               />
@@ -95,7 +97,7 @@ function CommitPicker({
                   !commit ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]",
                 )}
               >
-                Working tree
+                {t("git.changedFilesTree.workingTree")}
               </button>
               {filtered.map((c) => (
                 <button
@@ -116,7 +118,9 @@ function CommitPicker({
                 </button>
               ))}
               {filtered.length === 0 && (
-                <div className="px-2 py-2 text-[10px] text-[var(--text-tertiary)]">No commits</div>
+                <div className="px-2 py-2 text-[10px] text-[var(--text-tertiary)]">
+                  {t("git.changedFilesTree.noCommits")}
+                </div>
               )}
             </div>
           </div>

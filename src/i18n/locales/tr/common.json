@@ -964,6 +964,25 @@
       "refKindTitle": "{{kind}}: {{name}}",
       "branchKind": "dal",
       "tagKind": "etiket"
+    },
+    "graphPanel": {
+      "notARepoTitle": "Bu bir git deposu değil.",
+      "notARepoHint": "Geçmişini görmek için `.git` klasörü içeren bir proje açın.",
+      "dialogTitle": "Git Grafiği",
+      "exitFullscreen": "Tam ekrandan çık",
+      "fullscreen": "Tam ekran",
+      "refresh": "Yenile",
+      "commitsCount": "{{count}} commit",
+      "loading": "Yükleniyor…",
+      "noCommits": "Commit yok.",
+      "showMoreCommitsTitle": "{{count}} commit daha göster",
+      "showMoreButton": "{{count}} daha göster"
+    },
+    "changedFilesTree": {
+      "workingTree": "Çalışma ağacı",
+      "inspectCommitTitle": "Bir commit'in değişikliklerini incele",
+      "searchCommitsPlaceholder": "Commit'lerde ara…",
+      "noCommits": "Commit yok"
     }
   }
 }

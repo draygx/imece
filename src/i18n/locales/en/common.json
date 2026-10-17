@@ -964,6 +964,25 @@
       "refKindTitle": "{{kind}}: {{name}}",
       "branchKind": "branch",
       "tagKind": "tag"
+    },
+    "graphPanel": {
+      "notARepoTitle": "Not a git repository.",
+      "notARepoHint": "Open a project that contains a `.git` folder to see its history.",
+      "dialogTitle": "Git Graph",
+      "exitFullscreen": "Exit fullscreen",
+      "fullscreen": "Fullscreen",
+      "refresh": "Refresh",
+      "commitsCount": "{{count}} commits",
+      "loading": "Loading…",
+      "noCommits": "No commits.",
+      "showMoreCommitsTitle": "Show {{count}} more commits",
+      "showMoreButton": "Show {{count}} more"
+    },
+    "changedFilesTree": {
+      "workingTree": "Working tree",
+      "inspectCommitTitle": "Inspect a commit's changes",
+      "searchCommitsPlaceholder": "Search commits…",
+      "noCommits": "No commits"
     }
   }
 }
