@@ -1,4 +1,5 @@
 import { useMemo, useRef, useCallback, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { invoke } from "@tauri-apps/api/core";
 import { activeWorkspaceId } from "@/features/workspaces/lib/active-workspace";
@@ -50,6 +51,7 @@ const FILE_TAB_TYPES = new Set(["editor", "media", "svg", "pdf", "unsupported"])
 const EMPTY_DIRTY_DIRS: ReadonlyMap<string, GitStatusPresentation> = new Map();
 
 export function FileTree() {
+  const { t } = useTranslation();
   const tree = useExplorerStore.use.tree();
   const rootPath = useExplorerStore.use.rootPath();
   const loading = useExplorerStore.use.loading();
@@ -86,9 +88,9 @@ export function FileTree() {
   // Active editor tab's file path — used to highlight the matching
   // row in the tree (pill style like the screenshot).
   const activeFilePath = useMemo(() => {
-    const t = tabs.find((tab) => tab.id === activeTabId);
-    if (!t || t.type !== "editor") return null;
-    const fp = (t.data as { filePath?: string }).filePath;
+    const activeTab = tabs.find((tab) => tab.id === activeTabId);
+    if (!activeTab || activeTab.type !== "editor") return null;
+    const fp = (activeTab.data as { filePath?: string }).filePath;
     return typeof fp === "string" ? fp : null;
   }, [tabs, activeTabId]);
 
@@ -266,10 +268,11 @@ export function FileTree() {
       // viewer keeps loading the old (now-missing) path and 404s. Re-opening
       // also re-classifies, so a changed extension routes to the right viewer.
       const stale = tabs.filter(
-        (t) => FILE_TAB_TYPES.has(t.type) && (t.data as { filePath?: string }).filePath === oldPath,
+        (tab) =>
+          FILE_TAB_TYPES.has(tab.type) && (tab.data as { filePath?: string }).filePath === oldPath,
       );
       if (stale.length) {
-        for (const t of stale) closeTab(t.id);
+        for (const tab of stale) closeTab(tab.id);
         handleOpenFile(newPath, name);
       }
     } catch (e) {
@@ -285,11 +288,12 @@ export function FileTree() {
         await invoke("fs_delete", { path: entry.path });
         await reconcileDirectory(dirOfPath(entry.path));
         // Close any open file-backed tab pointing at this file.
-        for (const t of tabs.filter(
-          (t) =>
-            FILE_TAB_TYPES.has(t.type) && (t.data as { filePath?: string }).filePath === entry.path,
+        for (const tab of tabs.filter(
+          (tab) =>
+            FILE_TAB_TYPES.has(tab.type) &&
+            (tab.data as { filePath?: string }).filePath === entry.path,
         )) {
-          closeTab(t.id);
+          closeTab(tab.id);
         }
       }
     } catch (e) {
@@ -359,7 +363,7 @@ export function FileTree() {
       if (parent === destDir) return;
       // No-op: dropping a folder onto itself or a descendant.
       if (destDir === src || destDir.startsWith(src + "/")) {
-        toast.error("Can't move a folder into itself");
+        toast.error(t("explorer.fileTree.cantMoveFolderIntoItself"));
         return;
       }
       try {
@@ -374,7 +378,7 @@ export function FileTree() {
         toast.error(String(e));
       }
     },
-    [resolveCollision, reconcileDirectory],
+    [resolveCollision, reconcileDirectory, t],
   );
 
   // Pointer-based drag-and-drop (Zed/Athas style). Owns the floating
@@ -397,12 +401,12 @@ export function FileTree() {
           copied += 1;
         } catch (e) {
           const name = src.slice(src.lastIndexOf("/") + 1);
-          toast.error(`Couldn't import ${name}: ${String(e)}`);
+          toast.error(t("explorer.fileTree.couldNotImport", { name, error: String(e) }));
         }
       }
       if (copied > 0) await reconcileDirectory(destDir);
     },
-    [resolveCollision, reconcileDirectory],
+    [resolveCollision, reconcileDirectory, t],
   );
 
   const { externalDropPath } = useExternalFileDrop({
@@ -464,7 +468,7 @@ export function FileTree() {
     const rel = path.startsWith(projectPath) ? path.slice(projectPath.length + 1) : path;
     try {
       await invoke("fs_add_to_gitignore", { projectPath, pattern: rel });
-      toast.success(`Added to .gitignore: ${rel}`);
+      toast.success(t("explorer.fileTree.addedToGitignore", { path: rel }));
     } catch (e) {
       toast.error(String(e));
     }
@@ -500,20 +504,20 @@ export function FileTree() {
     // act on `entry`.
     const multi = selectedPaths.length > 1 && selectedPaths.includes(entry.path);
     const targets = multi ? selectionEntries() : [entry];
-    const targetPaths = targets.map((t) => t.path);
-    const countSuffix = multi ? ` (${targets.length})` : "";
+    const targetPaths = targets.map((tgt) => tgt.path);
+    const count = targets.length;
     return (
       <>
         {isDir ? (
           <>
             <ContextMenuItem onSelect={() => beginNewEntry(entry.path, false)}>
-              New File
+              {t("explorer.contextMenu.newFile")}
               <ContextMenuShortcut>
                 <KbdCombo combo="⌘N" />
               </ContextMenuShortcut>
             </ContextMenuItem>
             <ContextMenuItem onSelect={() => beginNewEntry(entry.path, true)}>
-              New Folder
+              {t("explorer.contextMenu.newFolder")}
               <ContextMenuShortcut>
                 <KbdCombo combo="⌥⌘N" />
               </ContextMenuShortcut>
@@ -523,49 +527,53 @@ export function FileTree() {
         ) : (
           <>
             <ContextMenuItem onSelect={() => handleOpenFile(entry.path, entry.name)}>
-              Open
+              {t("explorer.contextMenu.open")}
             </ContextMenuItem>
             <ContextMenuSeparator />
           </>
         )}
         <ContextMenuItem onSelect={() => handleRevealInFinder(entry.path)}>
-          Reveal in Finder
+          {t("explorer.contextMenu.revealInFinder")}
           <ContextMenuShortcut>
             <KbdCombo combo="⌥⌘R" />
           </ContextMenuShortcut>
         </ContextMenuItem>
         {!isDir && (
           <ContextMenuItem onSelect={() => handleOpenInDefaultApp(entry.path)}>
-            Open in Default App
+            {t("explorer.contextMenu.openInDefaultApp")}
           </ContextMenuItem>
         )}
         {isDir && (
           <ContextMenuItem onSelect={() => handleOpenInTerminal(entry.path)}>
-            Open in Terminal
+            {t("explorer.contextMenu.openInTerminal")}
           </ContextMenuItem>
         )}
         <ContextMenuSeparator />
         <ContextMenuItem onSelect={() => setClipboard(targetPaths, true)}>
-          Cut{countSuffix}
+          {multi
+            ? t("explorer.contextMenu.cutWithCount", { count })
+            : t("explorer.contextMenu.cut")}
           <ContextMenuShortcut>
             <KbdCombo combo="⌘X" />
           </ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem onSelect={() => setClipboard(targetPaths, false)}>
-          Copy{countSuffix}
+          {multi
+            ? t("explorer.contextMenu.copyWithCount", { count })
+            : t("explorer.contextMenu.copy")}
           <ContextMenuShortcut>
             <KbdCombo combo="⌘C" />
           </ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem onSelect={() => void handleDuplicate(entry.path)}>
-          Duplicate
+          {t("explorer.contextMenu.duplicate")}
           <ContextMenuShortcut>
             <KbdCombo combo="⌘D" />
           </ContextMenuShortcut>
         </ContextMenuItem>
         {isDir && clipboard && (
           <ContextMenuItem onSelect={() => void handlePaste(entry.path)}>
-            Paste
+            {t("explorer.contextMenu.paste")}
             <ContextMenuShortcut>
               <KbdCombo combo="⌘V" />
             </ContextMenuShortcut>
@@ -573,33 +581,41 @@ export function FileTree() {
         )}
         <ContextMenuSeparator />
         <ContextMenuItem onSelect={() => handleCopyPath(targetPaths)}>
-          Copy Path{countSuffix}
+          {multi
+            ? t("explorer.contextMenu.copyPathWithCount", { count })
+            : t("explorer.contextMenu.copyPath")}
           <ContextMenuShortcut>
             <KbdCombo combo="⌥⌘C" />
           </ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem onSelect={() => handleCopyRelativePath(targetPaths)}>
-          Copy Relative Path{countSuffix}
+          {multi
+            ? t("explorer.contextMenu.copyRelativePathWithCount", { count })
+            : t("explorer.contextMenu.copyRelativePath")}
           <ContextMenuShortcut>
             <KbdCombo combo="⇧⌥⌘C" />
           </ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem onSelect={() => void handleAddToGitignore(entry.path)}>
-          Add to .gitignore
+          {t("explorer.contextMenu.addToGitignore")}
         </ContextMenuItem>
         <ContextMenuItem onSelect={() => beginRename(entry.path)}>
-          Rename
+          {t("explorer.contextMenu.rename")}
           <ContextMenuShortcut>
             <KbdCombo combo="↵" />
           </ContextMenuShortcut>
         </ContextMenuItem>
         <ContextMenuItem
           onSelect={() =>
-            setDeleteTargets(targets.map((t) => ({ path: t.path, name: t.name, isDir: t.is_dir })))
+            setDeleteTargets(
+              targets.map((tgt) => ({ path: tgt.path, name: tgt.name, isDir: tgt.is_dir })),
+            )
           }
         >
-          Delete{countSuffix}
+          {multi
+            ? t("explorer.contextMenu.deleteWithCount", { count })
+            : t("explorer.contextMenu.delete")}
           <ContextMenuShortcut>⌫</ContextMenuShortcut>
         </ContextMenuItem>
       </>
@@ -612,17 +628,17 @@ export function FileTree() {
         disabled={!rootPath}
         onSelect={() => rootPath && beginNewEntry(rootPath, false)}
       >
-        New File
+        {t("explorer.contextMenu.newFile")}
       </ContextMenuItem>
       <ContextMenuItem
         disabled={!rootPath}
         onSelect={() => rootPath && beginNewEntry(rootPath, true)}
       >
-        New Folder
+        {t("explorer.contextMenu.newFolder")}
       </ContextMenuItem>
       {rootPath && clipboard && (
         <ContextMenuItem onSelect={() => void handlePaste(rootPath)}>
-          Paste
+          {t("explorer.contextMenu.paste")}
           <ContextMenuShortcut>
             <KbdCombo combo="⌘V" />
           </ContextMenuShortcut>
@@ -631,16 +647,18 @@ export function FileTree() {
       <ContextMenuSeparator />
       {rootPath && (
         <ContextMenuItem onSelect={() => handleRevealInFinder(rootPath)}>
-          Reveal Project in Finder
+          {t("explorer.contextMenu.revealProjectInFinder")}
         </ContextMenuItem>
       )}
       {rootPath && (
         <ContextMenuItem onSelect={() => handleOpenInTerminal(rootPath)}>
-          Open in Terminal
+          {t("explorer.contextMenu.openInTerminal")}
         </ContextMenuItem>
       )}
       <ContextMenuSeparator />
-      <ContextMenuItem onSelect={() => collapseAll()}>Collapse All</ContextMenuItem>
+      <ContextMenuItem onSelect={() => collapseAll()}>
+        {t("explorer.contextMenu.collapseAll")}
+      </ContextMenuItem>
     </ContextMenuContent>
   );
 
@@ -652,14 +670,14 @@ export function FileTree() {
           file-tree updates live off the filesystem watcher. */}
       <div className="flex items-center justify-between px-3 h-[29px] shrink-0 border-b border-border-default">
         <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider truncate flex-1">
-          {rootPath ? rootPath.split("/").pop() : "Files"}
+          {rootPath ? rootPath.split("/").pop() : t("explorer.fileTree.filesFallback")}
         </span>
         <div className="flex items-center gap-0.5">
           <FoldExpandButton tree={tree} onCollapseAll={collapseAll} onExpandAll={expandAllLoaded} />
           <button
             onClick={handlePickFolder}
             className="p-1 rounded hover:bg-bg-hover text-text-tertiary hover:text-text-secondary transition-colors"
-            title="Open folder"
+            title={t("explorer.fileTree.openFolderTitle")}
           >
             <FolderPlus size={11} />
           </button>
@@ -691,7 +709,7 @@ export function FileTree() {
               <PanelSkeleton rows={10} className="p-2 gap-1.5" />
             ) : flat.length === 0 ? (
               <div className="px-3 py-4 text-[11px] text-text-tertiary text-center">
-                Empty folder
+                {t("explorer.fileTree.emptyFolder")}
               </div>
             ) : (
               <div style={{ height: virtualizer.getTotalSize(), position: "relative" }}>
@@ -800,10 +818,10 @@ export function FileTree() {
             const ts = deleteTargets;
             if (!ts) return;
             void handleDelete(
-              ts.map((t) => ({
-                name: t.name,
-                path: t.path,
-                is_dir: t.isDir,
+              ts.map((tgt) => ({
+                name: tgt.name,
+                path: tgt.path,
+                is_dir: tgt.isDir,
                 is_symlink: false,
                 size: 0,
                 extension: null,
@@ -832,12 +850,17 @@ function FoldExpandButton({
   onCollapseAll: () => void;
   onExpandAll: () => void;
 }) {
+  const { t } = useTranslation();
   const anyExpanded = useMemo(() => hasAnyExpanded(tree), [tree]);
   return (
     <button
       onClick={anyExpanded ? onCollapseAll : onExpandAll}
       className="p-1 rounded hover:bg-bg-hover text-text-tertiary hover:text-text-secondary transition-colors"
-      title={anyExpanded ? "Collapse all" : "Expand all"}
+      title={
+        anyExpanded
+          ? t("explorer.fileTree.collapseAllTitle")
+          : t("explorer.fileTree.expandAllTitle")
+      }
     >
       {anyExpanded ? <FoldVertical size={11} /> : <UnfoldVertical size={11} />}
     </button>

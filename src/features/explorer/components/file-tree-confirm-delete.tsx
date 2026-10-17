@@ -1,4 +1,5 @@
 import * as Dialog from "@radix-ui/react-dialog";
+import { Trans, useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 
 interface ConfirmDeleteProps {
@@ -32,11 +33,13 @@ export function FileTreeConfirmDelete({
   count = 1,
   title,
   body,
-  confirmLabel = "Delete",
+  confirmLabel,
   onConfirm,
   onOpenChange,
 }: ConfirmDeleteProps) {
+  const { t } = useTranslation();
   const multi = count > 1;
+  const resolvedConfirmLabel = confirmLabel ?? t("explorer.confirmDelete.deleteLabel");
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
@@ -58,23 +61,27 @@ export function FileTreeConfirmDelete({
           }}
         >
           <Dialog.Title className="text-[13px] font-semibold text-text-primary">
-            {title ?? (multi ? `Delete ${count} items?` : `Delete ${isDir ? "folder" : "file"}?`)}
+            {title ??
+              (multi
+                ? t("explorer.confirmDelete.deleteItemsTitle", { count })
+                : isDir
+                  ? t("explorer.confirmDelete.deleteFolderTitle")
+                  : t("explorer.confirmDelete.deleteFileTitle"))}
           </Dialog.Title>
           <p className="text-[12px] text-text-secondary leading-relaxed">
-            {body ??
-              (multi ? (
-                <>
-                  <span className="font-mono text-text-primary">{name}</span> and {count - 1} other{" "}
-                  {count - 1 === 1 ? "item" : "items"} will be permanently deleted. This can't be
-                  undone.
-                </>
-              ) : (
-                <>
-                  <span className="font-mono text-text-primary">{name}</span> will be permanently{" "}
-                  {isDir ? "removed along with everything inside it" : "deleted"}. This can't be
-                  undone.
-                </>
-              ))}
+            {body ?? (
+              <Trans
+                i18nKey={
+                  multi
+                    ? "explorer.confirmDelete.multiBody"
+                    : isDir
+                      ? "explorer.confirmDelete.deleteFolderBody"
+                      : "explorer.confirmDelete.deleteFileBody"
+                }
+                values={{ name, count: count - 1 }}
+                components={{ bold: <span className="font-mono text-text-primary" /> }}
+              />
+            )}
           </p>
           <div className="flex items-center justify-end gap-2 mt-1">
             <button
@@ -85,7 +92,7 @@ export function FileTreeConfirmDelete({
                 "text-text-secondary hover:bg-bg-hover hover:text-text-primary",
               )}
             >
-              Cancel
+              {t("explorer.confirmDelete.cancel")}
             </button>
             <button
               type="button"
@@ -96,7 +103,7 @@ export function FileTreeConfirmDelete({
                 "text-white bg-[var(--status-error)] hover:opacity-90",
               )}
             >
-              {confirmLabel}
+              {resolvedConfirmLabel}
             </button>
           </div>
         </Dialog.Content>
