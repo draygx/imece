@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { RefreshCw, ArrowDown, ArrowUp, UploadCloud, Loader2, GitMerge } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGitStore } from "../../stores/git-store";
@@ -19,6 +20,7 @@ type View = "changes" | "history" | "stashes";
  * the workspace repo's git workflow.
  */
 export function GitManagerPanel() {
+  const { t } = useTranslation();
   const isRepo = useGitStore.use.isRepo();
   const repoPath = useGitStore.use.repoPath();
   const ahead = useGitStore.use.ahead();
@@ -57,7 +59,7 @@ export function GitManagerPanel() {
   if (!isRepo) {
     return (
       <div className="px-3 py-8 text-center text-[11px] text-text-tertiary">
-        Not a git repository
+        {t("git.manager.notARepo")}
       </div>
     );
   }
@@ -82,7 +84,9 @@ export function GitManagerPanel() {
         <button
           onClick={() => setMergeOpen(true)}
           className="flex items-center justify-center w-6 h-6 rounded text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors cursor-pointer shrink-0"
-          title={`Merge a branch into ${current?.name ?? "the current branch"}`}
+          title={t("git.manager.mergeIntoTitle", {
+            branch: current?.name ?? t("git.manager.currentBranchFallback"),
+          })}
         >
           <GitMerge size={12} />
         </button>
@@ -90,7 +94,7 @@ export function GitManagerPanel() {
           <ToolbarBtn
             onClick={() => run("fetch", () => actions.fetch())}
             busy={busy === "fetch"}
-            title="Fetch"
+            title={t("git.manager.fetch")}
             icon={<RefreshCw size={12} />}
           />
           {hasUpstream ? (
@@ -98,14 +102,14 @@ export function GitManagerPanel() {
               <ToolbarBtn
                 onClick={() => run("pull", () => actions.pull(false))}
                 busy={busy === "pull"}
-                title="Pull"
+                title={t("git.manager.pull")}
                 icon={<ArrowDown size={12} />}
                 badge={behind > 0 ? behind : undefined}
               />
               <ToolbarBtn
                 onClick={() => run("push", () => actions.push())}
                 busy={busy === "push"}
-                title="Push"
+                title={t("git.manager.push")}
                 icon={<ArrowUp size={12} />}
                 badge={ahead > 0 ? ahead : undefined}
               />
@@ -114,9 +118,9 @@ export function GitManagerPanel() {
             <ToolbarBtn
               onClick={() => run("publish", () => actions.publishBranch())}
               busy={busy === "publish"}
-              title="Publish branch (push -u origin)"
+              title={t("git.manager.publishTitle")}
               icon={<UploadCloud size={12} />}
-              label="Publish"
+              label={t("git.manager.publish")}
             />
           )}
         </div>
@@ -125,13 +129,15 @@ export function GitManagerPanel() {
       {/* View tabs */}
       <div className="shrink-0 flex items-center gap-0.5 px-1.5 h-[29px] border-b border-border-default">
         <ViewTab active={view === "changes"} onClick={() => setView("changes")}>
-          Changes{changedCount > 0 ? ` (${changedCount})` : ""}
+          {changedCount > 0
+            ? t("git.manager.changesWithCount", { count: changedCount })
+            : t("git.manager.changes")}
         </ViewTab>
         <ViewTab active={view === "history"} onClick={() => setView("history")}>
-          History
+          {t("git.manager.history")}
         </ViewTab>
         <ViewTab active={view === "stashes"} onClick={() => setView("stashes")}>
-          Stashes
+          {t("git.manager.stashes")}
         </ViewTab>
       </div>
 

@@ -64,20 +64,21 @@ const DIALOG_CODES: ReadonlySet<GitErrorCode> = new Set([
 /** Codes that are ordinary outcomes, not failures — quiet info toast. */
 const INFO_CODES: ReadonlySet<GitErrorCode> = new Set(["nothing-to-commit", "no-op-in-progress"]);
 
-const TITLES: Partial<Record<GitErrorCode, string>> = {
-  "auth-failed": "Authentication failed",
-  "non-fast-forward": "Push rejected — pull first",
-  "force-push-rejected": "Force push rejected",
-  "protected-branch": "Branch is protected",
-  "push-rejected": "Push rejected",
-  "hook-failed": "A git hook rejected this",
-  "lock-file-exists": "Repository is locked",
-  "local-changes-overwritten": "Local changes in the way",
-  "gpg-failed-to-sign": "Commit signing failed",
+const TITLE_KEYS: Partial<Record<GitErrorCode, string>> = {
+  "auth-failed": "git.errors.authFailed",
+  "non-fast-forward": "git.errors.nonFastForward",
+  "force-push-rejected": "git.errors.forcePushRejected",
+  "protected-branch": "git.errors.protectedBranch",
+  "push-rejected": "git.errors.pushRejected",
+  "hook-failed": "git.errors.hookFailed",
+  "lock-file-exists": "git.errors.lockFileExists",
+  "local-changes-overwritten": "git.errors.localChangesOverwritten",
+  "gpg-failed-to-sign": "git.errors.gpgFailedToSign",
 };
 
-export function gitErrorTitle(payload: GitErrorPayload): string {
-  return TITLES[payload.code] ?? "Git error";
+export function gitErrorTitle(payload: GitErrorPayload, t: (key: string) => string): string {
+  const key = TITLE_KEYS[payload.code];
+  return t(key ?? "git.errors.genericTitle");
 }
 
 /**

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AlertTriangle, Check, Copy } from "lucide-react";
 import { useGitStore } from "../../stores/git-store";
@@ -12,6 +13,7 @@ import { copyText } from "@/lib/clipboard";
  * "what happened" and "what git actually said".
  */
 export function GitErrorDialog() {
+  const { t } = useTranslation();
   const payload = useGitStore.use.errorDialog();
   const actions = useGitStore.use.actions();
   // Feedback for the copy button — without it a clipboard failure and a
@@ -37,7 +39,7 @@ export function GitErrorDialog() {
               <div className="px-4 pt-3.5 pb-3 border-b border-border-default">
                 <Dialog.Title className="text-[13px] font-semibold text-text-primary flex items-center gap-1.5">
                   <AlertTriangle size={13} className="text-[var(--status-error)] shrink-0" />
-                  {gitErrorTitle(payload)}
+                  {gitErrorTitle(payload, t)}
                 </Dialog.Title>
                 <Dialog.Description className="text-[11px] text-text-secondary mt-1.5">
                   {payload.message}
@@ -74,10 +76,10 @@ export function GitErrorDialog() {
                     <button
                       onClick={() => onCopy(payload.rawStderr)}
                       className="flex items-center gap-1 px-2 h-7 rounded text-[11px] text-text-secondary hover:bg-bg-hover transition-colors"
-                      title="Copy git output"
+                      title={t("git.errorDialog.copyOutputTitle")}
                     >
                       {copied ? <Check size={11} /> : <Copy size={11} />}
-                      {copied ? "Copied" : "Copy output"}
+                      {copied ? t("git.errorDialog.copied") : t("git.errorDialog.copyOutput")}
                     </button>
                   )}
                   <button
@@ -88,7 +90,7 @@ export function GitErrorDialog() {
                     // pairs the fill with the inverse token for this reason.
                     className="px-3 h-7 rounded text-[11px] font-medium text-text-inverse bg-accent hover:opacity-90 transition-colors"
                   >
-                    Dismiss
+                    {t("git.errorDialog.dismiss")}
                   </button>
                 </div>
               </div>

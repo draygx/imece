@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import { GitBranch, Check, Plus, Search, Trash2, GitMerge } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -7,6 +8,7 @@ import { handleGitError } from "../../lib/git-errors";
 
 /** Branch switcher popover: filter, checkout, create, delete, merge-into-current. */
 export function BranchSwitcher() {
+  const { t } = useTranslation();
   const branch = useGitStore.use.branch();
   const branchesFull = useGitStore.use.branchesFull();
   const actions = useGitStore.use.actions();
@@ -43,7 +45,7 @@ export function BranchSwitcher() {
       <Popover.Trigger asChild>
         <button
           className="flex items-center gap-1.5 h-6 px-2 rounded text-[11px] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-hover transition-colors cursor-pointer min-w-0"
-          title="Switch branch"
+          title={t("git.branchSwitcher.switchBranchTitle")}
         >
           <GitBranch size={12} className="shrink-0" />
           <span className="truncate max-w-[120px]">{branch || "—"}</span>
@@ -62,7 +64,7 @@ export function BranchSwitcher() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Filter branches…"
+              placeholder={t("git.branchSwitcher.filterPlaceholder")}
               autoFocus
               className="flex-1 bg-transparent outline-none text-[11px] text-text-primary placeholder:text-text-tertiary min-w-0"
             />
@@ -95,7 +97,7 @@ export function BranchSwitcher() {
                 <span className="truncate flex-1 font-mono">{b.name}</span>
                 {b.isRemote && (
                   <span className="shrink-0 text-[8px] font-mono uppercase tracking-wide text-text-tertiary border border-border-default rounded px-1">
-                    remote
+                    {t("git.branchSwitcher.remoteBadge")}
                   </span>
                 )}
                 {(b.ahead > 0 || b.behind > 0) && (
@@ -111,7 +113,7 @@ export function BranchSwitcher() {
                         void run(() => actions.mergeBranch(b.name));
                       }}
                       className="p-0.5 rounded text-text-tertiary hover:text-text-primary"
-                      title={`Merge ${b.name} into ${branch}`}
+                      title={t("git.branchSwitcher.mergeIntoTitle", { name: b.name, branch })}
                     >
                       <GitMerge size={11} />
                     </button>
@@ -121,7 +123,7 @@ export function BranchSwitcher() {
                         void run(() => actions.deleteBranch(b.name));
                       }}
                       className="p-0.5 rounded text-text-tertiary hover:text-[var(--status-error)]"
-                      title={`Delete ${b.name}`}
+                      title={t("git.branchSwitcher.deleteTitle", { name: b.name })}
                     >
                       <Trash2 size={11} />
                     </button>
@@ -131,7 +133,7 @@ export function BranchSwitcher() {
             ))}
             {filtered.length === 0 && (
               <div className="px-3 py-2 text-[10px] text-text-tertiary text-center">
-                No branches
+                {t("git.branchSwitcher.noBranches")}
               </div>
             )}
           </div>
@@ -142,7 +144,7 @@ export function BranchSwitcher() {
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
                 autoFocus
-                placeholder="new-branch-name"
+                placeholder={t("git.branchSwitcher.newBranchPlaceholder")}
                 className="w-full h-7 rounded border border-border-default bg-bg-input px-2 text-[11px] font-mono text-text-primary outline-none focus:border-border-focus"
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && newName.trim()) {
@@ -160,7 +162,7 @@ export function BranchSwitcher() {
                 className="w-full flex items-center gap-1.5 h-7 px-2 rounded text-[11px] text-text-secondary hover:bg-bg-hover hover:text-text-primary transition-colors"
               >
                 <Plus size={12} />
-                New branch from {branch}
+                {t("git.branchSwitcher.newBranchFrom", { branch })}
               </button>
             )}
           </div>
