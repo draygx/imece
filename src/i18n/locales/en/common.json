@@ -486,6 +486,48 @@
         "footerHint": "↑↓ · ↵ run · ⎋ close"
       }
     },
+    "transcript": {
+      "contextAttachedTitle": "Context attached with @-mentions",
+      "contextAttachedCount": "{{count}} attached",
+      "showMore": "Show more",
+      "showLess": "Show less",
+      "thinking": "Thinking…",
+      "thoughtProcess": "Thought process",
+      "verbs": {
+        "ran": "Ran",
+        "created": "Created",
+        "edited": "Edited",
+        "read": "Read",
+        "searched": "Searched"
+      },
+      "markerOpenTitle": "{{verb}} {{detail}} — open in side panel",
+      "toolCalls": "Tool calls",
+      "callCount": "{{count}} calls",
+      "modifiedCount": "{{count}} modified",
+      "hideToolCalls": "Hide tool calls",
+      "showToolCalls": "Show tool calls",
+      "timeGapMinutes": "{{value}}m ago",
+      "timeGapHours": "{{value}}h ago",
+      "timeGapDays": "{{value}}d ago",
+      "filesChangedCount": "{{count}} files changed",
+      "filesReadCount": "{{count}} files read",
+      "saveLabel": "Save",
+      "saveTitle": "Save this thread to the knowledge base",
+      "showChanges": "Show changes",
+      "showFewer": "Show fewer",
+      "moreCount": "+{{count}} more",
+      "userRowActions": {
+        "couldNotCopy": "Could not copy to the clipboard",
+        "retryMessage": "Retry this message",
+        "pinMessage": "Pin message",
+        "resendMessage": "Send this prompt again",
+        "copyMessage": "Copy message"
+      },
+      "stillStarting": "Still starting… this can take a few minutes on first run.",
+      "switchAgent": "Switch agent",
+      "copyDiagnostics": "Copy diagnostics",
+      "noMessagesYet": "No messages yet."
+    },
     "thinking": "Thinking",
     "header": {
       "newSession": "New session",

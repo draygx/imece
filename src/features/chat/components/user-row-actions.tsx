@@ -66,6 +66,7 @@
 // when it changes under the pointer); the copied state rides on the icon.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Copy, Forward, Pin, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -138,6 +139,7 @@ export function UserRowActions({
    *  this answer can never disagree. */
   toggleAbove: boolean;
 }) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   // The one subscription a row is allowed. It is not the chat store: the pins
   // store is written only when someone clicks a pin, so this never fires on a
@@ -160,14 +162,14 @@ export function UserRowActions({
       // the tick simply never appears and the user pastes stale clipboard
       // contents somewhere else before noticing.
       if (!ok) {
-        toast.error("Could not copy to the clipboard");
+        toast.error(t("chat.transcript.userRowActions.couldNotCopy"));
         return;
       }
       setCopied(true);
       if (timer.current) clearTimeout(timer.current);
       timer.current = setTimeout(() => setCopied(false), 1_200);
     });
-  }, [text]);
+  }, [text, t]);
 
   const onRetry = useCallback(() => void retryLastTurn(tabId), [tabId]);
 
@@ -219,17 +221,21 @@ export function UserRowActions({
       )}
     >
       {canRetry && (
-        <ActionButton label="Retry this message" onClick={onRetry}>
+        <ActionButton label={t("chat.transcript.userRowActions.retryMessage")} onClick={onRetry}>
           <RotateCcw size={12} />
         </ActionButton>
       )}
-      <ActionButton label="Pin message" onClick={onPin} active={pinned}>
+      <ActionButton
+        label={t("chat.transcript.userRowActions.pinMessage")}
+        onClick={onPin}
+        active={pinned}
+      >
         <Pin size={12} fill={pinned ? "currentColor" : "none"} />
       </ActionButton>
-      <ActionButton label="Send this prompt again" onClick={onResend}>
+      <ActionButton label={t("chat.transcript.userRowActions.resendMessage")} onClick={onResend}>
         <Forward size={12} />
       </ActionButton>
-      <ActionButton label="Copy message" onClick={onCopy}>
+      <ActionButton label={t("chat.transcript.userRowActions.copyMessage")} onClick={onCopy}>
         {copied ? <Check size={12} /> : <Copy size={12} />}
       </ActionButton>
     </div>
