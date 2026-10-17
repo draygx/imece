@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import * as Popover from "@radix-ui/react-popover";
 import {
@@ -21,6 +22,17 @@ type SortMode = "default" | "most-changes";
 
 export type HunkAction = "stage" | "unstage" | "discard";
 
+const HUNK_ACTION_HUNK_KEYS: Record<HunkAction, string> = {
+  stage: "git.diffView.stageHunk",
+  unstage: "git.diffView.unstageHunk",
+  discard: "git.diffView.discardHunk",
+};
+const HUNK_ACTION_LINES_KEYS: Record<HunkAction, string> = {
+  stage: "git.diffView.stageLines",
+  unstage: "git.diffView.unstageLines",
+  discard: "git.diffView.discardLines",
+};
+
 /**
  * Virtualized unified-diff renderer. Takes raw `git diff`/`git show` text and
  * draws per-file collapsible cards with red/green hunks. Shared by the
@@ -35,7 +47,7 @@ export function DiffView({
   onOpenDiff,
   onRefresh,
   filters = false,
-  emptyLabel = "No changes",
+  emptyLabel,
   className,
   hunkActions,
   onHunkAction,
@@ -53,6 +65,8 @@ export function DiffView({
   /** Invoked with the DISPLAYED hunk (+ selected line indices, if any). */
   onHunkAction?: (action: HunkAction, file: string, hunk: DiffHunk, selected?: number[]) => void;
 }) {
+  const { t } = useTranslation();
+  const resolvedEmptyLabel = emptyLabel ?? t("git.diffView.noChangesDefault");
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [query, setQuery] = useState("");
   const [sortMode, setSortMode] = useState<SortMode>("default");
@@ -145,7 +159,7 @@ export function DiffView({
     <div className="shrink-0 border-b border-border-default">
       <div className="flex items-center justify-between px-3 pt-2">
         <span className="text-[10px] font-mono text-text-tertiary">
-          {files.length} file{files.length !== 1 ? "s" : ""}{" "}
+          {t("git.diffView.filesCount", { count: files.length })}{" "}
           <span className="text-success">+{totalAdd}</span>{" "}
           <span className="text-error">-{totalDel}</span>
         </span>
@@ -155,7 +169,7 @@ export function DiffView({
               setCollapsed(anyExpanded ? new Set(files.map((f) => f.path)) : new Set())
             }
             className="p-1 rounded hover:bg-bg-hover text-text-tertiary cursor-pointer"
-            title={anyExpanded ? "Collapse all" : "Expand all"}
+            title={anyExpanded ? t("git.diffView.collapseAll") : t("git.diffView.expandAll")}
           >
             {anyExpanded ? <FoldVertical size={10} /> : <UnfoldVertical size={10} />}
           </button>
@@ -163,7 +177,7 @@ export function DiffView({
             <button
               onClick={onRefresh}
               className="p-1 rounded hover:bg-bg-hover text-text-tertiary cursor-pointer"
-              title="Refresh diff"
+              title={t("git.diffView.refreshDiffTitle")}
             >
               <RefreshCw size={10} />
             </button>
@@ -177,7 +191,7 @@ export function DiffView({
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter files…"
+            placeholder={t("git.diffView.filterFilesPlaceholder")}
             className="flex-1 bg-transparent outline-none text-[10px] text-text-primary placeholder:text-text-tertiary min-w-0"
           />
         </div>
@@ -189,7 +203,7 @@ export function DiffView({
               ? "text-accent bg-bg-selected"
               : "text-text-tertiary hover:bg-bg-hover",
           )}
-          title="Sort by most changes"
+          title={t("git.diffView.sortByMostChangesTitle")}
         >
           <ArrowDownWideNarrow size={11} />
         </button>
@@ -206,7 +220,9 @@ export function DiffView({
     <div className={cn("flex flex-col min-h-0 min-w-0", className)}>
       {header}
       {files.length === 0 ? (
-        <div className="px-3 py-8 text-center text-[11px] text-text-tertiary">{emptyLabel}</div>
+        <div className="px-3 py-8 text-center text-[11px] text-text-tertiary">
+          {resolvedEmptyLabel}
+        </div>
       ) : (
         <div
           ref={scrollRef}
@@ -255,7 +271,7 @@ export function DiffView({
                           onOpenDiff(file.path);
                         }}
                         className="opacity-0 group-hover:opacity-100 p-0.5 text-text-tertiary hover:text-text-primary"
-                        title="Open in diff view"
+                        title={t("git.changesView.openInDiffViewTitle")}
                       >
                         <GitCompare size={10} />
                       </button>
@@ -267,7 +283,7 @@ export function DiffView({
                           onOpenFile(file.path);
                         }}
                         className="opacity-0 group-hover:opacity-100 p-0.5 text-text-tertiary hover:text-text-primary"
-                        title="Open in code editor"
+                        title={t("git.changesView.openInCodeEditorTitle")}
                       >
                         <ExternalLink size={9} />
                       </button>
@@ -283,8 +299,10 @@ export function DiffView({
               if (row.kind === "hunk-header") {
                 const sel = lineSel.get(`${row.fileIndex}:${row.hunkIndex}`);
                 const nSel = sel?.size ?? 0;
-                const label = (verb: string) =>
-                  nSel > 0 ? `${verb} ${nSel} line${nSel === 1 ? "" : "s"}` : `${verb} hunk`;
+                const label = (action: HunkAction) =>
+                  nSel > 0
+                    ? t(HUNK_ACTION_LINES_KEYS[action], { count: nSel })
+                    : t(HUNK_ACTION_HUNK_KEYS[action]);
                 return (
                   <div
                     key={vr.index}
@@ -311,7 +329,7 @@ export function DiffView({
                             }
                             className="px-1.5 h-[16px] rounded border border-border-default text-[9px] text-text-secondary hover:text-text-primary hover:bg-bg-hover"
                           >
-                            {label("Stage")}
+                            {label("stage")}
                           </button>
                         )}
                         {hunkActions.includes("unstage") && (
@@ -327,7 +345,7 @@ export function DiffView({
                             }
                             className="px-1.5 h-[16px] rounded border border-border-default text-[9px] text-text-secondary hover:text-text-primary hover:bg-bg-hover"
                           >
-                            {label("Unstage")}
+                            {label("unstage")}
                           </button>
                         )}
                         {hunkActions.includes("discard") && (
@@ -343,7 +361,7 @@ export function DiffView({
                             }
                             className="px-1.5 h-[16px] rounded border border-border-default text-[9px] text-text-secondary hover:text-[var(--status-error)] hover:bg-bg-hover"
                           >
-                            {label("Discard")}
+                            {label("discard")}
                           </button>
                         )}
                       </span>
@@ -384,7 +402,7 @@ export function DiffView({
                       ? () => toggleLine(row.fileIndex, row.hunkIndex, row.lineIndex)
                       : undefined
                   }
-                  title={selectable && isChange ? "Click to select for partial staging" : undefined}
+                  title={selectable && isChange ? t("git.diffView.clickToSelectTitle") : undefined}
                   // Clip long lines to the viewport width (no horizontal scroll,
                   // no row overflow/overlap). Users open the full diff view to
                   // read a truncated line in its entirety.
@@ -463,6 +481,7 @@ function LangFilterPopover({
   active: string | null;
   onSelect: (lang: string | null) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <Popover.Root>
       <Popover.Trigger asChild>
@@ -471,7 +490,7 @@ function LangFilterPopover({
             "p-1 rounded transition-colors cursor-pointer",
             active ? "text-accent bg-bg-selected" : "text-text-tertiary hover:bg-bg-hover",
           )}
-          title="Filter by language"
+          title={t("git.diffView.filterByLanguageTitle")}
         >
           <Code size={11} />
         </button>
@@ -491,7 +510,7 @@ function LangFilterPopover({
               !active ? "text-accent" : "text-text-secondary",
             )}
           >
-            All languages
+            {t("git.diffView.allLanguages")}
           </button>
           {languages.map((lang) => (
             <button
@@ -518,6 +537,7 @@ function FileListPopover({
   files: DiffFile[];
   onOpen?: (path: string) => void;
 }) {
+  const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const filtered = files.filter((f) => f.path.toLowerCase().includes(search.toLowerCase()));
   return (
@@ -525,7 +545,7 @@ function FileListPopover({
       <Popover.Trigger asChild>
         <button
           className="p-1 rounded hover:bg-bg-hover text-text-tertiary cursor-pointer"
-          title="All changed files"
+          title={t("git.diffView.allChangedFilesTitle")}
         >
           <MoreHorizontal size={10} />
         </button>
@@ -543,7 +563,7 @@ function FileListPopover({
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search files…"
+              placeholder={t("git.diffView.searchFilesPlaceholder")}
               className="flex-1 bg-transparent outline-none text-[10px] text-text-primary placeholder:text-text-tertiary"
               autoFocus
               onKeyDown={(e) => e.stopPropagation()}
@@ -565,7 +585,7 @@ function FileListPopover({
             ))}
             {filtered.length === 0 && (
               <div className="px-3 py-2 text-[10px] text-text-tertiary text-center">
-                No files found
+                {t("git.diffView.noFilesFound")}
               </div>
             )}
           </div>

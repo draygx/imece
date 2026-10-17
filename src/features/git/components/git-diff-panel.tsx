@@ -1,4 +1,5 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { listen } from "@tauri-apps/api/event";
 import {
@@ -314,6 +315,7 @@ export function GitDiffPanel({
   onSelectFile,
   onOpenInEditor,
 }: GitDiffPanelProps) {
+  const { t } = useTranslation();
   const storeRepo = useGitStore.use.repoPath();
   const repoPath = repoPathProp || storeRepo || "";
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -497,17 +499,21 @@ export function GitDiffPanel({
             <button
               onClick={toggleTree}
               className="-ml-1 rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer"
-              title={treeCollapsed ? "Show changed files" : "Hide changed files"}
+              title={
+                treeCollapsed
+                  ? t("git.diffPanel.showChangedFilesTitle")
+                  : t("git.diffPanel.hideChangedFilesTitle")
+              }
             >
               {treeCollapsed ? <PanelLeftOpen size={12} /> : <PanelLeftClose size={12} />}
             </button>
             <FileCode2 size={12} className="shrink-0 text-[var(--text-tertiary)]" />
             <span className="truncate font-mono text-[11px] text-[var(--text-secondary)]">
-              {file || "Git Diff"}
+              {file || t("git.diffPanel.defaultTitle")}
             </span>
             {staged && (
               <span className="shrink-0 rounded bg-[var(--bg-elevated)] px-1.5 py-px text-[9px] uppercase tracking-wide text-[var(--text-tertiary)]">
-                staged
+                {t("git.diffPanel.stagedBadge")}
               </span>
             )}
             {stats && (
@@ -519,13 +525,13 @@ export function GitDiffPanel({
             {!!file && (
               <div className="ml-auto flex items-center gap-0.5">
                 <span className="mr-1 font-mono text-[10px] text-[var(--text-tertiary)] tabular-nums">
-                  {diffCount} diff{diffCount !== 1 ? "s" : ""}
+                  {t("git.diffPanel.diffsCount", { count: diffCount })}
                 </span>
                 <button
                   onClick={() => jump(-1)}
                   disabled={diffCount === 0}
                   className="rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] disabled:opacity-30 cursor-pointer"
-                  title="Previous change"
+                  title={t("git.diffPanel.previousChangeTitle")}
                 >
                   <ChevronUp size={12} />
                 </button>
@@ -533,14 +539,14 @@ export function GitDiffPanel({
                   onClick={() => jump(1)}
                   disabled={diffCount === 0}
                   className="rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] disabled:opacity-30 cursor-pointer"
-                  title="Next change"
+                  title={t("git.diffPanel.nextChangeTitle")}
                 >
                   <ChevronDown size={12} />
                 </button>
                 <button
                   onClick={() => void refetch()}
                   className="rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer"
-                  title="Refresh"
+                  title={t("git.graphPanel.refresh")}
                 >
                   <RefreshCw size={11} />
                 </button>
@@ -550,7 +556,7 @@ export function GitDiffPanel({
                     onOpenInEditor?.();
                   }}
                   className="rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer"
-                  title="Open in editor"
+                  title={t("git.conflictsView.openInEditorTitle")}
                 >
                   <ExternalLink size={11} />
                 </button>
@@ -561,19 +567,19 @@ export function GitDiffPanel({
           {/* Body */}
           {!file ? (
             <div className="flex flex-1 items-center justify-center px-3 text-center text-[11px] text-[var(--text-tertiary)]">
-              Pick a file from the left to view its diff — or choose a commit to browse.
+              {t("git.diffPanel.pickFileHint")}
             </div>
           ) : isLoading ? (
             <div className="px-3 py-8 text-center text-[11px] text-[var(--text-tertiary)]">
-              Loading diff…
+              {t("git.diffPanel.loadingDiff")}
             </div>
           ) : data?.isBinary ? (
             <div className="px-3 py-8 text-center text-[11px] text-[var(--text-tertiary)]">
-              Binary file — no text diff to show.
+              {t("git.diffPanel.binaryFileHint")}
             </div>
           ) : rows.length === 0 ? (
             <div className="px-3 py-8 text-center text-[11px] text-[var(--text-tertiary)]">
-              No changes.
+              {t("git.diffPanel.noChanges")}
             </div>
           ) : (
             <div className="flex min-h-0 flex-1">

@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, type RefObject } from "react";
+import { useTranslation } from "react-i18next";
 import type { DiffRow } from "../lib/git-diff-api";
 
 interface DiffMinimapProps {
@@ -46,6 +47,7 @@ function rowKind(r: DiffRow): Kind {
  * taller than the strip, the canvas pans with the editor scroll (Atom-style).
  */
 export const DiffMinimap = memo(function DiffMinimap({ rows, scrollRef }: DiffMinimapProps) {
+  const { t } = useTranslation();
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
@@ -162,7 +164,7 @@ export const DiffMinimap = memo(function DiffMinimap({ rows, scrollRef }: DiffMi
       ref={boxRef}
       className="relative shrink-0 cursor-pointer overflow-hidden border-l border-[var(--border-default)] bg-[var(--bg-secondary)]"
       style={{ width: WIDTH }}
-      title="Code map — click or drag to scroll"
+      title={t("git.diffMinimap.title")}
       onPointerDown={(e) => {
         dragging.current = true;
         e.currentTarget.setPointerCapture(e.pointerId);

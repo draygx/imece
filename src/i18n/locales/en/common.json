@@ -964,6 +964,65 @@
       "refKindTitle": "{{kind}}: {{name}}",
       "branchKind": "branch",
       "tagKind": "tag"
+    },
+    "graphPanel": {
+      "notARepoTitle": "Not a git repository.",
+      "notARepoHint": "Open a project that contains a `.git` folder to see its history.",
+      "dialogTitle": "Git Graph",
+      "exitFullscreen": "Exit fullscreen",
+      "fullscreen": "Fullscreen",
+      "refresh": "Refresh",
+      "commitsCount": "{{count}} commits",
+      "loading": "Loading…",
+      "noCommits": "No commits.",
+      "showMoreCommitsTitle": "Show {{count}} more commits",
+      "showMoreButton": "Show {{count}} more"
+    },
+    "changedFilesTree": {
+      "workingTree": "Working tree",
+      "inspectCommitTitle": "Inspect a commit's changes",
+      "searchCommitsPlaceholder": "Search commits…",
+      "noCommits": "No commits"
+    },
+    "diffView": {
+      "filesCount": "{{count}} files",
+      "collapseAll": "Collapse all",
+      "expandAll": "Expand all",
+      "refreshDiffTitle": "Refresh diff",
+      "filterFilesPlaceholder": "Filter files…",
+      "sortByMostChangesTitle": "Sort by most changes",
+      "stageHunk": "Stage hunk",
+      "stageLines": "Stage {{count}} lines",
+      "unstageHunk": "Unstage hunk",
+      "unstageLines": "Unstage {{count}} lines",
+      "discardHunk": "Discard hunk",
+      "discardLines": "Discard {{count}} lines",
+      "clickToSelectTitle": "Click to select for partial staging",
+      "filterByLanguageTitle": "Filter by language",
+      "allLanguages": "All languages",
+      "allChangedFilesTitle": "All changed files",
+      "searchFilesPlaceholder": "Search files…",
+      "noFilesFound": "No files found",
+      "noChangesDefault": "No changes"
+    },
+    "diffPanel": {
+      "showChangedFilesTitle": "Show changed files",
+      "hideChangedFilesTitle": "Hide changed files",
+      "defaultTitle": "Git Diff",
+      "stagedBadge": "staged",
+      "diffsCount": "{{count}} diffs",
+      "previousChangeTitle": "Previous change",
+      "nextChangeTitle": "Next change",
+      "pickFileHint": "Pick a file from the left to view its diff — or choose a commit to browse.",
+      "loadingDiff": "Loading diff…",
+      "binaryFileHint": "Binary file — no text diff to show.",
+      "noChanges": "No changes."
+    },
+    "diffMinimap": {
+      "title": "Code map — click or drag to scroll"
+    },
+    "diffModal": {
+      "closeAriaLabel": "Close"
     }
   }
 }
