@@ -803,5 +803,56 @@
       "revealProjectInFinder": "Projeyi Finder'da Göster",
       "collapseAll": "Tümünü Kapat"
     }
+  },
+  "git": {
+    "manager": {
+      "notARepo": "Bu bir git deposu değil",
+      "mergeIntoTitle": "Bir dalı {{branch}} içine birleştir",
+      "currentBranchFallback": "geçerli dal",
+      "fetch": "Getir",
+      "pull": "Çek",
+      "push": "Gönder",
+      "publishTitle": "Dalı yayınla (push -u origin)",
+      "publish": "Yayınla",
+      "changes": "Değişiklikler",
+      "changesWithCount": "Değişiklikler ({{count}})",
+      "history": "Geçmiş",
+      "stashes": "Stash'ler"
+    },
+    "branchSwitcher": {
+      "switchBranchTitle": "Dal değiştir",
+      "filterPlaceholder": "Dalları filtrele…",
+      "remoteBadge": "uzak",
+      "mergeIntoTitle": "{{name}}'i {{branch}} içine birleştir",
+      "deleteTitle": "{{name}}'i sil",
+      "noBranches": "Dal yok",
+      "newBranchPlaceholder": "yeni-dal-adi",
+      "newBranchFrom": "{{branch}}'tan yeni dal"
+    },
+    "errorDialog": {
+      "copyOutputTitle": "Git çıktısını kopyala",
+      "copied": "Kopyalandı",
+      "copyOutput": "Çıktıyı kopyala",
+      "dismiss": "Kapat"
+    },
+    "opOutput": {
+      "runningKind": "{{kind}} çalıştırılıyor…",
+      "runningKindHooks": "{{kind}} çalıştırılıyor (kancalar çalışıyor olabilir)…",
+      "kindFailed": "{{kind}} başarısız oldu — çıktı aşağıda",
+      "kindOutput": "{{kind}} çıktısı",
+      "lineCount": "{{count}} satır"
+    },
+    "errors": {
+      "authFailed": "Kimlik doğrulama başarısız oldu",
+      "nonFastForward": "Gönderme reddedildi — önce çekin",
+      "forcePushRejected": "Zorla gönderme reddedildi",
+      "protectedBranch": "Dal korumalı",
+      "pushRejected": "Gönderme reddedildi",
+      "hookFailed": "Bir git kancası bunu reddetti",
+      "lockFileExists": "Depo kilitli",
+      "localChangesOverwritten": "Yerel değişiklikler engelliyor",
+      "gpgFailedToSign": "Commit imzalama başarısız oldu",
+      "genericTitle": "Git hatası"
+    }
   }
 }

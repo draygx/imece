@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight, Loader2, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useGitStore } from "../../stores/git-store";
@@ -12,6 +13,7 @@ import { useGitStore } from "../../stores/git-store";
  * as a hung app.
  */
 export function GitOpOutput() {
+  const { t } = useTranslation();
   const activeOp = useGitStore.use.activeOp();
   const [collapsed, setCollapsed] = useState(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -43,21 +45,24 @@ export function GitOpOutput() {
           <>
             <Loader2 size={10} className="animate-spin" />
             <span>
-              Running {activeOp.kind}
-              {activeOp.kind === "commit" ? " (hooks may be running)" : ""}…
+              {activeOp.kind === "commit"
+                ? t("git.opOutput.runningKindHooks", { kind: activeOp.kind })
+                : t("git.opOutput.runningKind", { kind: activeOp.kind })}
             </span>
           </>
         ) : failed ? (
           <>
             <XCircle size={10} className="text-[var(--status-error)]" />
             <span className="text-[var(--status-error)]">
-              {activeOp.kind} failed — output below
+              {t("git.opOutput.kindFailed", { kind: activeOp.kind })}
             </span>
           </>
         ) : (
-          <span>{activeOp.kind} output</span>
+          <span>{t("git.opOutput.kindOutput", { kind: activeOp.kind })}</span>
         )}
-        <span className="ml-auto font-mono">{activeOp.lines.length} lines</span>
+        <span className="ml-auto font-mono">
+          {t("git.opOutput.lineCount", { count: activeOp.lines.length })}
+        </span>
       </button>
       {!collapsed && (
         <div

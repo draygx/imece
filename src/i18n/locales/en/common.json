@@ -803,5 +803,56 @@
       "revealProjectInFinder": "Reveal Project in Finder",
       "collapseAll": "Collapse All"
     }
+  },
+  "git": {
+    "manager": {
+      "notARepo": "Not a git repository",
+      "mergeIntoTitle": "Merge a branch into {{branch}}",
+      "currentBranchFallback": "the current branch",
+      "fetch": "Fetch",
+      "pull": "Pull",
+      "push": "Push",
+      "publishTitle": "Publish branch (push -u origin)",
+      "publish": "Publish",
+      "changes": "Changes",
+      "changesWithCount": "Changes ({{count}})",
+      "history": "History",
+      "stashes": "Stashes"
+    },
+    "branchSwitcher": {
+      "switchBranchTitle": "Switch branch",
+      "filterPlaceholder": "Filter branches…",
+      "remoteBadge": "remote",
+      "mergeIntoTitle": "Merge {{name}} into {{branch}}",
+      "deleteTitle": "Delete {{name}}",
+      "noBranches": "No branches",
+      "newBranchPlaceholder": "new-branch-name",
+      "newBranchFrom": "New branch from {{branch}}"
+    },
+    "errorDialog": {
+      "copyOutputTitle": "Copy git output",
+      "copied": "Copied",
+      "copyOutput": "Copy output",
+      "dismiss": "Dismiss"
+    },
+    "opOutput": {
+      "runningKind": "Running {{kind}}…",
+      "runningKindHooks": "Running {{kind}} (hooks may be running)…",
+      "kindFailed": "{{kind}} failed — output below",
+      "kindOutput": "{{kind}} output",
+      "lineCount": "{{count}} lines"
+    },
+    "errors": {
+      "authFailed": "Authentication failed",
+      "nonFastForward": "Push rejected — pull first",
+      "forcePushRejected": "Force push rejected",
+      "protectedBranch": "Branch is protected",
+      "pushRejected": "Push rejected",
+      "hookFailed": "A git hook rejected this",
+      "lockFileExists": "Repository is locked",
+      "localChangesOverwritten": "Local changes in the way",
+      "gpgFailedToSign": "Commit signing failed",
+      "genericTitle": "Git error"
+    }
   }
 }
