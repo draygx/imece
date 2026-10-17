@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { afterEach, describe, expect, it, vi, beforeEach } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi, beforeEach } from "vitest";
 
 const invoke = vi.fn();
 vi.mock("@tauri-apps/api/core", () => ({ invoke: (...args: unknown[]) => invoke(...args) }));
@@ -35,6 +35,7 @@ vi.mock("@/features/auth/stores/auth-store", () => ({
 
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import i18next from "@/i18n";
 import { AiGrantBar } from "./ai-grant-bar";
 import {
   useAiGrantStore,
@@ -42,6 +43,13 @@ import {
   useNoAiGrant,
   type Entitlement,
 } from "../stores/ai-grant-store";
+
+// This renders AiGrantBar standalone, without main.tsx's "./i18n" side-effect
+// import — without forcing a language, i18next is never init()ed and t()
+// returns raw keys instead of the English copy these assertions check.
+beforeAll(async () => {
+  await i18next.changeLanguage("en");
+});
 
 /** A stand-in composer: mounts the probe and reports the lock, nothing else. */
 function Composer() {

@@ -484,6 +484,16 @@
         "loadingAgentCommands": "Aracı komutları yükleniyor…",
         "footerDefault": "Komutlar",
         "footerHint": "↑↓ · ↵ çalıştır · ⎋ kapat"
+      },
+      "providerModelPills": {
+        "triggerTitle": "Model — sağlayıcı ve model seçmek için tıklayın",
+        "selectModel": "Model seç",
+        "noApiKeyTitle": "{{provider}} — API anahtarı yok",
+        "pricingTitle": "1M token başına fiyat (girdi / çıktı) — models.dev",
+        "refreshPricingTitle": "Model fiyatlandırmasını yenile (models.dev)",
+        "recommendedForCoding": "Kodlama için önerilen",
+        "noApiKeyFor": "API anahtarı yok:",
+        "setUpKeyInSettings": "Ayarlar'da anahtar kurun"
       }
     },
     "transcript": {
@@ -688,6 +698,60 @@
       "wantsToRun": "Aracı <code>{{title}}</code> çalıştırmak istiyor mu?",
       "tellAgentInstead": "Aracıya bunun yerine ne yapacağını söyleyin…",
       "truncated": "…(kısaltıldı)"
+    },
+    "aiGrantBar": {
+      "thisOrganisation": "Bu kuruluş",
+      "localOrgBarTitle": "İmece Agent, hesabınızla senkronize edilen kuruluşlarla çalışır",
+      "localOrgNotice": "<bold>{{org}}</bold> yerel — İmece Agent'ı kullanmak için senkronize edin",
+      "createOrgTitle": "Bu kuruluşu İmece hesabınızda oluşturun",
+      "signInToSyncTitle": "Bu kuruluşu senkronize etmek için giriş yapın",
+      "syncing": "Senkronize ediliyor…",
+      "turnOnSync": "Senkronizasyonu aç",
+      "dismiss": "Kapat",
+      "noGrantNotice": "<bold>{{org}}</bold> için AI izni yok",
+      "checkAgain": "Yeniden kontrol et",
+      "refresh": "Yenile",
+      "requestRecorded": "Talebiniz kaydedildi",
+      "requestAccessTitle": "İmece'ye kuruluşunuzun AI erişimine ihtiyacı olduğunu bildirin",
+      "requested": "Talep edildi",
+      "requesting": "Talep ediliyor…",
+      "request": "Talep et",
+      "couldNotReachGateway": "Ağ geçidine erişilemedi."
+    },
+    "planTasksPill": {
+      "title": "Uygulama planı"
+    },
+    "plansPanel": {
+      "header": "Planlar",
+      "hidePlans": "Planları gizle",
+      "emptyState": "Henüz plan yok. Claude Code bir plan önerdiğinde, onu tetikleyen mesajla birlikte burada saklanır.",
+      "collapsePlan": "Planı kapat",
+      "expandPlan": "Planı aç",
+      "noMessage": "(mesaj yok)"
+    },
+    "bashHistoryPanel": {
+      "header": "Bash çağrıları",
+      "hideBashHistory": "Bash geçmişini gizle",
+      "emptyState": "Bu sohbette henüz bash komutu yok."
+    },
+    "retryPill": {
+      "retryingWithTime": "Yeniden deneniyor {{attempt}}/{{maxAttempts}}, {{secs}} sn sonra",
+      "retryingNow": "Yeniden deneniyor {{attempt}}/{{maxAttempts}}…"
+    },
+    "featuredAgentOffers": {
+      "availableToInstall": "Yüklenebilir",
+      "installedToast": "{{label}} yüklendi",
+      "installFailedToast": "{{label}} yüklenemedi: {{error}}",
+      "installAndSwitchTitle": "{{label}}'i yükle ve bu sohbeti ona geçir",
+      "noPlatformBuildTitle": "{{label}} bu platform için yayınlanmış bir sürüme sahip değil"
+    },
+    "detailPanel": {
+      "outputFallbackTitle": "Çıktı",
+      "copyOutput": "Çıktıyı kopyala",
+      "arguments": "Argümanlar",
+      "stillRunning": "Hâlâ çalışıyor…",
+      "noOutput": "Çıktı yok.",
+      "close": "Kapat (Esc)"
     }
   }
 }

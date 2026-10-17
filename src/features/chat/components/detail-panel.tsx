@@ -16,6 +16,7 @@
 // clipped lines or with the whole box scrolling sideways.
 
 import { useCallback, useMemo, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight, TerminalSquare, Copy } from "lucide-react";
 import { copyText } from "@/lib/clipboard";
 import type { ChatMessage, ToolCallDisplay } from "@/types/agent";
@@ -40,6 +41,7 @@ function useToolCalls(messages: ChatMessage[]) {
 }
 
 export function DetailPanel({ tabId, messages }: { tabId: string; messages: ChatMessage[] }) {
+  const { t } = useTranslation();
   const target = useDetailPanelStore((s) => s.targets[tabId] ?? null);
   const width = useDetailPanelStore((s) => s.width);
   const { close, setWidth } = useDetailPanelStore.use.actions();
@@ -92,7 +94,7 @@ export function DetailPanel({ tabId, messages }: { tabId: string; messages: Chat
       <div
         onMouseDown={onResizeStart}
         className="absolute -left-px top-0 z-10 h-full w-px cursor-col-resize bg-border-default transition-colors hover:bg-accent"
-        title="Drag to resize"
+        title={t("chat.sessionSidebar.dragToResize")}
       />
       <PanelBody target={target} byId={byId} onClose={onClose} />
     </div>
@@ -108,6 +110,7 @@ function PanelBody({
   byId: Map<string, ToolCallDisplay>;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const tc = byId.get(target.toolCallId);
   const output = tc?.result ?? "";
 
@@ -115,14 +118,14 @@ function PanelBody({
     <>
       <Header
         icon={<TerminalSquare size={11} className="text-[var(--text-tertiary)]" />}
-        title={tc?.toolName ?? "Output"}
+        title={tc?.toolName ?? t("chat.detailPanel.outputFallbackTitle")}
         onClose={onClose}
         action={
           output ? (
             <button
               type="button"
               onClick={() => void copyText(output)}
-              title="Copy output"
+              title={t("chat.detailPanel.copyOutput")}
               className="flex h-5 w-5 items-center justify-center rounded text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
             >
               <Copy size={11} />
@@ -134,7 +137,7 @@ function PanelBody({
         {tc && Object.keys(tc.arguments ?? {}).length > 0 && (
           <div className="border-b border-[var(--border-subtle)] px-3 py-2">
             <div className="pb-1 text-[9px] uppercase tracking-wider text-[var(--text-tertiary)]">
-              Arguments
+              {t("chat.detailPanel.arguments")}
             </div>
             <pre className="whitespace-pre-wrap break-words font-mono text-[11px] leading-snug text-[var(--text-secondary)] select-text">
               {JSON.stringify(tc.arguments, null, 2)}
@@ -147,7 +150,9 @@ function PanelBody({
           </pre>
         ) : (
           <Empty>
-            {tc?.status === "running" || tc?.status === "pending" ? "Still running…" : "No output."}
+            {tc?.status === "running" || tc?.status === "pending"
+              ? t("chat.detailPanel.stillRunning")
+              : t("chat.detailPanel.noOutput")}
           </Empty>
         )}
       </div>
@@ -168,6 +173,7 @@ function Header({
   onClose: () => void;
   action?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="flex h-[32px] shrink-0 items-center justify-between border-b border-[var(--border-default)] px-3">
       <div className="flex min-w-0 items-center gap-1.5">
@@ -184,7 +190,7 @@ function Header({
         <button
           type="button"
           onClick={onClose}
-          title="Close (Esc)"
+          title={t("chat.detailPanel.close")}
           className="rounded p-1 text-[var(--text-tertiary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
         >
           <ChevronRight size={12} />

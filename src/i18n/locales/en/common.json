@@ -484,6 +484,16 @@
         "loadingAgentCommands": "Loading agent commands…",
         "footerDefault": "Commands",
         "footerHint": "↑↓ · ↵ run · ⎋ close"
+      },
+      "providerModelPills": {
+        "triggerTitle": "Model — click to choose provider + model",
+        "selectModel": "Select model",
+        "noApiKeyTitle": "{{provider}} — no API key",
+        "pricingTitle": "Price per 1M tokens (input / output) — models.dev",
+        "refreshPricingTitle": "Refresh model pricing (models.dev)",
+        "recommendedForCoding": "Recommended for coding",
+        "noApiKeyFor": "No API key for",
+        "setUpKeyInSettings": "Set up key in Settings"
       }
     },
     "transcript": {
@@ -688,6 +698,60 @@
       "wantsToRun": "The agent wants to run <code>{{title}}</code>?",
       "tellAgentInstead": "Tell the agent what to do instead…",
       "truncated": "…(truncated)"
+    },
+    "aiGrantBar": {
+      "thisOrganisation": "This organisation",
+      "localOrgBarTitle": "İmece Agent works with organisations synced to your account",
+      "localOrgNotice": "<bold>{{org}}</bold> is local — sync it to use İmece Agent",
+      "createOrgTitle": "Create this organisation in your İmece account",
+      "signInToSyncTitle": "Sign in to sync this organisation",
+      "syncing": "Syncing…",
+      "turnOnSync": "Turn on sync",
+      "dismiss": "Dismiss",
+      "noGrantNotice": "<bold>{{org}}</bold> doesn't have AI grants",
+      "checkAgain": "Check again",
+      "refresh": "Refresh",
+      "requestRecorded": "Your request has been recorded",
+      "requestAccessTitle": "Tell İmece your organisation needs AI access",
+      "requested": "Requested",
+      "requesting": "Requesting…",
+      "request": "Request",
+      "couldNotReachGateway": "Could not reach the gateway."
+    },
+    "planTasksPill": {
+      "title": "Implementation plan"
+    },
+    "plansPanel": {
+      "header": "Plans",
+      "hidePlans": "Hide plans",
+      "emptyState": "No plans yet. When Claude Code proposes a plan, it’s saved here with the message that triggered it.",
+      "collapsePlan": "Collapse plan",
+      "expandPlan": "Expand plan",
+      "noMessage": "(no message)"
+    },
+    "bashHistoryPanel": {
+      "header": "Bash calls",
+      "hideBashHistory": "Hide bash history",
+      "emptyState": "No bash commands in this chat yet."
+    },
+    "retryPill": {
+      "retryingWithTime": "Retrying {{attempt}}/{{maxAttempts}} in {{secs}}s",
+      "retryingNow": "Retrying {{attempt}}/{{maxAttempts}}…"
+    },
+    "featuredAgentOffers": {
+      "availableToInstall": "Available to install",
+      "installedToast": "{{label}} installed",
+      "installFailedToast": "Couldn't install {{label}}: {{error}}",
+      "installAndSwitchTitle": "Install {{label}} and switch this chat to it",
+      "noPlatformBuildTitle": "{{label}} has no published build for this platform"
+    },
+    "detailPanel": {
+      "outputFallbackTitle": "Output",
+      "copyOutput": "Copy output",
+      "arguments": "Arguments",
+      "stillRunning": "Still running…",
+      "noOutput": "No output.",
+      "close": "Close (Esc)"
     }
   }
 }
