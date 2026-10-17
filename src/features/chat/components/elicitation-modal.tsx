@@ -17,6 +17,7 @@
 // use.
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Dialog from "@radix-ui/react-dialog";
 import { HelpCircle, ExternalLink } from "lucide-react";
 import { openUrl } from "@tauri-apps/plugin-opener";
@@ -51,6 +52,7 @@ export function ElicitationModal({
   pending: PendingElicitation;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   const fields = useMemo(
     () => (pending.mode === "form" ? parseElicitationSchema(pending.requestedSchema) : []),
     [pending.mode, pending.requestedSchema],
@@ -77,7 +79,7 @@ export function ElicitationModal({
       // Stay open: the agent is still waiting on this reply, so dismissing on a
       // failed send would strand it with nothing left to retry from.
       setBusy(false);
-      toast.error(`Could not send your answer: ${e}`);
+      toast.error(t("chat.elicitation.couldNotSendAnswer", { error: e }));
     }
   };
 
@@ -98,7 +100,9 @@ export function ElicitationModal({
           <div className="flex items-start gap-2.5 border-b border-border-default px-4 py-3">
             <HelpCircle className="mt-0.5 size-4 text-text-tertiary" />
             <div className="min-w-0">
-              <Dialog.Title className="text-sm font-medium">The agent has a question</Dialog.Title>
+              <Dialog.Title className="text-sm font-medium">
+                {t("chat.elicitation.agentHasQuestion")}
+              </Dialog.Title>
               <Dialog.Description className="mt-0.5 text-xs text-text-secondary break-words">
                 {pending.message}
               </Dialog.Description>
@@ -112,7 +116,7 @@ export function ElicitationModal({
                 className="flex w-full items-center gap-2 rounded-sm border border-border-default bg-bg-base px-2.5 py-1.5 text-left text-[11px] text-text-secondary transition-colors hover:bg-bg-hover hover:text-text-primary"
               >
                 <ExternalLink className="size-3.5 shrink-0 text-text-tertiary" />
-                <span className="min-w-0 flex-1 truncate">Open page</span>
+                <span className="min-w-0 flex-1 truncate">{t("chat.elicitation.openPage")}</span>
               </button>
             )}
 
@@ -121,7 +125,7 @@ export function ElicitationModal({
                 // A form with nothing to fill is still answerable — the agent may
                 // just want a yes/no. Saying so beats an empty box.
                 <p className="px-0.5 text-xs text-text-secondary">
-                  Confirm to continue, or decline to tell the agent no.
+                  {t("chat.elicitation.confirmOrDecline")}
                 </p>
               )}
 
@@ -144,7 +148,7 @@ export function ElicitationModal({
                         : "text-text-secondary hover:bg-bg-hover",
                     )}
                   >
-                    {values[f.name] ? "Yes" : "No"}
+                    {values[f.name] ? t("chat.elicitation.yes") : t("chat.elicitation.no")}
                   </button>
                 ) : f.kind === "enum" ? (
                   <div className="flex flex-wrap gap-1">
@@ -204,14 +208,14 @@ export function ElicitationModal({
                 onClick={() => void respond("accept", pending.mode === "form" ? values : {})}
                 className="h-7 rounded-sm border border-border-default px-2.5 text-xs text-text-primary hover:bg-bg-hover disabled:opacity-50 disabled:hover:bg-transparent"
               >
-                {pending.mode === "url" ? "I'm done" : "Send"}
+                {pending.mode === "url" ? t("chat.elicitation.imDone") : t("chat.elicitation.send")}
               </button>
               <button
                 disabled={busy}
                 onClick={() => void respond("decline")}
                 className="h-7 rounded-sm px-2 text-xs text-text-tertiary hover:text-text-primary"
               >
-                Decline
+                {t("chat.elicitation.decline")}
               </button>
             </div>
           </div>

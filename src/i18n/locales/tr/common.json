@@ -653,6 +653,41 @@
       "hideSidebarWithHint": "Kenar çubuğunu gizle ({{hint}})",
       "newChat": "Yeni sohbet",
       "dragToResize": "Boyutlandırmak için sürükleyin"
+    },
+    "elicitation": {
+      "couldNotSendAnswer": "Cevabınız gönderilemedi: {{error}}",
+      "agentHasQuestion": "Aracının bir sorusu var",
+      "openPage": "Sayfayı aç",
+      "confirmOrDecline": "Devam etmek için onaylayın, ya da aracıya hayır demek için reddedin.",
+      "yes": "Evet",
+      "no": "Hayır",
+      "imDone": "Tamamladım",
+      "send": "Gönder",
+      "decline": "Reddet"
+    },
+    "approvalCard": {
+      "skipLabel": "Geç",
+      "answerInOwnWords": "Kendi kelimelerinizle cevaplayın…",
+      "typeYourAnswer": "Cevabınızı yazın…",
+      "previousQuestion": "Önceki soru",
+      "questionProgress": "Soru {{current}} / {{total}}",
+      "submitAnswers": "Cevapları gönder",
+      "nextQuestion": "Sonraki soru",
+      "submit": "Gönder"
+    },
+    "permissionModal": {
+      "permissionSendFailed": "İzin gönderilemedi: {{error}}",
+      "permissionCancelFailed": "İzin iptali başarısız oldu: {{error}}",
+      "fallbackToolCall": "Araç çağrısı",
+      "queueNote": "Bundan sonra {{count}} tane daha bekliyor",
+      "reviewPlanTitle": "Planı incele",
+      "reviewPlanDescription": "Aracı devam etmeden önce bir plan önerdi. İnceleyin, sonra onaylayın veya reddedin.",
+      "bypassPermissionsLabel": "Evet, ve izinleri atla",
+      "bypassPermissionsDescription": "Planı onayla ve bu oturumun kalanında sormayı durdur.",
+      "cancel": "Vazgeç",
+      "wantsToRun": "Aracı <code>{{title}}</code> çalıştırmak istiyor mu?",
+      "tellAgentInstead": "Aracıya bunun yerine ne yapacağını söyleyin…",
+      "truncated": "…(kısaltıldı)"
     }
   }
 }

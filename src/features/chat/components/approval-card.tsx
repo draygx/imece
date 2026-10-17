@@ -12,6 +12,7 @@
 // this renderable for permissions only.
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, ArrowRight, Check, CircleHelp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { QuestionSpec } from "../lib/questions";
@@ -33,7 +34,7 @@ export function ApprovalCard({
   queueNote,
   onSubmit,
   onSkip,
-  skipLabel = "Skip",
+  skipLabel,
 }: {
   questions: QuestionSpec[];
   queueNote?: string | null;
@@ -44,6 +45,8 @@ export function ApprovalCard({
   onSkip?: () => void;
   skipLabel?: string;
 }) {
+  const { t } = useTranslation();
+  const resolvedSkipLabel = skipLabel ?? t("chat.approvalCard.skipLabel");
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>(() => questions.map(() => EMPTY));
   const inputRef = useRef<HTMLInputElement>(null);
@@ -144,7 +147,7 @@ export function ApprovalCard({
               </div>
             )}
             <div className="text-[14px] font-medium leading-snug text-[var(--text-primary)]">
-              {q.question || "The agent has a question"}
+              {q.question || t("chat.elicitation.agentHasQuestion")}
             </div>
             {queueNote && (
               <div className="mt-0.5 text-[11px] text-[var(--text-tertiary)]">{queueNote}</div>
@@ -217,7 +220,11 @@ export function ApprovalCard({
                 custom: e.target.value,
               })
             }
-            placeholder={q.options.length > 0 ? "Answer in your own words…" : "Type your answer…"}
+            placeholder={
+              q.options.length > 0
+                ? t("chat.approvalCard.answerInOwnWords")
+                : t("chat.approvalCard.typeYourAnswer")
+            }
             className={cn(
               "h-10 w-full rounded-lg border-0 bg-[var(--bg-base)]/70 px-3 text-[13px] text-[var(--text-primary)] outline-none transition-colors placeholder:text-[var(--text-tertiary)] focus:bg-[var(--bg-base)]",
               q.options.length > 0 && "mt-1.5",
@@ -229,7 +236,7 @@ export function ApprovalCard({
         <div className="mt-4 flex items-center gap-3 pl-[26px]">
           <button
             type="button"
-            aria-label="Previous question"
+            aria-label={t("chat.approvalCard.previousQuestion")}
             disabled={step === 0}
             onClick={() => {
               clearAdvance();
@@ -247,7 +254,10 @@ export function ApprovalCard({
 
           <span
             className="flex items-center gap-1.5"
-            aria-label={`Question ${step + 1} of ${questions.length}`}
+            aria-label={t("chat.approvalCard.questionProgress", {
+              current: step + 1,
+              total: questions.length,
+            })}
           >
             {questions.map((_, i) => (
               <span
@@ -271,13 +281,15 @@ export function ApprovalCard({
               }}
               className="ml-auto cursor-pointer rounded-full px-2.5 py-1.5 text-[12px] text-[var(--text-tertiary)] transition-colors hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]"
             >
-              {skipLabel}
+              {resolvedSkipLabel}
             </button>
           )}
 
           <button
             type="button"
-            aria-label={last ? "Submit answers" : "Next question"}
+            aria-label={
+              last ? t("chat.approvalCard.submitAnswers") : t("chat.approvalCard.nextQuestion")
+            }
             disabled={!isAnswered(answer)}
             onClick={() => goNext()}
             className={cn(
@@ -288,7 +300,7 @@ export function ApprovalCard({
                 : "cursor-default bg-[var(--bg-base)] text-[var(--text-ghost)]",
             )}
           >
-            {last && questions.length > 1 && <span>Submit</span>}
+            {last && questions.length > 1 && <span>{t("chat.approvalCard.submit")}</span>}
             <ArrowRight size={15} />
           </button>
         </div>

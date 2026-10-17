@@ -653,6 +653,41 @@
       "hideSidebarWithHint": "Hide sidebar ({{hint}})",
       "newChat": "New chat",
       "dragToResize": "Drag to resize"
+    },
+    "elicitation": {
+      "couldNotSendAnswer": "Could not send your answer: {{error}}",
+      "agentHasQuestion": "The agent has a question",
+      "openPage": "Open page",
+      "confirmOrDecline": "Confirm to continue, or decline to tell the agent no.",
+      "yes": "Yes",
+      "no": "No",
+      "imDone": "I'm done",
+      "send": "Send",
+      "decline": "Decline"
+    },
+    "approvalCard": {
+      "skipLabel": "Skip",
+      "answerInOwnWords": "Answer in your own words…",
+      "typeYourAnswer": "Type your answer…",
+      "previousQuestion": "Previous question",
+      "questionProgress": "Question {{current}} of {{total}}",
+      "submitAnswers": "Submit answers",
+      "nextQuestion": "Next question",
+      "submit": "Submit"
+    },
+    "permissionModal": {
+      "permissionSendFailed": "Permission send failed: {{error}}",
+      "permissionCancelFailed": "Permission cancel failed: {{error}}",
+      "fallbackToolCall": "Tool call",
+      "queueNote": "{{count}} more pending after this",
+      "reviewPlanTitle": "Review plan",
+      "reviewPlanDescription": "The agent proposed a plan before continuing. Review it, then approve or reject.",
+      "bypassPermissionsLabel": "Yes, and bypass permissions",
+      "bypassPermissionsDescription": "Approve the plan and stop asking for the rest of this session.",
+      "cancel": "Cancel",
+      "wantsToRun": "The agent wants to run <code>{{title}}</code>?",
+      "tellAgentInstead": "Tell the agent what to do instead…",
+      "truncated": "…(truncated)"
     }
   }
 }
