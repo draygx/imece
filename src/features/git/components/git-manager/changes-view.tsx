@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
 import {
   Plus,
@@ -32,18 +33,22 @@ function FieldToggle({
   open,
   hasContent,
   label,
+  hideTitle,
+  showTitle,
   onToggle,
 }: {
   open: boolean;
   hasContent: boolean;
   label: string;
+  hideTitle: string;
+  showTitle: string;
   onToggle: () => void;
 }) {
   return (
     <button
       onClick={onToggle}
       className="flex items-center gap-1 text-[10px] text-text-tertiary hover:text-text-secondary"
-      title={open ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
+      title={open ? hideTitle : showTitle}
     >
       {open ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
       {label}
@@ -90,6 +95,7 @@ function FileRow({
   onOpenDiff?: () => void;
   onOpenInEditor?: () => void;
 }) {
+  const { t } = useTranslation();
   const badge = statusBadge(file.status);
   const name = file.path.split("/").pop() ?? file.path;
   const dir = file.path.slice(0, file.path.length - name.length);
@@ -118,7 +124,7 @@ function FileRow({
               onOpenDiff();
             }}
             className="p-0.5 rounded text-text-tertiary hover:text-text-primary"
-            title="Open in diff view"
+            title={t("git.changesView.openInDiffViewTitle")}
           >
             <GitCompare size={11} />
           </button>
@@ -130,7 +136,7 @@ function FileRow({
               onOpenInEditor();
             }}
             className="p-0.5 rounded text-text-tertiary hover:text-text-primary"
-            title="Open in code editor"
+            title={t("git.changesView.openInCodeEditorTitle")}
           >
             <FileCode2 size={11} />
           </button>
@@ -142,7 +148,7 @@ function FileRow({
               onDiscard();
             }}
             className="p-0.5 rounded text-text-tertiary hover:text-[var(--status-error)]"
-            title="Discard changes"
+            title={t("git.changesView.discardChangesTitle")}
           >
             <Undo2 size={11} />
           </button>
@@ -153,7 +159,7 @@ function FileRow({
             onAction();
           }}
           className="p-0.5 rounded text-text-tertiary hover:text-text-primary"
-          title={action === "stage" ? "Stage" : "Unstage"}
+          title={action === "stage" ? t("git.changesView.stage") : t("git.changesView.unstage")}
         >
           {action === "stage" ? <Plus size={12} /> : <Minus size={12} />}
         </button>
@@ -163,6 +169,7 @@ function FileRow({
 }
 
 export function ChangesView() {
+  const { t } = useTranslation();
   const files = useGitStore.use.files();
   const diff = useGitStore.use.diff();
   const inProgress = useGitStore.use.inProgress();
@@ -350,21 +357,21 @@ export function ChangesView() {
         <div className="shrink-0 flex items-center gap-2 px-3 py-2 border-b border-[var(--status-warning)]/30 bg-[var(--status-warning)]/10 text-[11px]">
           <AlertTriangle size={12} className="text-[var(--status-warning)] shrink-0" />
           <span className="flex-1 text-text-secondary">
-            Resolving <span className="font-medium text-text-primary">{inProgressLabel}</span>
+            {t("git.changesView.resolvingKind", { kind: inProgressLabel })}
           </span>
           <button
             onClick={() => run(() => actions.opControl(opKind, "continue"))}
             disabled={hasConflicts}
-            title={hasConflicts ? "Resolve all conflicts first" : undefined}
+            title={hasConflicts ? t("git.changesView.resolveConflictsFirstTitle") : undefined}
             className="px-2 h-6 rounded text-[10px] font-medium bg-[var(--accent-primary)] text-[var(--bg-base)] hover:bg-[var(--accent-primary-hover)] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            Continue
+            {t("git.changesView.continueButton")}
           </button>
           <button
             onClick={() => run(() => actions.opControl(opKind, "abort"))}
             className="px-2 h-6 rounded text-[10px] text-text-secondary hover:bg-bg-hover hover:text-text-primary"
           >
-            Abort
+            {t("git.changesView.abortButton")}
           </button>
         </div>
       )}
@@ -379,13 +386,13 @@ export function ChangesView() {
           <div>
             <div className="flex items-center justify-between px-2 h-[24px] sticky top-0 bg-[var(--bg-sidebar)] border-b border-border-subtle">
               <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">
-                Staged ({staged.length})
+                {t("git.changesView.stagedHeading", { count: staged.length })}
               </span>
               <button
                 onClick={() => run(() => actions.unstageFiles(staged.map((f) => f.path)))}
                 className="text-[10px] text-text-tertiary hover:text-text-primary"
               >
-                Unstage all
+                {t("git.changesView.unstageAll")}
               </button>
             </div>
             {staged.map((f) => (
@@ -407,7 +414,7 @@ export function ChangesView() {
         <div>
           <div className="flex items-center justify-between px-2 h-[24px] sticky top-0 bg-[var(--bg-sidebar)] border-b border-border-subtle">
             <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">
-              Changes ({unstaged.length})
+              {t("git.manager.changesWithCount", { count: unstaged.length })}
             </span>
             {unstaged.length > 0 && (
               <div className="flex items-center gap-1.5">
@@ -415,15 +422,15 @@ export function ChangesView() {
                   onClick={() => run(() => actions.stageFiles(unstaged.map((f) => f.path)))}
                   className="text-[10px] text-text-tertiary hover:text-text-primary"
                 >
-                  Stage all
+                  {t("git.changesView.stageAll")}
                 </button>
                 <span className="w-px h-3 bg-border-default" />
                 <button
                   onClick={() => setConfirmRevertAll(true)}
                   className="text-[10px] text-text-tertiary hover:text-[var(--status-error)]"
-                  title="Discard all unstaged changes"
+                  title={t("git.changesView.discardAllUnstagedTitle")}
                 >
-                  Revert all
+                  {t("git.changesView.revertAll")}
                 </button>
               </div>
             )}
@@ -443,7 +450,7 @@ export function ChangesView() {
           ))}
           {files.length === 0 && (
             <div className="px-3 py-6 text-center text-[11px] text-text-tertiary">
-              No changes — working tree clean
+              {t("git.changesView.noChangesCleanTree")}
             </div>
           )}
         </div>
@@ -457,7 +464,7 @@ export function ChangesView() {
         onOpenDiff={repoPath ? (p) => openGitDiff(repoPath, p, false) : undefined}
         onRefresh={() => run(() => actions.loadDiff())}
         filters={!selected}
-        emptyLabel={selected ? "No diff for this file" : "No changes"}
+        emptyLabel={selected ? t("git.changesView.noDiffForFile") : t("git.changesView.noChanges")}
         className="flex-1"
         hunkActions={["stage", "discard"]}
         onHunkAction={onHunkAction}
@@ -471,7 +478,9 @@ export function ChangesView() {
         <input
           value={summary}
           onChange={(e) => setSummary(e.target.value)}
-          placeholder={amend ? "Amend message (empty = keep original)" : "Summary (required)"}
+          placeholder={
+            amend ? t("git.changesView.amendPlaceholder") : t("git.changesView.summaryPlaceholder")
+          }
           className="w-full h-7 rounded-md border border-border-default bg-bg-input px-2 text-[11px] text-text-primary outline-none focus:border-border-focus"
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) doCommit();
@@ -484,13 +493,17 @@ export function ChangesView() {
           <FieldToggle
             open={showDesc}
             hasContent={description.trim().length > 0}
-            label="Description"
+            label={t("git.changesView.descriptionLabel")}
+            hideTitle={t("git.changesView.hideDescriptionTitle")}
+            showTitle={t("git.changesView.showDescriptionTitle")}
             onToggle={() => setShowDesc((v) => !v)}
           />
           <FieldToggle
             open={showCoAuthors}
             hasContent={coAuthors.trim().length > 0}
-            label="Co-authors"
+            label={t("git.changesView.coAuthorsLabel")}
+            hideTitle={t("git.changesView.hideCoAuthorsTitle")}
+            showTitle={t("git.changesView.showCoAuthorsTitle")}
             onToggle={() => setShowCoAuthors((v) => !v)}
           />
         </div>
@@ -498,7 +511,7 @@ export function ChangesView() {
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description (optional)"
+            placeholder={t("git.changesView.descriptionPlaceholder")}
             rows={3}
             className="w-full rounded-md border border-border-default bg-bg-input px-2 py-1.5 text-[11px] text-text-primary outline-none focus:border-border-focus resize-none"
           />
@@ -507,9 +520,9 @@ export function ChangesView() {
           <input
             value={coAuthors}
             onChange={(e) => setCoAuthors(e.target.value)}
-            placeholder="Co-authors: Name <email>, Name <email>"
+            placeholder={t("git.changesView.coAuthorsPlaceholder")}
             className="w-full h-7 rounded-md border border-border-default bg-bg-input px-2 text-[11px] font-mono text-text-primary outline-none focus:border-border-focus"
-            title="Added as Co-authored-by trailers"
+            title={t("git.changesView.coAuthorsInputTitle")}
           />
         )}
         <div className="flex items-center gap-2">
@@ -520,7 +533,7 @@ export function ChangesView() {
               onChange={(e) => setAmend(e.target.checked)}
               className="accent-[var(--accent-primary)]"
             />
-            Amend last commit
+            {t("git.changesView.amendLastCommit")}
           </label>
           {/* The house pill, same as the session-capture footer's actions and
               the create-organisation modal's. The old style was a filled white
@@ -539,7 +552,11 @@ export function ChangesView() {
             ) : (
               <GitCommitHorizontal size={11} />
             )}
-            {committing ? "Committing…" : amend ? "Amend" : "Commit"}
+            {committing
+              ? t("git.changesView.committing")
+              : amend
+                ? t("git.changesView.amendButton")
+                : t("git.changesView.commitButton")}
           </button>
         </div>
       </div>
@@ -561,18 +578,18 @@ export function ChangesView() {
         open={confirmHunkDiscard !== null}
         name=""
         isDir={false}
-        title="Discard these changes?"
-        confirmLabel="Discard"
+        title={t("git.changesView.discardTheseChangesTitle")}
+        confirmLabel={t("git.changesView.discardLabel")}
         body={
-          <>
-            {confirmHunkDiscard?.selected
-              ? `${confirmHunkDiscard.selected.length} selected line${
-                  confirmHunkDiscard.selected.length === 1 ? "" : "s"
-                }`
-              : "This hunk"}{" "}
-            in <span className="font-mono text-text-primary">{confirmHunkDiscard?.file}</span> will
-            be reverted in your working tree. This can't be undone.
-          </>
+          <Trans
+            i18nKey={
+              confirmHunkDiscard?.selected
+                ? "git.changesView.discardSelectedLinesBody"
+                : "git.changesView.discardHunkBody"
+            }
+            values={{ count: confirmHunkDiscard?.selected?.length, file: confirmHunkDiscard?.file }}
+            components={{ file: <span className="font-mono text-text-primary" /> }}
+          />
         }
         onConfirm={() => {
           if (confirmHunkDiscard) {
@@ -594,16 +611,14 @@ export function ChangesView() {
         open={confirmRevertAll}
         name=""
         isDir={false}
-        title="Revert all changes?"
-        confirmLabel="Revert all"
+        title={t("git.changesView.revertAllChangesTitle")}
+        confirmLabel={t("git.changesView.revertAllLabel")}
         body={
-          <>
-            All{" "}
-            <span className="font-mono text-text-primary">
-              {unstaged.length} unstaged change{unstaged.length === 1 ? "" : "s"}
-            </span>{" "}
-            will be discarded and any newly added files deleted. This can't be undone.
-          </>
+          <Trans
+            i18nKey="git.changesView.revertAllBody"
+            values={{ count: unstaged.length }}
+            components={{ bold: <span className="font-mono text-text-primary" /> }}
+          />
         }
         onConfirm={() => {
           void revertAll();
