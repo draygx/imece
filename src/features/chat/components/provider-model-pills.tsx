@@ -9,6 +9,7 @@
 //! coding-model catalog).
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as Popover from "@radix-ui/react-popover";
 import { Check, ChevronDown, Loader2, RefreshCw, Search, Star } from "lucide-react";
 import { ProviderLogo } from "@/components/provider-logo";
@@ -73,6 +74,7 @@ export function ProviderModelPills({
   onProvider: (id: string) => void;
   onModel: (id: string) => void;
 }) {
+  const { t } = useTranslation();
   const keys = useByokStore.use.keys();
   const loaded = useByokStore.use.loaded();
   const { load } = useByokStore.use.actions();
@@ -211,7 +213,7 @@ export function ProviderModelPills({
         <span className="min-w-0 flex-1 truncate">{id}</span>
         <span
           className="shrink-0 text-[10px] tabular-nums text-[var(--text-tertiary)]"
-          title="Price per 1M tokens (input / output) — models.dev"
+          title={t("chat.composer.providerModelPills.pricingTitle")}
         >
           {price}
         </span>
@@ -231,13 +233,16 @@ export function ProviderModelPills({
       }}
     >
       <Popover.Trigger asChild>
-        <button className={PILL_CLASS} title="Model — click to choose provider + model">
+        <button className={PILL_CLASS} title={t("chat.composer.providerModelPills.triggerTitle")}>
           <ProviderLogo id={provider || viewProvider} size={13} />
           {loadingModels && (
             <Loader2 size={10} className="animate-spin text-[var(--text-tertiary)]" />
           )}
           <span className="max-w-[150px] truncate font-mono">
-            {model || (loadingModels ? "Loading…" : "Select model")}
+            {model ||
+              (loadingModels
+                ? t("chat.composer.groups.loading")
+                : t("chat.composer.providerModelPills.selectModel"))}
           </span>
           <ChevronDown size={11} className="text-[var(--text-tertiary)]" />
         </button>
@@ -259,7 +264,13 @@ export function ProviderModelPills({
                   <button
                     key={p.id}
                     onClick={() => setViewProvider(p.id)}
-                    title={`${p.name}${keyed ? "" : " — no API key"}`}
+                    title={
+                      keyed
+                        ? p.name
+                        : t("chat.composer.providerModelPills.noApiKeyTitle", {
+                            provider: p.name,
+                          })
+                    }
                     className={cn(
                       "flex h-7 w-7 items-center justify-center rounded-md transition-all",
                       p.id === viewProvider
@@ -285,14 +296,14 @@ export function ProviderModelPills({
                       autoFocus
                       value={q}
                       onChange={(e) => setQ(e.target.value)}
-                      placeholder="Search models…"
+                      placeholder={t("chat.composer.groups.searchModels")}
                       spellCheck={false}
                       className="min-w-0 flex-1 bg-transparent text-[11px] text-[var(--text-primary)] outline-none placeholder:text-[var(--text-tertiary)]"
                     />
                     <button
                       onClick={() => void refreshPricing()}
                       disabled={pricingLoading}
-                      title="Refresh model pricing (models.dev)"
+                      title={t("chat.composer.providerModelPills.refreshPricingTitle")}
                       className="flex h-5 w-5 shrink-0 items-center justify-center rounded text-[var(--text-tertiary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-hover)] cursor-pointer disabled:cursor-default"
                     >
                       <RefreshCw size={11} className={cn(pricingLoading && "animate-spin")} />
@@ -304,14 +315,16 @@ export function ProviderModelPills({
                   <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar py-1">
                     {pinned.length === 0 && rest.length === 0 ? (
                       <div className="px-2.5 py-2 text-[11px] text-[var(--text-tertiary)]">
-                        {loadingModels ? "Loading…" : "No models"}
+                        {loadingModels
+                          ? t("chat.composer.groups.loading")
+                          : t("chat.composer.groups.noModels")}
                       </div>
                     ) : (
                       <>
                         {pinned.length > 0 && (
                           <>
                             <div className="px-2.5 pt-1 pb-0.5 text-[9px] font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">
-                              Recommended for coding
+                              {t("chat.composer.providerModelPills.recommendedForCoding")}
                             </div>
                             {pinned.map((id) => renderModel(id, true))}
                             {rest.length > 0 && (
@@ -329,7 +342,7 @@ export function ProviderModelPills({
                 <div className="flex flex-1 flex-col items-center justify-center gap-2 px-4 py-8 text-center">
                   <ProviderLogo id={viewProvider} size={22} />
                   <div className="text-[12px] text-[var(--text-secondary)]">
-                    No API key for{" "}
+                    {t("chat.composer.providerModelPills.noApiKeyFor")}{" "}
                     <span className="text-[var(--text-primary)]">
                       {providerById(viewProvider)?.name ?? viewProvider}
                     </span>
@@ -338,7 +351,7 @@ export function ProviderModelPills({
                     onClick={openApiKeys}
                     className="rounded-md border border-[var(--border-default)] bg-[var(--bg-base)] px-3 py-1.5 text-[11px] font-medium text-[var(--text-primary)] hover:bg-[var(--bg-hover)] transition-colors cursor-pointer"
                   >
-                    Set up key in Settings
+                    {t("chat.composer.providerModelPills.setUpKeyInSettings")}
                   </button>
                 </div>
               )}

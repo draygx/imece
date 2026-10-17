@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -30,6 +31,7 @@ export function FeaturedAgentOffers({
   /** Called with the new agent's agentType once it is installed and switchable. */
   onInstalled: (agentType: string) => void;
 }) {
+  const { t } = useTranslation();
   const offers = useFeaturedAgentOffers();
   // Component-local is enough: the composer's group panel stays MOUNTED while
   // closed (height 0), so closing the panel mid-install does not lose the row's
@@ -46,10 +48,10 @@ export function FeaturedAgentOffers({
       // The catalog is what knows the installed agent's display alias, so the
       // agentType can only be resolved after this lands.
       await hydrateAgentRegistry();
-      toast.success(`${label} installed`);
+      toast.success(t("chat.featuredAgentOffers.installedToast", { label }));
       onInstalled(agentTypeForRegistryId(id));
     } catch (e) {
-      toast.error(`Couldn't install ${label}: ${String(e)}`);
+      toast.error(t("chat.featuredAgentOffers.installFailedToast", { label, error: String(e) }));
     } finally {
       setInstalling(null);
     }
@@ -59,7 +61,7 @@ export function FeaturedAgentOffers({
     <>
       <div className="h-px bg-[var(--border-default)]" />
       <div className="px-3 pb-0.5 pt-1.5 text-[9px] font-medium uppercase tracking-wider text-[var(--text-tertiary)]">
-        Available to install
+        {t("chat.featuredAgentOffers.availableToInstall")}
       </div>
       <div className="p-1 pt-0.5">
         {offers.map((offer) => {
@@ -72,8 +74,8 @@ export function FeaturedAgentOffers({
               disabled={disabled}
               title={
                 offer.platformSupported
-                  ? `Install ${offer.label} and switch this chat to it`
-                  : `${offer.label} has no published build for this platform`
+                  ? t("chat.featuredAgentOffers.installAndSwitchTitle", { label: offer.label })
+                  : t("chat.featuredAgentOffers.noPlatformBuildTitle", { label: offer.label })
               }
               className={cn(
                 "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors",

@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronUp, ListTodo } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useChatStore } from "../stores/chat-store";
@@ -112,6 +113,7 @@ function StepIcon({ status, active }: { status: string; active: boolean }) {
 }
 
 export const PlanTasksPill = memo(function PlanTasksPill({ tabId }: { tabId: string }) {
+  const { t } = useTranslation();
   const plan = useChatStore((s) => s.sessions[tabId]?.livePlan);
   const status = useChatStore((s) => s.sessions[tabId]?.status);
   const [open, setOpen] = useState(false);
@@ -175,7 +177,7 @@ export const PlanTasksPill = memo(function PlanTasksPill({ tabId }: { tabId: str
           <div className="flex h-9 items-center gap-2 px-3">
             <ListTodo size={13} className="shrink-0 text-[var(--text-secondary)]" />
             <span className="flex-1 truncate text-[12px] font-medium text-[var(--text-primary)]">
-              Implementation plan
+              {t("chat.planTasksPill.title")}
             </span>
             <span className="font-mono text-[10px] tabular-nums text-[var(--text-tertiary)]">
               {completed}/{plan.length}
@@ -221,7 +223,7 @@ export const PlanTasksPill = memo(function PlanTasksPill({ tabId }: { tabId: str
             ? "border-[var(--border-strong)] bg-[var(--bg-selected)] text-[var(--text-primary)]"
             : "border-[var(--border-default)] bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)]",
         )}
-        title="Implementation plan"
+        title={t("chat.planTasksPill.title")}
       >
         <span className="text-[var(--accent-primary)]">
           <ArcRing frac={plan.length ? completed / plan.length : 0} />

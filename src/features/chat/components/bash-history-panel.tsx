@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { TerminalSquare, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ interface BashHistoryPanelProps {
 }
 
 export function BashHistoryPanel({ messages, onJump, onClose }: BashHistoryPanelProps) {
+  const { t } = useTranslation();
   const bashPanel = useLayoutStore.use.bashPanel();
   const { setBashPanelWidth } = useLayoutStore.use.actions();
 
@@ -110,20 +112,22 @@ export function BashHistoryPanel({ messages, onJump, onClose }: BashHistoryPanel
         <div
           onMouseDown={onResizeStart}
           className="absolute top-0 -left-px w-px h-full bg-border-default hover:bg-accent transition-colors cursor-col-resize z-10"
-          title="Drag to resize"
+          title={t("chat.sessionSidebar.dragToResize")}
         />
 
         {/* Header */}
         <div className="flex items-center justify-between px-3 h-[32px] border-b border-[var(--border-default)] shrink-0">
           <div className="flex items-center gap-1.5">
             <TerminalSquare size={11} className="text-[var(--text-tertiary)]" />
-            <span className="text-[11px] font-medium text-[var(--text-secondary)]">Bash calls</span>
+            <span className="text-[11px] font-medium text-[var(--text-secondary)]">
+              {t("chat.bashHistoryPanel.header")}
+            </span>
             <span className="text-[10px] text-[var(--text-tertiary)]">· {entries.length}</span>
           </div>
           <button
             onClick={onClose}
             className="p-1 rounded hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
-            title="Hide bash history"
+            title={t("chat.bashHistoryPanel.hideBashHistory")}
           >
             <ChevronRight size={12} />
           </button>
@@ -133,7 +137,7 @@ export function BashHistoryPanel({ messages, onJump, onClose }: BashHistoryPanel
         <div ref={parentRef} className="flex-1 overflow-y-auto hide-scrollbar">
           {entries.length === 0 ? (
             <div className="px-3 py-3 text-[11px] text-[var(--text-tertiary)] leading-relaxed">
-              No bash commands in this chat yet.
+              {t("chat.bashHistoryPanel.emptyState")}
             </div>
           ) : (
             <div

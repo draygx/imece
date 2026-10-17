@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
 import { ClipboardList, ChevronRight, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ interface PlansPanelProps {
  * bash-history panel's right-side slide-in overlay.
  */
 export function PlansPanel({ onClose }: PlansPanelProps) {
+  const { t } = useTranslation();
   const plansPanel = useLayoutStore.use.plansPanel();
   const { setPlansPanelWidth } = useLayoutStore.use.actions();
   const projectPath = useProjectStore.use.currentProject()?.path ?? null;
@@ -101,20 +103,22 @@ export function PlansPanel({ onClose }: PlansPanelProps) {
         <div
           onMouseDown={onResizeStart}
           className="absolute top-0 -left-px w-px h-full bg-border-default hover:bg-accent transition-colors cursor-col-resize z-10"
-          title="Drag to resize"
+          title={t("chat.sessionSidebar.dragToResize")}
         />
 
         {/* Header */}
         <div className="flex items-center justify-between px-3 h-[32px] border-b border-[var(--border-default)] shrink-0">
           <div className="flex items-center gap-1.5">
             <ClipboardList size={11} className="text-[var(--text-tertiary)]" />
-            <span className="text-[11px] font-medium text-[var(--text-secondary)]">Plans</span>
+            <span className="text-[11px] font-medium text-[var(--text-secondary)]">
+              {t("chat.plansPanel.header")}
+            </span>
             <span className="text-[10px] text-[var(--text-tertiary)]">· {plans.length}</span>
           </div>
           <button
             onClick={onClose}
             className="p-1 rounded hover:bg-[var(--bg-hover)] text-[var(--text-tertiary)] hover:text-[var(--text-primary)] cursor-pointer transition-colors"
-            title="Hide plans"
+            title={t("chat.plansPanel.hidePlans")}
           >
             <ChevronRight size={12} />
           </button>
@@ -124,8 +128,7 @@ export function PlansPanel({ onClose }: PlansPanelProps) {
         <div className="flex-1 overflow-y-auto hide-scrollbar">
           {plans.length === 0 ? (
             <div className="px-3 py-3 text-[11px] text-[var(--text-tertiary)] leading-relaxed">
-              No plans yet. When Claude Code proposes a plan, it’s saved here with the message that
-              triggered it.
+              {t("chat.plansPanel.emptyState")}
             </div>
           ) : (
             plans.map((p, idx) => {
@@ -140,7 +143,9 @@ export function PlansPanel({ onClose }: PlansPanelProps) {
                   <button
                     onClick={() => toggle(p.id)}
                     className="group w-full text-left flex items-start gap-1.5 cursor-pointer"
-                    title={isOpen ? "Collapse plan" : "Expand plan"}
+                    title={
+                      isOpen ? t("chat.plansPanel.collapsePlan") : t("chat.plansPanel.expandPlan")
+                    }
                   >
                     {isOpen ? (
                       <ChevronDown
@@ -159,7 +164,7 @@ export function PlansPanel({ onClose }: PlansPanelProps) {
                         !isOpen && "line-clamp-2",
                       )}
                     >
-                      {p.userMessage || "(no message)"}
+                      {p.userMessage || t("chat.plansPanel.noMessage")}
                     </span>
                   </button>
 

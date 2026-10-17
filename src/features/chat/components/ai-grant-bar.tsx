@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import { Check, Cloud, RotateCw, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ const ACTION =
   "disabled:cursor-default disabled:text-[var(--text-tertiary)]/40 disabled:hover:bg-transparent";
 
 export function AiGrantBar() {
+  const { t } = useTranslation();
   const snapshot = useAuthStore((s) => s.snapshot);
   // `AuthSnapshot` is a discriminated union — the orgs only exist on the
   // signed-in arm, which is also the only arm this bar renders under.
@@ -87,8 +89,8 @@ export function AiGrantBar() {
   const onRefresh = useCallback(async () => {
     // A failed re-check leaves the bar exactly as it was rather than clearing
     // it — vanishing on a dropped connection would read as "you have access now".
-    if (!(await refresh())) toast.error("Could not reach the gateway.");
-  }, [refresh]);
+    if (!(await refresh())) toast.error(t("chat.aiGrantBar.couldNotReachGateway"));
+  }, [refresh, t]);
 
   const onRequest = useCallback(async () => {
     try {
@@ -109,16 +111,14 @@ export function AiGrantBar() {
       <div
         data-testid="ai-grant-bar"
         className={STRIP}
-        title="İmece Agent works with organisations synced to your account"
+        title={t("chat.aiGrantBar.localOrgBarTitle")}
       >
-        <span className="min-w-0 truncate">
-          <span className="font-semibold text-[var(--text-primary)]">
-            {orgName ?? "This organisation"}
-          </span>
-          <span className="text-[var(--text-tertiary)]">
-            {" "}
-            is local — sync it to use İmece Agent
-          </span>
+        <span className="min-w-0 truncate text-[var(--text-tertiary)]">
+          <Trans
+            i18nKey="chat.aiGrantBar.localOrgNotice"
+            values={{ org: orgName ?? t("chat.aiGrantBar.thisOrganisation") }}
+            components={{ bold: <span className="font-semibold text-[var(--text-primary)]" /> }}
+          />
         </span>
 
         <div className="flex shrink-0 items-center gap-0.5">
@@ -127,19 +127,17 @@ export function AiGrantBar() {
             onClick={() => void onTurnOnSync()}
             disabled={syncing}
             title={
-              account
-                ? "Create this organisation in your İmece account"
-                : "Sign in to sync this organisation"
+              account ? t("chat.aiGrantBar.createOrgTitle") : t("chat.aiGrantBar.signInToSyncTitle")
             }
             className={cn(ACTION, syncing ? "cursor-default" : "cursor-pointer")}
           >
             <Cloud size={11} className={cn(syncing && "animate-pulse")} />
-            {syncing ? "Syncing…" : "Turn on sync"}
+            {syncing ? t("chat.aiGrantBar.syncing") : t("chat.aiGrantBar.turnOnSync")}
           </button>
           <button
             type="button"
             onClick={() => dismiss()}
-            title="Dismiss"
+            title={t("chat.aiGrantBar.dismiss")}
             className="shrink-0 cursor-pointer rounded p-0.5 text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-primary)]"
           >
             <X size={12} />
@@ -153,11 +151,12 @@ export function AiGrantBar() {
 
   return (
     <div data-testid="ai-grant-bar" className={STRIP} title={entitlement.message}>
-      <span className="min-w-0 truncate">
-        <span className="font-semibold text-[var(--text-primary)]">
-          {orgName ?? "This organisation"}
-        </span>
-        <span className="text-[var(--text-tertiary)]"> doesn&apos;t have AI grants</span>
+      <span className="min-w-0 truncate text-[var(--text-tertiary)]">
+        <Trans
+          i18nKey="chat.aiGrantBar.noGrantNotice"
+          values={{ org: orgName ?? t("chat.aiGrantBar.thisOrganisation") }}
+          components={{ bold: <span className="font-semibold text-[var(--text-primary)]" /> }}
+        />
       </span>
 
       <div className="flex shrink-0 items-center gap-0.5">
@@ -165,11 +164,11 @@ export function AiGrantBar() {
           type="button"
           onClick={() => void onRefresh()}
           disabled={checking}
-          title="Check again"
+          title={t("chat.aiGrantBar.checkAgain")}
           className={cn(ACTION, checking ? "cursor-default" : "cursor-pointer")}
         >
           <RotateCw size={11} className={cn(checking && "animate-spin")} />
-          Refresh
+          {t("chat.aiGrantBar.refresh")}
         </button>
 
         <button
@@ -178,19 +177,23 @@ export function AiGrantBar() {
           disabled={requesting || requested}
           title={
             requested
-              ? "Your request has been recorded"
-              : "Tell İmece your organisation needs AI access"
+              ? t("chat.aiGrantBar.requestRecorded")
+              : t("chat.aiGrantBar.requestAccessTitle")
           }
           className={cn(ACTION, requesting || requested ? "cursor-default" : "cursor-pointer")}
         >
           {requested ? <Check size={11} /> : null}
-          {requested ? "Requested" : requesting ? "Requesting…" : "Request"}
+          {requested
+            ? t("chat.aiGrantBar.requested")
+            : requesting
+              ? t("chat.aiGrantBar.requesting")
+              : t("chat.aiGrantBar.request")}
         </button>
 
         <button
           type="button"
           onClick={() => dismiss()}
-          title="Dismiss"
+          title={t("chat.aiGrantBar.dismiss")}
           className="shrink-0 cursor-pointer rounded p-0.5 text-[var(--text-tertiary)] transition-colors hover:text-[var(--text-primary)]"
         >
           <X size={12} />

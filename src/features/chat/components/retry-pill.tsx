@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { RotateCw } from "lucide-react";
 import { useChatStore } from "../stores/chat-store";
 
@@ -9,6 +10,7 @@ import { useChatStore } from "../stores/chat-store";
  * flowing or the turn ends (the store owns clearing — this only renders).
  */
 export function RetryPill({ tabId }: { tabId: string }) {
+  const { t } = useTranslation();
   const retry = useChatStore((s) => s.sessions[tabId]?.retryStatus);
   const [now, setNow] = useState(() => Date.now());
 
@@ -20,10 +22,10 @@ export function RetryPill({ tabId }: { tabId: string }) {
     const tick = () => {
       if (document.visibilityState === "visible") setNow(Date.now());
     };
-    const t = setInterval(tick, 1_000);
+    const intervalId = setInterval(tick, 1_000);
     document.addEventListener("visibilitychange", tick);
     return () => {
-      clearInterval(t);
+      clearInterval(intervalId);
       document.removeEventListener("visibilitychange", tick);
     };
   }, [retry]);
@@ -43,8 +45,16 @@ export function RetryPill({ tabId }: { tabId: string }) {
     >
       <RotateCw size={12} className="animate-spin text-[var(--text-tertiary)]" />
       <span className="font-medium text-[var(--text-primary)]">
-        Retrying {retry.attempt}/{retry.maxAttempts}
-        {secs > 0 ? ` in ${secs}s` : "…"}
+        {secs > 0
+          ? t("chat.retryPill.retryingWithTime", {
+              attempt: retry.attempt,
+              maxAttempts: retry.maxAttempts,
+              secs,
+            })
+          : t("chat.retryPill.retryingNow", {
+              attempt: retry.attempt,
+              maxAttempts: retry.maxAttempts,
+            })}
       </span>
       <span className="truncate text-[var(--text-tertiary)]">{cause}</span>
     </div>
