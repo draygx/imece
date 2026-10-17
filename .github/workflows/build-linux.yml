@@ -58,14 +58,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: imece-linux-appimage
-          path: src-tauri/target/release/bundle/appimage/*.AppImage
+          # The repo root's `[workspace]` puts `target/` at the workspace
+          # root, not inside the `src-tauri` member crate.
+          path: target/release/bundle/appimage/*.AppImage
           if-no-files-found: error
 
       - name: Upload deb
         uses: actions/upload-artifact@v4
         with:
           name: imece-linux-deb
-          path: src-tauri/target/release/bundle/deb/*.deb
+          path: target/release/bundle/deb/*.deb
           if-no-files-found: error
 
       - name: Attach to release
@@ -73,5 +75,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            src-tauri/target/release/bundle/appimage/*.AppImage
-            src-tauri/target/release/bundle/deb/*.deb
+            target/release/bundle/appimage/*.AppImage
+            target/release/bundle/deb/*.deb
