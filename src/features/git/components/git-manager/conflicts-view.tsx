@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { invoke } from "@tauri-apps/api/core";
 import { FileCode2, Check } from "lucide-react";
 import { useGitStore } from "../../stores/git-store";
@@ -23,6 +24,7 @@ interface ConflictState {
  * mark-resolved. GitHub Desktop's conflict dialog, inlined.
  */
 export function ConflictsView({ onOpenFile }: { onOpenFile: (path: string) => void }) {
+  const { t } = useTranslation();
   const repoPath = useGitStore.use.repoPath();
   const files = useGitStore.use.files();
   const actions = useGitStore.use.actions();
@@ -58,9 +60,9 @@ export function ConflictsView({ onOpenFile }: { onOpenFile: (path: string) => vo
     <div className="shrink-0 border-b border-border-default">
       <div className="flex items-center justify-between px-2 h-[24px] bg-[var(--bg-sidebar)] border-b border-border-subtle">
         <span className="text-[10px] font-semibold text-text-tertiary uppercase tracking-wider">
-          Conflicts ({state.files.length})
+          {t("git.conflictsView.conflictsHeading", { count: state.files.length })}
         </span>
-        <span className="text-[9px] text-text-tertiary">resolve each file, then Continue</span>
+        <span className="text-[9px] text-text-tertiary">{t("git.conflictsView.resolveHint")}</span>
       </div>
       {state.files.map((f) => (
         <div
@@ -73,30 +75,32 @@ export function ConflictsView({ onOpenFile }: { onOpenFile: (path: string) => vo
           <span className="truncate flex-1 min-w-0 font-mono text-text-secondary">{f.path}</span>
           {f.markerCount > 0 ? (
             <span className="shrink-0 text-[9px] font-mono text-[var(--status-warning)]">
-              {f.markerCount} marker{f.markerCount === 1 ? "" : "s"}
+              {t("git.conflictsView.markerCount", { count: f.markerCount })}
             </span>
           ) : (
-            <span className="shrink-0 text-[9px] font-mono text-text-tertiary">no markers</span>
+            <span className="shrink-0 text-[9px] font-mono text-text-tertiary">
+              {t("git.conflictsView.noMarkers")}
+            </span>
           )}
           <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 shrink-0">
             <button
               onClick={() => void resolve(f.path, "ours")}
               className="px-1.5 h-[16px] rounded border border-border-default text-[9px] text-text-secondary hover:text-text-primary hover:bg-bg-hover"
-              title="Keep your version"
+              title={t("git.conflictsView.keepYourVersionTitle")}
             >
-              Ours
+              {t("git.conflictsView.ours")}
             </button>
             <button
               onClick={() => void resolve(f.path, "theirs")}
               className="px-1.5 h-[16px] rounded border border-border-default text-[9px] text-text-secondary hover:text-text-primary hover:bg-bg-hover"
-              title="Take their version"
+              title={t("git.conflictsView.takeTheirVersionTitle")}
             >
-              Theirs
+              {t("git.conflictsView.theirs")}
             </button>
             <button
               onClick={() => onOpenFile(f.path)}
               className="p-0.5 rounded text-text-tertiary hover:text-text-primary"
-              title="Open in editor"
+              title={t("git.conflictsView.openInEditorTitle")}
             >
               <FileCode2 size={11} />
             </button>
@@ -105,8 +109,8 @@ export function ConflictsView({ onOpenFile }: { onOpenFile: (path: string) => vo
               className="p-0.5 rounded text-text-tertiary hover:text-success"
               title={
                 f.markerCount > 0
-                  ? "Mark resolved (conflict markers still present!)"
-                  : "Mark resolved"
+                  ? t("git.conflictsView.markResolvedWithMarkersTitle")
+                  : t("git.conflictsView.markResolvedTitle")
               }
             >
               <Check size={11} />

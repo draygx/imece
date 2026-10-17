@@ -853,6 +853,47 @@
       "localChangesOverwritten": "Local changes in the way",
       "gpgFailedToSign": "Commit signing failed",
       "genericTitle": "Git error"
+    },
+    "stashesView": {
+      "stashAllChanges": "Stash all changes",
+      "noStashes": "No stashes",
+      "apply": "Apply",
+      "pop": "Pop",
+      "drop": "Drop"
+    },
+    "conflictsView": {
+      "conflictsHeading": "Conflicts ({{count}})",
+      "resolveHint": "resolve each file, then continue",
+      "markerCount": "{{count}} markers",
+      "noMarkers": "no markers",
+      "ours": "Ours",
+      "theirs": "Theirs",
+      "keepYourVersionTitle": "Keep your version",
+      "takeTheirVersionTitle": "Take their version",
+      "openInEditorTitle": "Open in editor",
+      "markResolvedTitle": "Mark resolved",
+      "markResolvedWithMarkersTitle": "Mark resolved (conflict markers still present!)"
+    },
+    "mergeBranchDialog": {
+      "mergeIntoTitle": "Merge into <code>{{branch}}</code>",
+      "chooseBranchDescription": "Choose a branch to merge into <code>{{branch}}</code>.",
+      "noOtherBranches": "No other branches",
+      "checkingOrigin": "Checking origin for new commits…",
+      "staleUpstreamWarning": "<branch>{{selected}}</branch> is behind <upstreamBranch>{{upstream}}</upstreamBranch> by {{count}} commits. <mergeInsteadBtn>Merge {{upstream}} instead</mergeInsteadBtn> to bring in the latest changes.",
+      "cancel": "Cancel",
+      "rebaseButton": "Rebase",
+      "rebaseTitleWithBranches": "Rebase {{branch}} onto {{selected}}",
+      "mergeButton": "Merge",
+      "mergeButtonWithBranch": "Merge {{branch}}",
+      "selectBranchHint": "Select a branch to see what merging it would do.",
+      "checkingAbility": "Checking for ability to merge automatically…",
+      "uptodateMsg": "<dst>{{dst}}</dst> is already up to date with <src>{{src}}</src>.",
+      "invalidMsg": "Unable to merge unrelated histories.",
+      "conflictsMsg": "{{count}} files will conflict when merging <src>{{src}}</src> into <dst>{{dst}}</dst>. You can still merge and resolve them.",
+      "cleanMsg": "This will merge {{count}} commits from <src>{{src}}</src> into <dst>{{dst}}</dst>.",
+      "rebasedToast": "Rebased {{branch}} onto {{selected}}",
+      "mergedToast": "Merged {{selected}} into {{branch}}",
+      "mergedWithConflictsToast": "Merged {{selected}} with conflicts — resolve them to finish"
     }
   }
 }

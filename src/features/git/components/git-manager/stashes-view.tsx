@@ -1,9 +1,11 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Archive } from "lucide-react";
 import { useGitStore } from "../../stores/git-store";
 import { handleGitError } from "../../lib/git-errors";
 
 export function StashesView() {
+  const { t } = useTranslation();
   const repoPath = useGitStore.use.repoPath();
   const stashes = useGitStore.use.stashes();
   const files = useGitStore.use.files();
@@ -30,12 +32,14 @@ export function StashesView() {
           className="w-full flex items-center justify-center gap-1.5 h-7 rounded-md text-[11px] font-medium bg-bg-elevated text-text-secondary hover:text-text-primary hover:bg-bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <Archive size={12} />
-          Stash all changes
+          {t("git.stashesView.stashAllChanges")}
         </button>
       </div>
       <div className="flex-1 min-h-0 overflow-y-auto hide-scrollbar">
         {stashes.length === 0 ? (
-          <div className="px-3 py-8 text-center text-[11px] text-text-tertiary">No stashes</div>
+          <div className="px-3 py-8 text-center text-[11px] text-text-tertiary">
+            {t("git.stashesView.noStashes")}
+          </div>
         ) : (
           stashes.map((s) => (
             <div
@@ -51,19 +55,19 @@ export function StashesView() {
                   onClick={() => run(() => actions.stashApply(s.index))}
                   className="text-[10px] text-text-tertiary hover:text-text-primary"
                 >
-                  Apply
+                  {t("git.stashesView.apply")}
                 </button>
                 <button
                   onClick={() => run(() => actions.stashPop(s.index))}
                   className="text-[10px] text-text-tertiary hover:text-text-primary"
                 >
-                  Pop
+                  {t("git.stashesView.pop")}
                 </button>
                 <button
                   onClick={() => run(() => actions.stashDrop(s.index))}
                   className="text-[10px] text-text-tertiary hover:text-[var(--status-error)]"
                 >
-                  Drop
+                  {t("git.stashesView.drop")}
                 </button>
               </div>
             </div>
